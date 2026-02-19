@@ -1,1 +1,0 @@
-# ta35-stocks
