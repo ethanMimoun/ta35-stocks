@@ -1,0 +1,2101 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>איתן:ת"א35</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
+  
+  <!-- Google Fonts: Inter + Rubik -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+      font-family: 'Inter', 'Rubik', -apple-system, system-ui, sans-serif;
+      background: #fafafa;
+      color: #0f172a; 
+      direction: rtl; 
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* HEADER - CLEAN DARK */
+    .header { 
+      background: #0f172a;
+      color: #ffffff; 
+      padding: 16px 20px; 
+      border-bottom: 1px solid #1e293b;
+    }
+    .header-inner { max-width: 1200px; margin: 0 auto; }
+    .header-row1 { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .header-brand { 
+      font-size: 18px; 
+      font-weight: 700; 
+      color: #ffffff;
+      letter-spacing: -0.02em;
+    }
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+    .header-btn { 
+      background: rgba(255,255,255,0.1); 
+      border: 1px solid rgba(255,255,255,0.2); 
+      border-radius: 6px; 
+      width: 36px; 
+      height: 36px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      cursor: pointer; 
+      color: rgba(255,255,255,0.7); 
+      font-size: 16px; 
+      transition: all 0.15s ease;
+    }
+    .header-btn:hover { 
+      background: rgba(255,255,255,0.15); 
+      border-color: rgba(255,255,255,0.3);
+      color: #ffffff;
+    }
+    .header-btn.active { 
+      background: #fef3c7; 
+      border-color: #fbbf24;
+      color: #f59e0b;
+    }
+    .header-btn.spinning { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    
+    /* ADD BUTTON - BIG GREEN */
+    .add-btn {
+      background: #10b981;
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #ffffff;
+      font-size: 24px;
+      font-weight: 700;
+      transition: all 0.15s ease;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+    }
+    .add-btn:hover {
+      background: #059669;
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+    .header-user { font-size: 13px; color: rgba(255,255,255,0.8); display: flex; align-items: center; gap: 8px; font-weight: 500; }
+    .header-user-name { max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .header-user button { 
+      background: rgba(239, 68, 68, 0.15); 
+      border: 1px solid rgba(239, 68, 68, 0.3); 
+      color: #fca5a5; 
+      padding: 6px 12px; 
+      border-radius: 6px; 
+      cursor: pointer; 
+      font-size: 11px; 
+      font-weight: 600;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .header-user button:hover { 
+      background: rgba(239, 68, 68, 0.25); 
+      border-color: #ef4444;
+      color: #ffffff;
+    }
+    
+    /* MARKET STATS - DARK CARDS */
+    .market-strip { display: flex; gap: 10px; padding: 10px 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .market-strip::-webkit-scrollbar { display: none; }
+    .market-stat { 
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1); 
+      border-radius: 8px; 
+      padding: 10px 14px; 
+      min-width: 80px; 
+      text-align: center; 
+      flex-shrink: 0;
+    }
+    .market-stat-label { font-size: 10px; color: rgba(255,255,255,0.5); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+    .market-stat-value { font-size: 20px; font-weight: 700; color: #ffffff; }
+    .market-stat-value.green { color: #10b981; }
+    .market-stat-value.red { color: #ef4444; }
+    
+    /* UPDATE STATUS */
+    .update-status { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 8px; text-align: center; font-weight: 500; }
+    
+    /* SEARCH */
+    .search-wrap { position: relative; margin-bottom: 12px; }
+    .search-wrap input { 
+      width: 100%; 
+      padding: 10px 40px 10px 14px; 
+      border-radius: 8px; 
+      border: 1px solid rgba(255,255,255,0.2); 
+      font-size: 14px; 
+      font-family: inherit; 
+      direction: rtl; 
+      background: rgba(255,255,255,0.05);
+      color: #ffffff; 
+      transition: all 0.15s ease;
+      font-weight: 400;
+    }
+    .search-wrap input::placeholder { color: rgba(255,255,255,0.4); }
+    .search-wrap input:focus { 
+      outline: none; 
+      border-color: rgba(255,255,255,0.4); 
+      background: rgba(255,255,255,0.08);
+    }
+    .search-icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: rgba(255,255,255,0.4); font-size: 15px; pointer-events: none; }
+
+    /* MAIN */
+    .main { max-width: 1200px; margin: 0 auto; padding: 24px 20px; }
+
+    /* SORT BUTTONS - CLEAN */
+    .sort-bar { 
+      background: #ffffff; 
+      border: 1px solid #e2e8f0;
+      border-radius: 8px; 
+      padding: 12px; 
+      display: flex; 
+      align-items: center; 
+      gap: 8px; 
+      flex-wrap: wrap; 
+      margin-bottom: 16px;
+    }
+    .sort-btn { 
+      padding: 8px 16px; 
+      border-radius: 6px; 
+      border: 1px solid #e2e8f0; 
+      background: #ffffff; 
+      color: #64748b; 
+      cursor: pointer; 
+      font-size: 12px; 
+      font-weight: 600; 
+      font-family: inherit; 
+      transition: all 0.15s ease; 
+      white-space: nowrap;
+    }
+    .sort-btn:hover { 
+      background: #f8fafc; 
+      border-color: #cbd5e1;
+      color: #0f172a;
+    }
+    .sort-btn.active { 
+      background: #0f172a;
+      color: #ffffff; 
+      border-color: #0f172a;
+    }
+    .sort-btn.active.green { 
+      background: #10b981;
+      border-color: #10b981;
+    }
+    .sort-btn.active.red { 
+      background: #ef4444;
+      border-color: #ef4444;
+    }
+    
+    /* MORE MENU */
+    .more-menu { position: relative; }
+    .more-btn { 
+      padding: 8px 16px; 
+      border-radius: 6px; 
+      border: 1px solid #e2e8f0; 
+      background: #ffffff; 
+      color: #64748b; 
+      cursor: pointer; 
+      font-size: 12px; 
+      font-weight: 600; 
+      transition: all 0.15s ease; 
+      display: flex; 
+      align-items: center; 
+      gap: 4px;
+      font-family: inherit;
+    }
+    .more-btn:hover { 
+      background: #f8fafc; 
+      border-color: #cbd5e1;
+      color: #0f172a;
+    }
+    .more-dropdown { 
+      display: none; 
+      position: absolute; 
+      top: 100%; 
+      right: 0; 
+      background: #ffffff; 
+      border: 1px solid #e2e8f0; 
+      border-radius: 8px; 
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1); 
+      padding: 6px; 
+      margin-top: 6px; 
+      min-width: 160px; 
+      z-index: 100;
+    }
+    .more-dropdown.show { display: block; }
+    .more-option { 
+      padding: 8px 12px; 
+      cursor: pointer; 
+      border-radius: 4px; 
+      font-size: 13px; 
+      color: #475569; 
+      transition: all 0.15s; 
+      font-weight: 500;
+    }
+    .more-option:hover { 
+      background: #f8fafc;
+      color: #0f172a;
+    }
+
+    /* SECTOR FILTER */
+    .sector-filter { margin-bottom: 16px; }
+    .sector-label { font-size: 11px; color: #64748b; margin-bottom: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    .sector-tags { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; -webkit-overflow-scrolling: touch; }
+    .sector-tags::-webkit-scrollbar { height: 4px; }
+    .sector-tags::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 2px; }
+    .sector-tags::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+    .sector-tag { 
+      padding: 6px 14px; 
+      border-radius: 6px; 
+      border: 1px solid #e2e8f0; 
+      background: #ffffff; 
+      color: #64748b; 
+      cursor: pointer; 
+      font-size: 11px; 
+      font-weight: 600; 
+      transition: all 0.15s ease; 
+      white-space: nowrap; 
+      flex-shrink: 0;
+    }
+    .sector-tag:hover { 
+      background: #f8fafc; 
+      border-color: #cbd5e1; 
+      color: #0f172a;
+    }
+    .sector-tag.active { 
+      background: #0f172a;
+      color: #ffffff; 
+      border-color: #0f172a;
+    }
+
+    /* RESULTS COUNT */
+    .results-count { font-size: 12px; color: #64748b; margin-bottom: 14px; font-weight: 500; }
+
+    /* GRID */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 14px; }
+
+    /* CARD - CLEAN & FUNCTIONAL */
+    .card { 
+      background: #ffffff; 
+      border: 1px solid #e2e8f0; 
+      border-radius: 8px; 
+      padding: 16px; 
+      cursor: pointer; 
+      transition: all 0.15s ease;
+    }
+    .card:hover { 
+      border-color: #0f172a;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+    }
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .card-name { flex: 1; }
+    .card-hname { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 3px; letter-spacing: -0.01em; }
+    .card-symbol { font-size: 11px; color: #94a3b8; font-weight: 600; }
+    .card-price-wrap { text-align: left; }
+    .card-price { 
+      font-size: 22px; 
+      font-weight: 800; 
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+    .card-change { font-size: 13px; font-weight: 700; margin-top: 2px; }
+    .card-change.up { color: #10b981; }
+    .card-change.down { color: #ef4444; }
+
+    /* FAVORITE BUTTON */
+    .fav-btn { 
+      background: #ffffff; 
+      border: 1px solid #e2e8f0; 
+      border-radius: 50%; 
+      width: 32px; 
+      height: 32px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      cursor: pointer; 
+      font-size: 15px; 
+      transition: all 0.15s ease;
+    }
+    .fav-btn:hover { 
+      border-color: #fbbf24;
+      background: #fef3c7;
+    }
+    .fav-btn.active { 
+      background: #fef3c7;
+      border-color: #fbbf24;
+    }
+
+    /* ALERT BANNER */
+    .alert-banner { background: #0f172a; color: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; border: 1px solid #1e293b; }
+    .alert-banner-content { flex: 1; }
+    .alert-banner h3 { font-size: 16px; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; font-weight: 700; }
+    .alert-banner p { font-size: 13px; color: rgba(255,255,255,0.7); font-weight: 500; }
+    .alert-banner-btn { background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 13px; transition: all 0.15s; white-space: nowrap; font-family: inherit; }
+    .alert-banner-btn:hover { background: #059669; }
+    .alert-banner-btn.enabled { background: #64748b; }
+    .alert-banner-btn.enabled:hover { background: #475569; }
+
+    /* MORE MENU */
+    .more-menu { position: relative; }
+    .more-btn { 
+      padding: 7px 14px; 
+      border-radius: 20px; 
+      border: 1.5px solid #e2e8f0; 
+      background: white; 
+      color: #475569; 
+      cursor: pointer; 
+      font-size: 11px; 
+      font-weight: 600; 
+      transition: all 0.3s ease; 
+      display: flex; 
+      align-items: center; 
+      gap: 4px;
+    }
+    .more-btn:hover { 
+      background: #f8fafc; 
+      border-color: #cbd5e1;
+      transform: translateY(-1px);
+    }
+    .more-dropdown { 
+      display: none; 
+      position: absolute; 
+      top: 100%; 
+      right: 0; 
+      background: white; 
+      border: 1.5px solid #e2e8f0; 
+      border-radius: 10px; 
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12); 
+      padding: 6px; 
+      margin-top: 6px; 
+      min-width: 140px; 
+      z-index: 100;
+      backdrop-filter: blur(20px);
+      background: rgba(255,255,255,0.95);
+    }
+    .more-dropdown.show { display: block; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    .more-option { 
+      padding: 8px 10px; 
+      cursor: pointer; 
+      border-radius: 6px; 
+      font-size: 12px; 
+      color: #475569; 
+      transition: all 0.2s; 
+      font-weight: 500;
+    }
+    .more-option:hover { 
+      background: linear-gradient(135deg, #f1f5f9 0%, #e0e7ff 100%);
+      color: #1e40af;
+    }
+
+
+    /* PORTFOLIO SUMMARY - CLEAN */
+    .portfolio-summary { 
+      background: #0f172a;
+      color: white; 
+      padding: 24px; 
+      border-radius: 8px; 
+      margin-bottom: 20px;
+      border: 1px solid #1e293b;
+    }
+    .portfolio-summary h2 { font-size: 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; font-weight: 700; letter-spacing: -0.01em; }
+    .portfolio-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .portfolio-stat { 
+      background: rgba(255,255,255,0.05); 
+      padding: 16px; 
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .portfolio-stat-label { font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+    .portfolio-stat-value { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
+    .portfolio-stat-value.positive { color: #10b981; }
+    .portfolio-stat-value.negative { color: #ef4444; }
+
+    /* PORTFOLIO TABLE */
+    .portfolio-table { background: white; border-radius: 12px; overflow-x: auto; overflow-y: visible; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 20px; -webkit-overflow-scrolling: touch; }
+    .portfolio-table table { width: 100%; border-collapse: collapse; min-width: 800px; }
+    .portfolio-table th { background: #f8fafc; padding: 12px 16px; text-align: right; font-size: 13px; font-weight: 700; color: #475569; border-bottom: 2px solid #e2e8f0; }
+    .portfolio-table td { padding: 12px 16px; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+    .portfolio-table tr:hover td { background: #f8fafc; }
+    .portfolio-table .positive { color: #16a34a; font-weight: 600; }
+    .portfolio-table .negative { color: #dc2626; font-weight: 600; }
+    .portfolio-action-btn { border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s; margin: 0 2px; }
+    .portfolio-sell-btn { background: #f59e0b; color: white; }
+    .portfolio-sell-btn:hover { background: #d97706; }
+    .portfolio-remove-btn { background: #ef4444; color: white; }
+    .portfolio-remove-btn:hover { background: #dc2626; }
+    
+    /* PORTFOLIO COMPACT VIEW */
+    .portfolio-compact { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 20px; overflow: hidden; }
+    .portfolio-item { border-bottom: 1px solid #e2e8f0; transition: all 0.15s; cursor: pointer; }
+    .portfolio-item:last-child { border-bottom: none; }
+    .portfolio-item:hover { background: #f8fafc; }
+    .portfolio-item-header { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px; padding: 16px 20px; align-items: center; }
+    .portfolio-item-name { font-size: 15px; font-weight: 700; color: #0f172a; letter-spacing: -0.01em; }
+    .portfolio-item-symbol { font-size: 11px; color: #94a3b8; margin-top: 2px; font-weight: 600; }
+    .portfolio-item-quantity { text-align: center; font-size: 14px; color: #475569; font-weight: 500; }
+    .portfolio-item-quantity-label { font-size: 10px; color: #94a3b8; font-weight: 600; text-transform: uppercase; }
+    .portfolio-item-profit { text-align: left; font-size: 16px; font-weight: 800; }
+    .portfolio-item-profit.positive { color: #10b981; }
+    .portfolio-item-profit.negative { color: #ef4444; }
+    
+    /* PORTFOLIO EXPANDED VIEW */
+    .portfolio-item-details { display: none; background: #f8fafc; padding: 20px; border-top: 1px solid #e2e8f0; }
+    .portfolio-item.expanded .portfolio-item-details { display: block; }
+    .portfolio-item.expanded { background: #f8fafc; }
+    .portfolio-details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+    .portfolio-detail-label { font-size: 10px; color: #64748b; margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    .portfolio-detail-value { font-size: 18px; font-weight: 800; color: #0f172a; letter-spacing: -0.01em; }
+    .portfolio-detail-value.positive { color: #10b981; }
+    .portfolio-detail-value.negative { color: #ef4444; }
+    .portfolio-actions { display: flex; gap: 8px; padding-top: 16px; border-top: 1px solid #e2e8f0; }
+    .portfolio-action-button { flex: 1; padding: 12px; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.15s; font-family: inherit; }
+    .portfolio-buy-btn { background: #10b981; color: white; }
+    .portfolio-buy-btn:hover { background: #059669; }
+    .portfolio-sell-btn-expanded { background: #f59e0b; color: white; }
+    .portfolio-sell-btn-expanded:hover { background: #d97706; }
+    .portfolio-close-btn { background: #64748b; color: white; }
+    .portfolio-close-btn:hover { background: #475569; }
+
+    /* SECTOR FILTER - TAGS STYLE */
+    .sector-filter { margin-bottom: 16px; }
+    .sector-label { font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 8px; }
+    .sector-tags { display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+    .sector-tags::-webkit-scrollbar { height: 4px; }
+    .sector-tags::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 2px; }
+    .sector-tags::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+    .sector-tag { padding: 6px 12px; border-radius: 16px; border: 1px solid #e2e8f0; background: white; color: #475569; cursor: pointer; font-size: 11px; font-weight: 500; white-space: nowrap; transition: all 0.15s; flex-shrink: 0; }
+    .sector-tag:hover { background: #f1f5f9; }
+    .sector-tag.active { background: #0f172a; color: white; border-color: #0f172a; }
+
+    /* RESULTS COUNT */
+    .results-count { font-size: 11px; color: #64748b; margin-bottom: 12px; font-weight: 600; }
+
+    /* GRID */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+
+
+    /* MODAL */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: white; border-radius: 8px; max-width: 680px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,0.25); }
+    .modal-header { background: #0f172a; color: white; padding: 24px; border-radius: 8px 8px 0 0; position: sticky; top: 0; z-index: 10; }
+    .modal-header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .modal-close { background: none; border: none; color: #94a3b8; font-size: 28px; cursor: pointer; line-height: 1; padding: 0; }
+    .modal-close:hover { color: white; }
+    .modal-badge { font-size: 12px; background: #1e293b; padding: 3px 10px; border-radius: 4px; display: inline-block; margin-bottom: 6px; }
+    .modal-title { font-size: 26px; font-weight: 800; margin-bottom: 2px; }
+    .modal-subtitle { color: #94a3b8; font-size: 14px; }
+    .modal-price { font-size: 40px; font-weight: 800; }
+    .modal-change { font-size: 18px; font-weight: 600; }
+    .modal-change.up { color: #4ade80; }
+    .modal-change.down { color: #f87171; }
+    .modal-body { padding: 24px; }
+    .modal-section { margin-bottom: 24px; }
+    .modal-section h3 { font-size: 16px; font-weight: 700; margin-bottom: 12px; color: #0f172a; }
+    .modal-desc { color: #475569; line-height: 1.6; font-size: 14px; }
+    .modal-sector-tag { display: inline-block; background: #f1f5f9; color: #475569; padding: 4px 12px; border-radius: 4px; font-size: 13px; margin-top: 8px; }
+    .modal-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; background: #f8fafc; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; }
+    .modal-stat { background: white; border-radius: 6px; padding: 12px; border: 1px solid #e2e8f0; }
+    .modal-stat-label { font-size: 11px; color: #94a3b8; margin-bottom: 4px; }
+    .modal-stat-value { font-size: 18px; font-weight: 800; color: #0f172a; }
+    .modal-stat-value.green { color: #16a34a; }
+    .modal-stat-value.red { color: #dc2626; }
+    .modal-links { display: flex; flex-direction: column; gap: 8px; }
+    .modal-link { display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; text-decoration: none; color: #0f172a; transition: all 0.15s; font-weight: 500; font-size: 14px; }
+    .modal-link:hover { border-color: #0f172a; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .modal-link-icon { font-size: 18px; }
+    .modal-action-btn { background: #3b82f6; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 15px; width: 100%; transition: all 0.2s; margin-top: 16px; }
+    .modal-action-btn:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+
+    /* SIMPLE POPUP */
+    .simple-popup { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; align-items: center; justify-content: center; padding: 16px; }
+    .simple-popup.open { display: flex; }
+    .simple-popup-box { background: white; border-radius: 12px; padding: 24px; max-width: 400px; width: 100%; box-shadow: 0 24px 64px rgba(0,0,0,0.3); }
+    .simple-popup h3 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+    .simple-popup-input { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 16px; margin-bottom: 16px; font-family: inherit; text-align: right; }
+    .simple-popup-input:focus { outline: none; border-color: #3b82f6; }
+    .simple-popup-btns { display: flex; gap: 8px; }
+    .simple-popup-btn { flex: 1; padding: 12px; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 14px; transition: all 0.2s; border: none; }
+    .simple-popup-btn.primary { background: #3b82f6; color: white; }
+    .simple-popup-btn.primary:hover { background: #2563eb; }
+    .simple-popup-btn.secondary { background: #f1f5f9; color: #475569; }
+    .simple-popup-btn.secondary:hover { background: #e2e8f0; }
+
+    /* ADD STOCKS MODAL - FULL SCREEN */
+    .add-stocks-modal { 
+      display: none; 
+      position: fixed; 
+      inset: 0; 
+      background: #ffffff; 
+      z-index: 300; 
+      overflow-y: auto;
+    }
+    .add-stocks-modal.open { display: block; }
+    .add-stocks-header { 
+      background: #0f172a; 
+      color: white; 
+      padding: 16px 20px; 
+      position: sticky; 
+      top: 0; 
+      z-index: 10;
+      border-bottom: 1px solid #1e293b;
+    }
+    .add-stocks-header-top { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      margin-bottom: 12px; 
+    }
+    .add-stocks-title { 
+      font-size: 20px; 
+      font-weight: 700; 
+      letter-spacing: -0.01em;
+    }
+    .add-stocks-close { 
+      background: rgba(255,255,255,0.1); 
+      border: 1px solid rgba(255,255,255,0.2); 
+      border-radius: 50%; 
+      width: 36px; 
+      height: 36px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      cursor: pointer; 
+      color: rgba(255,255,255,0.7); 
+      font-size: 24px; 
+      transition: all 0.15s;
+    }
+    .add-stocks-close:hover { 
+      background: rgba(255,255,255,0.15); 
+      color: #ffffff; 
+    }
+    .add-stocks-search { 
+      position: relative; 
+    }
+    .add-stocks-search input { 
+      width: 100%; 
+      padding: 10px 40px 10px 14px; 
+      border-radius: 8px; 
+      border: 1px solid rgba(255,255,255,0.2); 
+      font-size: 14px; 
+      font-family: inherit; 
+      direction: rtl; 
+      background: rgba(255,255,255,0.05);
+      color: #ffffff; 
+      transition: all 0.15s ease;
+    }
+    .add-stocks-search input::placeholder { color: rgba(255,255,255,0.4); }
+    .add-stocks-search input:focus { 
+      outline: none; 
+      border-color: rgba(255,255,255,0.4); 
+      background: rgba(255,255,255,0.08);
+    }
+    .add-stocks-search-icon { 
+      position: absolute; 
+      right: 14px; 
+      top: 50%; 
+      transform: translateY(-50%); 
+      color: rgba(255,255,255,0.4); 
+      font-size: 15px; 
+    }
+    .add-stocks-list { 
+      max-width: 800px; 
+      margin: 0 auto; 
+      padding: 20px; 
+    }
+    .add-stock-item { 
+      background: #ffffff; 
+      border: 1px solid #e2e8f0; 
+      border-radius: 8px; 
+      padding: 16px; 
+      margin-bottom: 10px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      transition: all 0.15s ease;
+    }
+    .add-stock-item:hover { 
+      border-color: #cbd5e1; 
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .add-stock-info { flex: 1; }
+    .add-stock-name { 
+      font-size: 15px; 
+      font-weight: 700; 
+      color: #0f172a; 
+      margin-bottom: 3px;
+      letter-spacing: -0.01em;
+    }
+    .add-stock-symbol { 
+      font-size: 11px; 
+      color: #94a3b8; 
+      font-weight: 600; 
+    }
+    .add-stock-price { 
+      text-align: left; 
+      margin: 0 16px; 
+    }
+    .add-stock-price-value { 
+      font-size: 16px; 
+      font-weight: 700; 
+      color: #0f172a; 
+    }
+    .add-stock-change { 
+      font-size: 12px; 
+      font-weight: 600; 
+    }
+    .add-stock-change.up { color: #10b981; }
+    .add-stock-change.down { color: #ef4444; }
+    .add-stock-fav { 
+      background: #ffffff; 
+      border: 1px solid #e2e8f0; 
+      border-radius: 50%; 
+      width: 40px; 
+      height: 40px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      cursor: pointer; 
+      font-size: 18px; 
+      transition: all 0.15s ease;
+    }
+    .add-stock-fav:hover { 
+      border-color: #fbbf24; 
+      background: #fef3c7;
+      transform: scale(1.05);
+    }
+    .add-stock-fav.active { 
+      background: #fef3c7; 
+      border-color: #fbbf24;
+    }
+
+    /* EMPTY STATE */
+    .empty { text-align: center; padding: 80px 20px; grid-column: 1 / -1; }
+    .empty-icon { font-size: 64px; margin-bottom: 20px; }
+    .empty h3 { font-size: 22px; font-weight: 700; margin-bottom: 10px; color: #0f172a; }
+    .empty p { color: #64748b; font-size: 15px; margin-bottom: 24px; line-height: 1.5; }
+    .empty-btn {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .empty-btn:hover {
+      background: #059669;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    /* FOOTER NOTE */
+    .footer-note { background: white; border: 2px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-top: 32px; }
+    .footer-note h3 { font-weight: 700; margin-bottom: 10px; }
+    .footer-note p { font-size: 13px; color: #475569; margin-bottom: 4px; }
+
+    /* LOGIN SCREEN */
+    .login-screen { 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      min-height: 100vh; 
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 9999;
+      overflow-y: auto;
+    }
+    .login-screen.hidden { display: none; }
+    #app-container { display: none; }
+    .login-box { background: white; border-radius: 16px; padding: 40px; max-width: 420px; width: 90%; box-shadow: 0 24px 64px rgba(0,0,0,0.4); margin: 20px auto; }
+    .login-logo { text-align: center; font-size: 48px; margin-bottom: 8px; }
+    .login-title { text-align: center; font-size: 28px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
+    .login-subtitle { text-align: center; color: #64748b; font-size: 14px; margin-bottom: 32px; }
+    .login-input { width: 100%; padding: 14px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px; margin-bottom: 16px; font-family: inherit; transition: all 0.2s; }
+    .login-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+    .login-btn { width: 100%; padding: 14px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-bottom: 12px; }
+    .login-btn:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59,130,246,0.3); }
+    .login-btn.secondary { background: #f1f5f9; color: #475569; }
+    .login-btn.secondary:hover { background: #e2e8f0; }
+    .login-divider { text-align: center; color: #94a3b8; font-size: 13px; margin: 20px 0; }
+    .login-error { background: #fef2f2; border: 2px solid #fca5a5; color: #dc2626; padding: 12px; border-radius: 8px; font-size: 14px; margin-bottom: 16px; display: none; }
+    .login-error.show { display: block; }
+    .user-info { display: flex; align-items: center; gap: 8px; background: #1e293b; padding: 8px 16px; border-radius: 8px; }
+    .user-name { color: white; font-weight: 600; font-size: 14px; }
+    .logout-btn { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s; }
+    .logout-btn:hover { background: #dc2626; }
+
+    @media (max-width: 600px) {
+      .header-top { flex-direction: column; }
+      .modal-stats-grid { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+      .alert-banner { flex-direction: column; align-items: stretch; }
+      .alert-banner-btn { width: 100%; }
+      .portfolio-table { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">📊</div>
+    <h2 class="login-title">מרכז המניות הישראליות</h2>
+    <p class="login-subtitle">נתוני שוק, מעקב אישי ותיק דמה</p>
+    
+    <div class="login-error" id="login-error"></div>
+    
+    <div id="login-form">
+      <input type="text" class="login-input" id="login-username" placeholder="שם משתמש" onkeypress="if(event.key==='Enter') handleLogin()">
+      <input type="password" class="login-input" id="login-password" placeholder="סיסמה" onkeypress="if(event.key==='Enter') handleLogin()">
+      <button class="login-btn" onclick="handleLogin()">התחבר</button>
+      <div class="login-divider">או</div>
+      <button class="login-btn secondary" onclick="showRegister()">יצירת חשבון חדש</button>
+    </div>
+    
+    <div id="register-form" style="display:none">
+      <input type="text" class="login-input" id="register-username" placeholder="שם משתמש (אנגלית בלבד, ללא רווחים)" onkeypress="if(event.key==='Enter') document.getElementById('register-password').focus()">
+      <input type="password" class="login-input" id="register-password" placeholder="סיסמה (לפחות 6 תווים)" onkeypress="if(event.key==='Enter') document.getElementById('register-password-confirm').focus()">
+      <input type="password" class="login-input" id="register-password-confirm" placeholder="אימות סיסמה" onkeypress="if(event.key==='Enter') handleRegister()">
+      <button class="login-btn" onclick="handleRegister()">צור חשבון</button>
+      <button class="login-btn secondary" onclick="showLogin()">חזרה להתחברות</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP CONTENT -->
+<div id="app-container">
+
+<div class="header">
+  <div class="header-inner">
+    <!-- Row 1: Brand + Actions + User -->
+    <div class="header-row1">
+      <div class="header-brand">מרכז המניות הישראליות</div>
+      <div class="header-actions">
+        <button class="header-btn" id="alert-btn" onclick="toggleAlerts()" title="התראות">
+          <span id="alert-icon">🔔</span>
+        </button>
+        <button class="header-btn" id="refresh-btn" onclick="fetchData()" title="רענון">⟳</button>
+        <button class="add-btn" onclick="openAddStocksModal()" title="הוסף מניות">+</button>
+        <div class="header-user">
+          <span id="user-name-display">משתמש</span>
+          <button onclick="handleLogout()">יציאה</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Row 2: Search -->
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="חיפוש..." oninput="render()">
+    </div>
+    
+    <!-- Market Stats Strip -->
+    <div class="market-strip">
+      <div class="market-stat">
+        <div class="market-stat-label">עולים</div>
+        <div class="market-stat-value green" id="stat-up">-</div>
+      </div>
+      <div class="market-stat">
+        <div class="market-stat-label">יורדים</div>
+        <div class="market-stat-value red" id="stat-down">-</div>
+      </div>
+      <div class="market-stat">
+        <div class="market-stat-label">מועדפים</div>
+        <div class="market-stat-value" id="stat-favs">0</div>
+      </div>
+      <div class="market-stat">
+        <div class="market-stat-label">בתיק</div>
+        <div class="market-stat-value" id="stat-portfolio">0</div>
+      </div>
+    </div>
+    
+    <!-- Update Status -->
+    <div class="update-status" id="status-bar">טוען נתונים...</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- Sort Bar - Watchlist First -->
+  <div class="sort-bar">
+    <button class="sort-btn active" id="sort-favorites" onclick="setSort('favorites')">המניות שלי</button>
+    <button class="sort-btn" id="sort-portfolio" onclick="setSort('portfolio')">תיק דמה</button>
+    <button class="sort-btn" id="sort-gainers" onclick="setSort('gainers')">עולים</button>
+    <button class="sort-btn" id="sort-losers" onclick="setSort('losers')">יורדים</button>
+    <div class="more-menu">
+      <button class="more-btn" onclick="toggleMoreMenu()">עוד ⋮</button>
+      <div class="more-dropdown" id="more-dropdown">
+        <div class="more-option" onclick="setSort('default'); toggleMoreMenu();">כל המניות</div>
+        <div class="more-option" onclick="setSort('marketcap'); toggleMoreMenu();">שווי שוק גבוה</div>
+        <div class="more-option" onclick="setSort('volume'); toggleMoreMenu();">נפח מסחר גבוה</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="portfolio-summary-container"></div>
+
+  <!-- Sector Filter - Tags -->
+  <div class="sector-filter">
+    <div class="sector-label">סינון לפי ענף:</div>
+    <div class="sector-tags" id="sector-tags"></div>
+  </div>
+
+  <div class="results-count" id="results-count"></div>
+
+  <div class="grid" id="cards-grid"></div>
+
+  <div class="footer-note">
+    <h3>📌 מידע חשוב</h3>
+    <p>• האפליקציה מתחברת ל-Google Sheets שלך ומתרעננת כל 2 דקות</p>
+    <p>• <strong>תיק הדמה מתחיל עם 100,000 ₪</strong> - קנה ומכור מניות!</p>
+    <p>• מכירת מניות מחזירה כסף לקופה במחיר הנוכחי</p>
+    <p>• תיק הדמה והמועדפים נשמרים בטלפון שלך</p>
+    <p>• הפלטפורמה אינה מספקת ייעוץ השקעות</p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" id="modal-box"></div>
+</div>
+
+<div class="simple-popup" id="add-portfolio-popup">
+  <div class="simple-popup-box">
+    <h3 id="popup-title">הוסף לתיק הדמה</h3>
+    <p id="portfolio-popup-info" style="margin-bottom:12px;color:#64748b;font-size:13px"></p>
+    <input type="number" class="simple-popup-input" id="portfolio-quantity" placeholder="כמות מניות" min="1" step="1">
+    <div class="simple-popup-btns">
+      <button class="simple-popup-btn primary" onclick="confirmAddToPortfolio()">הוסף</button>
+      <button class="simple-popup-btn secondary" onclick="closeAddPortfolioPopup()">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<div class="simple-popup" id="sell-popup">
+  <div class="simple-popup-box">
+    <h3 id="sell-popup-title">מכור מניות</h3>
+    <p id="sell-popup-info" style="margin-bottom:12px;color:#64748b;font-size:14px"></p>
+    <input type="number" class="simple-popup-input" id="sell-quantity" placeholder="כמות למכירה" min="1" step="1">
+    <div class="simple-popup-btns">
+      <button class="simple-popup-btn primary" onclick="confirmSell()">מכור</button>
+      <button class="simple-popup-btn secondary" onclick="closeSellPopup()">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Stocks Modal -->
+<div class="add-stocks-modal" id="add-stocks-modal">
+  <div class="add-stocks-header">
+    <div class="add-stocks-header-top">
+      <div class="add-stocks-title">הוסף מניות למעקב</div>
+      <button class="add-stocks-close" onclick="closeAddStocksModal()">×</button>
+    </div>
+    <div class="add-stocks-search">
+      <span class="add-stocks-search-icon">🔍</span>
+      <input type="text" id="add-stocks-search-input" placeholder="חפש מניה..." oninput="filterAddStocksList()">
+    </div>
+  </div>
+  <div class="add-stocks-list" id="add-stocks-list"></div>
+</div>
+
+<script>
+const SECTOR_MAP = {
+  'OPCE':'אנרגיה ותשתיות','ORA':'אנרגיה ותשתיות','ICL':'כימיה וחומרים',
+  'ESLT':'תעשייה ביטחונית','AMOT':'נדל"ן','ENLT':'אנרגיה ותשתיות',
+  'BEZQ':'תקשורת','BIG':'קמעונאות','DSCT':'בנקאות','LUMI':'בנקאות',
+  'POLI':'בנקאות','MZTF':'בנקאות','FIBI':'בנקאות',
+  'DLEKG':'אנרגיה ותשתיות','DIMRI':'נדל"ן','PHOE':'ביטוח ופיננסים',
+  'HARL':'ביטוח ופיננסים','TSEM':'טכנולוגיה וחצאים',
+  'TEVA':'תרופות וביוטכנולוגיה','CLIS':'ביטוח ופיננסים','MVNE':'נדל"ן',
+  'MGDL':'ביטוח ופיננסים','MLSR':'נדל"ן','MMHD':'ביטוח ופיננסים',
+  'NVPT':'אנרגיה ותשתיות','NVMI':'טכנולוגיה וחצאים',
+  'NWMD':'אנרגיה ותשתיות','NICE':'טכנולוגיה ותוכנה','NXSN':'טכנולוגיה ותוכנה',
+  'AZRG':'נדל"ן','FTAL':'נדל"ן','CAMT':'טכנולוגיה וחצאים',
+  'SAE':'קמעונאות','STRS':'מזון ומשקאות','SPEN':'בנייה ותשתיות'
+};
+
+const WEBSITE_MAP = {
+  'ESLT':'https://www.elbitsystems.com','ICL':'https://www.icl-group.com',
+  'ORA':'https://www.ormat.com','BEZQ':'https://www.bezeq.co.il',
+  'DSCT':'https://www.discountbank.co.il','LUMI':'https://www.leumi.co.il',
+  'POLI':'https://www.bankhapoalim.co.il','MZTF':'https://www.mizrahi-tefahot.co.il',
+  'FIBI':'https://www.fibi.co.il','PHOE':'https://www.fnx.co.il',
+  'HARL':'https://www.harel-group.co.il','TSEM':'https://www.towersemi.com',
+  'TEVA':'https://www.tevapharm.com','CLIS':'https://www.clalbit.co.il',
+  'MGDL':'https://www.migdal.co.il','MLSR':'https://www.melisron.co.il',
+  'MMHD':'https://www.menora.co.il','NVMI':'https://www.novami.com',
+  'NWMD':'https://www.newmed-energy.com','NICE':'https://www.nice.com',
+  'AZRG':'https://www.azrieli.com','AMOT':'https://www.amot.co.il',
+  'ENLT':'https://www.enlightenergy.co.il','DLEKG':'https://www.delek-group.com',
+  'DIMRI':'https://www.dimri.co.il','BIG':'https://www.big.co.il',
+  'SAE':'https://www.shufersal.co.il','STRS':'https://www.strauss-group.com',
+  'SPEN':'https://www.shikun-binui.com','CAMT':'https://www.camtek.com'
+};
+
+const companies = [
+  {id:'ENLT',name:'אנלייט אנרגיה',price:230.2,changePercent:-2.42,marketCap:31.72,volume:369477},
+  {id:'ESLT',name:'אלביט מערכות',price:3080.0,changePercent:10.95,marketCap:46.94,volume:151042},
+  {id:'OPCE',name:'או.פי.סי אנרגיה',price:117.3,changePercent:5.49,marketCap:35.40,volume:530625},
+  {id:'AZRG',name:'עזריאלי קבוצה',price:470.6,changePercent:3.70,marketCap:57.07,volume:87442},
+  {id:'ICL',name:'ICL- כימיקלים לישראל',price:16.7,changePercent:-0.89,marketCap:21.37,volume:2636768},
+  {id:'NVPT',name:'נאוויטס פרוליום',price:128.5,changePercent:2.23,marketCap:14.90,volume:213041},
+  {id:'NWMD',name:'ניו-מד אנרגיה',price:19.3,changePercent:1.96,marketCap:22.04,volume:1829161},
+  {id:'ORA',name:'אורמת טכנולוגיות',price:339.0,changePercent:-3.94,marketCap:6.60,volume:55779},
+  {id:'DLEKG',name:'דלק קבוצה',price:1101.0,changePercent:2.42,marketCap:20.14,volume:36112},
+  {id:'STRS',name:'שטראוס',price:135.7,changePercent:-1.74,marketCap:15.87,volume:381400},
+  {id:'TEVA',name:'טבע',price:93.9,changePercent:3.20,marketCap:34.60,volume:1173005},
+  {id:'NICE',name:'נייס',price:373.8,changePercent:1.27,marketCap:7.16,volume:101257},
+  {id:'MLSR',name:'מליסרון',price:427.0,changePercent:2.45,marketCap:20.36,volume:40366},
+  {id:'CAMT',name:'קמטק',price:489.0,changePercent:3.60,marketCap:7.35,volume:82751},
+  {id:'SAE',name:'שופרסל',price:45.2,changePercent:1.60,marketCap:12.06,volume:291181},
+  {id:'FTAL',name:'פתאל החזקות',price:601.4,changePercent:1.97,marketCap:9.92,volume:14881},
+  {id:'POLI',name:'בנק הפועלים',price:77.1,changePercent:2.02,marketCap:101.24,volume:2550930},
+  {id:'CLIS',name:'כלל עסקי ביטוח',price:238.5,changePercent:-1.12,marketCap:19.22,volume:264419},
+  {id:'NVMI',name:'נובה',price:1365.5,changePercent:-0.63,marketCap:14.04,volume:47619},
+  {id:'TSEM',name:'טאואר',price:424.5,changePercent:-2.62,marketCap:15.40,volume:355159},
+  {id:'DSCT',name:'בנק דיסקונט',price:34.0,changePercent:0.59,marketCap:41.59,volume:2377074},
+  {id:'AMOT',name:'אמות השקעות',price:20.6,changePercent:0.64,marketCap:10.17,volume:1188262},
+  {id:'LUMI',name:'בנק לאומי',price:72.3,changePercent:0.50,marketCap:107.00,volume:2681053},
+  {id:'NXSN',name:'נקסט ויז\'ן',price:368.4,changePercent:0.88,marketCap:33.40,volume:234747},
+  {id:'SPEN',name:'שפיר הנדסה',price:34.1,changePercent:0.12,marketCap:12.20,volume:140537},
+  {id:'MVNE',name:'מבנה נדל"ן',price:14.3,changePercent:3.26,marketCap:10.00,volume:1410842},
+  {id:'PHOE',name:'הפיניקס ביטחים',price:168.4,changePercent:0.18,marketCap:42.67,volume:348821},
+  {id:'BIG',name:'ביג',price:781.8,changePercent:5.02,marketCap:19.59,volume:63890},
+  {id:'HARL',name:'הראל השקעות',price:174.3,changePercent:-0.11,marketCap:35.87,volume:339864},
+  {id:'BEZQ',name:'בזק',price:8.3,changePercent:0.94,marketCap:22.93,volume:4441139},
+  {id:'MGDL',name:'מגדל ביטוח',price:17.2,changePercent:-0.75,marketCap:18.18,volume:2584763},
+  {id:'MZTF',name:'בנק מזרחי טפחות',price:230.0,changePercent:1.95,marketCap:59.79,volume:291112},
+  {id:'FIBI',name:'בנק בינלאומי',price:264.1,changePercent:0.49,marketCap:26.49,volume:128053},
+  {id:'MMHD',name:'מנורה מבטחים',price:482.0,changePercent:0.42,marketCap:30.11,volume:97839},
+  {id:'DIMRI',name:'דמרי',price:439.8,changePercent:1.50,marketCap:9.69,volume:32606}
+].map(item => ({
+  ...item,
+  sector: SECTOR_MAP[item.id] || 'כללי',
+  change: parseFloat((item.price * item.changePercent / 100).toFixed(2)),
+  yearHigh: parseFloat((item.price * 1.3).toFixed(2)),
+  yearLow: parseFloat((item.price * 0.7).toFixed(2)),
+  website: WEBSITE_MAP[item.id] || 'https://www.tase.co.il'
+}));
+
+let currentSort = 'favorites';
+let currentSector = '';
+let favorites = [];
+let alertsEnabled = false;
+let lastPrices = {};
+let portfolio = [];
+let cash = 100000;
+let currentAddingStock = null;
+let currentSellingStock = null;
+let secondsLeft = 120;
+let countdownTimer = null;
+let currentUser = null;
+let db = null;
+let auth = null;
+
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2LehOqxokrErTsaaKs3AdUMpbQ6sD6syzz9WoFYQf_npXQcQe_760VD7ODqaRYD3jwcAgIfPhh70k/pub?gid=0&single=true&output=csv';
+const REFRESH_INTERVAL = 2 * 60 * 1000;
+
+// ===== FIREBASE INITIALIZATION =====
+const firebaseConfig = {
+  apiKey: "AIzaSyDsMfH0OhteiA95yVIa4_hOL30sfKO8l0g",
+  authDomain: "ta35-stocks.firebaseapp.com",
+  projectId: "ta35-stocks",
+  storageBucket: "ta35-stocks.firebasestorage.app",
+  messagingSenderId: "69207084875",
+  appId: "1:69207084875:web:b24f77e3044a4cd409a2ce",
+  measurementId: "G-N42BJNK972"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+auth = firebase.auth();
+db = firebase.firestore();
+
+// ===== USER MANAGEMENT WITH FIREBASE =====
+async function loadUserData(uid) {
+  try {
+    const docRef = db.collection('users').doc(uid);
+    const doc = await docRef.get();
+    
+    if (doc.exists) {
+      const userData = doc.data();
+      favorites = userData.favorites || [];
+      alertsEnabled = userData.alertsEnabled || false;
+      lastPrices = userData.lastPrices || {};
+      portfolio = userData.portfolio || [];
+      cash = userData.cash !== undefined ? userData.cash : 100000;
+    } else {
+      // משתמש חדש - אתחול
+      favorites = [];
+      alertsEnabled = false;
+      lastPrices = {};
+      portfolio = [];
+      cash = 100000;
+      await saveUserData();
+    }
+  } catch (error) {
+    console.error('Error loading user data:', error);
+  }
+}
+
+async function saveUserData() {
+  if (!currentUser) return;
+  
+  try {
+    await db.collection('users').doc(currentUser).set({
+      favorites,
+      alertsEnabled,
+      lastPrices,
+      portfolio,
+      cash,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+  } catch (error) {
+    console.error('Error saving user data:', error);
+  }
+}
+
+function showLogin() {
+  document.getElementById('login-form').style.display = 'block';
+  document.getElementById('register-form').style.display = 'none';
+  document.getElementById('login-error').classList.remove('show');
+  // ניקוי שדות רישום
+  document.getElementById('register-username').value = '';
+  document.getElementById('register-password').value = '';
+  document.getElementById('register-password-confirm').value = '';
+}
+
+function showRegister() {
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('register-form').style.display = 'block';
+  document.getElementById('login-error').classList.remove('show');
+  // ניקוי שדות התחברות
+  document.getElementById('login-username').value = '';
+  document.getElementById('login-password').value = '';
+}
+
+function showError(msg) {
+  const errorEl = document.getElementById('login-error');
+  errorEl.textContent = msg;
+  errorEl.classList.add('show');
+}
+
+async function handleLogin() {
+  let email = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  
+  if (!email || !password) {
+    showError('נא למלא את כל השדות');
+    return;
+  }
+  
+  // אם זה לא אימייל, הוסף @ta35-stocks.com
+  if (!email.includes('@')) {
+    email = email.toLowerCase() + '@ta35-stocks.com';
+  }
+  
+  try {
+    // התחברות עם Firebase Authentication
+    const userCredential = await auth.signInWithEmailAndPassword(email, password);
+    currentUser = userCredential.user.uid;
+    
+    // טעינת נתוני המשתמש מ-Firestore
+    await loadUserData(currentUser);
+    
+    // הסתרת מסך התחברות והצגת אפליקציה
+    const displayName = email.split('@')[0];
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app-container').style.display = 'block';
+    document.getElementById('user-name-display').textContent = displayName;
+    updateAlertButton();
+    fetchData();
+    render();
+    
+    // ניקוי שדות
+    document.getElementById('login-username').value = '';
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-error').classList.remove('show');
+  } catch (error) {
+    console.error('Login error:', error);
+    if (error.code === 'auth/user-not-found') {
+      showError('שם משתמש לא קיים');
+    } else if (error.code === 'auth/wrong-password') {
+      showError('סיסמה שגויה');
+    } else if (error.code === 'auth/invalid-email') {
+      showError('שם משתמש לא תקין');
+    } else if (error.code === 'auth/invalid-credential') {
+      showError('שם משתמש או סיסמה שגויים');
+    } else {
+      showError('שגיאה בהתחברות: ' + error.message);
+    }
+  }
+}
+
+async function handleRegister() {
+  let username = document.getElementById('register-username').value.trim().toLowerCase();
+  const password = document.getElementById('register-password').value;
+  const passwordConfirm = document.getElementById('register-password-confirm').value;
+  
+  if (!username || !password || !passwordConfirm) {
+    showError('נא למלא את כל השדות');
+    return;
+  }
+  
+  if (username.length < 3) {
+    showError('שם משתמש חייב להיות לפחות 3 תווים');
+    return;
+  }
+  
+  if (password.length < 6) {
+    showError('סיסמה חייבת להיות לפחות 6 תווים');
+    return;
+  }
+  
+  if (password !== passwordConfirm) {
+    showError('הסיסמאות לא תואמות');
+    return;
+  }
+  
+  // הסרת תווים לא חוקיים משם המשתמש
+  username = username.replace(/[^a-z0-9]/g, '');
+  
+  if (username.length < 3) {
+    showError('שם משתמש יכול להכיל רק אותיות באנגלית ומספרים');
+    return;
+  }
+  
+  const email = username + '@ta35-stocks.com';
+  
+  try {
+    // יצירת חשבון חדש ב-Firebase Authentication
+    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+    currentUser = userCredential.user.uid;
+    
+    // אתחול נתוני משתמש חדש
+    favorites = [];
+    alertsEnabled = false;
+    lastPrices = {};
+    portfolio = [];
+    cash = 100000;
+    
+    // שמירה ראשונית ב-Firestore
+    await saveUserData();
+    
+    // הסתרת מסך התחברות והצגת אפליקציה
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app-container').style.display = 'block';
+    document.getElementById('user-name-display').textContent = username;
+    updateAlertButton();
+    fetchData();
+    render();
+    
+    // ניקוי שדות
+    document.getElementById('register-username').value = '';
+    document.getElementById('register-password').value = '';
+    document.getElementById('register-password-confirm').value = '';
+  } catch (error) {
+    console.error('Registration error:', error);
+    if (error.code === 'auth/email-already-in-use') {
+      showError('שם משתמש כבר קיים');
+    } else if (error.code === 'auth/invalid-email') {
+      showError('שם משתמש לא תקין');
+    } else if (error.code === 'auth/weak-password') {
+      showError('הסיסמה חלשה מדי - לפחות 6 תווים');
+    } else {
+      showError('שגיאה ביצירת חשבון: ' + error.message);
+    }
+  }
+}
+
+async function handleLogout() {
+  if (confirm('האם להתנתק? (הנתונים שלך נשמרים)')) {
+    await saveUserData(); // שמירה לפני יציאה
+    await auth.signOut();
+    currentUser = null;
+    
+    // ניקוי השדות
+    document.getElementById('login-username').value = '';
+    document.getElementById('login-password').value = '';
+    document.getElementById('login-error').classList.remove('show');
+    
+    // הצגת מסך התחברות והסתרת אפליקציה
+    document.getElementById('login-screen').classList.remove('hidden');
+    document.getElementById('app-container').style.display = 'none';
+    showLogin();
+  }
+}
+
+// Firebase Auth State Observer
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    // משתמש מחובר
+    currentUser = user.uid;
+    const username = user.email.split('@')[0];
+    await loadUserData(currentUser);
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app-container').style.display = 'block';
+    document.getElementById('user-name-display').textContent = username;
+    updateAlertButton();
+    fetchData();
+  } else {
+    // אין משתמש מחובר
+    document.getElementById('login-screen').classList.remove('hidden');
+    document.getElementById('app-container').style.display = 'none';
+  }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Firebase יטפל בהתחברות דרך onAuthStateChanged
+  setInterval(fetchData, REFRESH_INTERVAL);
+});
+
+function parseCSVLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    if (line[i] === '"') { inQuotes = !inQuotes; }
+    else if (line[i] === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
+    else { current += line[i]; }
+  }
+  result.push(current.trim());
+  return result;
+}
+
+function cleanNumber(s) {
+  if (!s) return 0;
+  return parseFloat(String(s).replace(/[₪,\s]/g, '')) || 0;
+}
+
+function parseSheetData(csvText) {
+  const lines = csvText.split('\n').filter(l => l.trim());
+  const result = [];
+  for (let i = 2; i < lines.length; i++) {
+    const parts = parseCSVLine(lines[i]);
+    if (parts.length < 7 || !parts[2].includes('TLV:')) continue;
+    const symbol = parts[2].replace('TLV:', '').trim();
+    const price = cleanNumber(parts[3]);
+    const changePercent = cleanNumber(parts[4].replace('%', ''));
+    if (!price) continue;
+    result.push({
+      id: symbol,
+      name: parts[1].trim(),
+      sector: SECTOR_MAP[symbol] || 'כללי',
+      price,
+      change: parseFloat((price * changePercent / 100).toFixed(2)),
+      changePercent,
+      volume: Math.round(cleanNumber(parts[6])),
+      marketCap: parseFloat((cleanNumber(parts[5]) / 1000000000).toFixed(2)),
+      yearHigh: parseFloat((price * 1.3).toFixed(2)),
+      yearLow: parseFloat((price * 0.7).toFixed(2)),
+      website: WEBSITE_MAP[symbol] || 'https://www.tase.co.il'
+    });
+  }
+  return result;
+}
+
+function checkAlerts(newCompanies) {
+  if (!alertsEnabled || favorites.length === 0) return;
+  
+  newCompanies.forEach(company => {
+    if (!favorites.includes(company.id)) return;
+    
+    const lastPrice = lastPrices[company.id];
+    if (!lastPrice) {
+      lastPrices[company.id] = company.price;
+      return;
+    }
+    
+    const priceChange = ((company.price - lastPrice) / lastPrice) * 100;
+    
+    if (Math.abs(priceChange) >= 5) {
+      const direction = priceChange > 0 ? 'עלתה' : 'ירדה';
+      const emoji = priceChange > 0 ? '📈' : '📉';
+      
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification(`${emoji} ${company.name}`, {
+          body: `המניה ${direction} ב-${Math.abs(priceChange).toFixed(2)}%!\nמחיר נוכחי: ₪${company.price.toFixed(2)}`
+        });
+      }
+      
+      lastPrices[company.id] = company.price;
+      saveUserData();
+    }
+  });
+}
+
+async function fetchData() {
+  const btn = document.getElementById('refresh-btn');
+  if (btn) btn.classList.add('spinning');
+  setStatus('loading', '⏳ מתעדכן...');
+
+  const PROXIES = [
+    url => url,
+    url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    url => `https://corsproxy.io/?${encodeURIComponent(url)}`
+  ];
+
+  for (const proxy of PROXIES) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      
+      const res = await fetch(proxy(SHEET_URL + '&t=' + Date.now()), {
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      
+      if (!res.ok) continue;
+      const text = await res.text();
+      const parsed = parseSheetData(text);
+      if (parsed.length > 0) {
+        checkAlerts(parsed);
+        
+        // עדכן את מערך החברות
+        companies.length = 0;
+        companies.push(...parsed);
+        
+        const now = new Date().toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+        let timeEl = document.getElementById('last-update-time');
+        if (!timeEl) {
+          timeEl = document.createElement('span');
+          timeEl.id = 'last-update-time';
+          timeEl.style.display = 'none';
+          document.body.appendChild(timeEl);
+        }
+        timeEl.dataset.time = now;
+        setStatus('ok', `✅ עודכן ב-${now} · עדכון בעוד 2:00`);
+        startCountdown();
+        render();
+        if (btn) btn.classList.remove('spinning');
+        return;
+      }
+    } catch(e) { 
+      console.log('Proxy failed:', e);
+      continue; 
+    }
+  }
+
+  // אם כל ה-proxies נכשלו - השתמש בנתוני גיבוי
+  console.log('Using fallback data');
+  setStatus('ok', '✅ מוצגים נתוני גיבוי (Google Sheets לא זמין)');
+  render();
+  if (btn) btn.classList.remove('spinning');
+}
+
+function setStatus(type, msg) {
+  const el = document.getElementById('status-bar');
+  if (!el) return;
+  el.className = 'status-bar status-' + type;
+  el.textContent = msg;
+}
+
+function startCountdown() {
+  if (countdownTimer) clearInterval(countdownTimer);
+  secondsLeft = 120;
+  countdownTimer = setInterval(() => {
+    secondsLeft--;
+    if (secondsLeft <= 0) { secondsLeft = 120; }
+    const m = Math.floor(secondsLeft / 60);
+    const s = String(secondsLeft % 60).padStart(2, '0');
+    const lastUpdate = document.getElementById('last-update-time');
+    const el = document.getElementById('status-bar');
+    if (el && lastUpdate) {
+      el.textContent = `✅ עודכן ב-${lastUpdate.dataset.time} · עדכון בעוד ${m}:${s}`;
+    }
+  }, 1000);
+}
+
+function formatVolume(v) {
+  if (v >= 1000000) return (v/1000000).toFixed(1) + 'M';
+  if (v >= 1000) return (v/1000).toFixed(0) + 'K';
+  return v;
+}
+
+function toggleFavorite(id, event) {
+  event.stopPropagation();
+  const index = favorites.indexOf(id);
+  if (index > -1) {
+    favorites.splice(index, 1);
+    delete lastPrices[id];
+  } else {
+    favorites.push(id);
+    const company = companies.find(c => c.id === id);
+    if (company) lastPrices[id] = company.price;
+  }
+  saveUserData();
+  render();
+}
+
+function isFavorite(id) {
+  return favorites.includes(id);
+}
+
+async function toggleAlerts() {
+  if (!alertsEnabled) {
+    if ('Notification' in window) {
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        alertsEnabled = true;
+        saveUserData();
+        favorites.forEach(favId => {
+          const company = companies.find(c => c.id === favId);
+          if (company && !lastPrices[favId]) lastPrices[favId] = company.price;
+        });
+        saveUserData();
+        new Notification('🔔 התראות הופעלו!', {
+          body: 'תקבל התראה כשמניה מועדפת תעלה/תרד מעל 5%'
+        });
+      } else {
+        alert('לא ניתן להפעיל התראות ללא הרשאה');
+        return;
+      }
+    } else {
+      alert('הדפדפן שלך לא תומך בהתראות');
+      return;
+    }
+  } else {
+    alertsEnabled = false;
+    saveUserData();
+  }
+  updateAlertButton();
+}
+
+function updateAlertButton() {
+  const btn = document.getElementById('alert-btn');
+  const icon = document.getElementById('alert-icon');
+  if (alertsEnabled) {
+    btn.style.color = '#22c55e';
+    btn.title = 'התראות מופעלות - לחץ לכיבוי';
+    if (icon) icon.textContent = '🔔';
+  } else {
+    btn.style.color = '#94a3b8';
+    btn.title = 'התראות כבויות - לחץ להפעלה';
+    if (icon) icon.textContent = '🔕';
+  }
+}
+
+function openAddToPortfolio(id) {
+  currentAddingStock = id;
+  const company = companies.find(c => c.id === id);
+  document.getElementById('popup-title').textContent = `הוסף ${company.name} לתיק`;
+  document.getElementById('portfolio-quantity').value = '';
+  
+  // הוספת מידע על כסף זמין
+  const infoEl = document.getElementById('portfolio-popup-info');
+  if (infoEl) {
+    infoEl.textContent = `מחיר למניה: ₪${company.price.toLocaleString('he-IL', {minimumFractionDigits: 2})} | כסף זמין: ₪${cash.toLocaleString('he-IL', {minimumFractionDigits: 2})}`;
+  }
+  
+  document.getElementById('add-portfolio-popup').classList.add('open');
+  document.getElementById('portfolio-quantity').focus();
+}
+
+function closeAddPortfolioPopup() {
+  document.getElementById('add-portfolio-popup').classList.remove('open');
+  currentAddingStock = null;
+}
+
+function confirmAddToPortfolio() {
+  const quantity = parseInt(document.getElementById('portfolio-quantity').value);
+  if (!quantity || quantity <= 0) {
+    alert('נא להזין כמות חיובית');
+    return;
+  }
+  
+  const company = companies.find(c => c.id === currentAddingStock);
+  if (!company) return;
+  
+  const totalCost = company.price * quantity;
+  
+  // בדיקה אם יש מספיק כסף
+  if (totalCost > cash) {
+    alert(`❌ אין מספיק כסף בקופה!\n\nעלות: ₪${totalCost.toLocaleString('he-IL', {minimumFractionDigits: 2})}\nבקופה: ₪${cash.toLocaleString('he-IL', {minimumFractionDigits: 2})}`);
+    return;
+  }
+  
+  const existing = portfolio.find(p => p.id === currentAddingStock);
+  if (existing) {
+    existing.quantity += quantity;
+  } else {
+    portfolio.push({
+      id: currentAddingStock,
+      name: company.name,
+      quantity: quantity,
+      buyPrice: company.price,
+      buyDate: new Date().toISOString()
+    });
+  }
+  
+  // הפחתת הכסף מהקופה
+  cash -= totalCost;
+  
+  saveUserData();
+  closeAddPortfolioPopup();
+  render();
+}
+
+function openSellPopup(id) {
+  currentSellingStock = id;
+  const holding = portfolio.find(p => p.id === id);
+  if (!holding) return;
+  
+  document.getElementById('sell-popup-title').textContent = `מכור ${holding.name}`;
+  document.getElementById('sell-popup-info').textContent = `יש לך ${holding.quantity} מניות`;
+  document.getElementById('sell-quantity').value = '';
+  document.getElementById('sell-quantity').max = holding.quantity;
+  document.getElementById('sell-popup').classList.add('open');
+  document.getElementById('sell-quantity').focus();
+}
+
+function closeSellPopup() {
+  document.getElementById('sell-popup').classList.remove('open');
+  currentSellingStock = null;
+}
+
+function confirmSell() {
+  const quantity = parseInt(document.getElementById('sell-quantity').value);
+  const holding = portfolio.find(p => p.id === currentSellingStock);
+  
+  if (!quantity || quantity <= 0) {
+    alert('נא להזין כמות חיובית');
+    return;
+  }
+  
+  if (quantity > holding.quantity) {
+    alert('אין לך מספיק מניות');
+    return;
+  }
+  
+  // חישוב הכסף שחוזר לקופה (מחיר נוכחי!)
+  const company = companies.find(c => c.id === currentSellingStock);
+  const saleAmount = company.price * quantity;
+  
+  holding.quantity -= quantity;
+  
+  if (holding.quantity === 0) {
+    portfolio = portfolio.filter(p => p.id !== currentSellingStock);
+  }
+  
+  // הוספת הכסף לקופה
+  cash += saleAmount;
+  
+  saveUserData();
+  closeSellPopup();
+  render();
+}
+
+function removeFromPortfolio(id) {
+  if (confirm('האם להסיר מניה זו מהתיק? (הכסף יחזור לקופה במחיר הנוכחי)')) {
+    const holding = portfolio.find(p => p.id === id);
+    const company = companies.find(c => c.id === id);
+    
+    // החזרת הכסף לקופה (מחיר נוכחי)
+    const saleAmount = company.price * holding.quantity;
+    cash += saleAmount;
+    
+    portfolio = portfolio.filter(p => p.id !== id);
+    saveUserData();
+    render();
+  }
+}
+
+function togglePortfolioItem(id) {
+  // סוגר את כל הפריטים האחרים
+  document.querySelectorAll('.portfolio-item').forEach(item => {
+    if (item.id !== `portfolio-item-${id}`) {
+      item.classList.remove('expanded');
+    }
+  });
+  
+  // פותח/סוגר את הפריט הנוכחי
+  const item = document.getElementById(`portfolio-item-${id}`);
+  if (item) {
+    item.classList.toggle('expanded');
+  }
+}
+
+function isInPortfolio(id) {
+  return portfolio.some(p => p.id === id);
+}
+
+function calculatePortfolioStats() {
+  let totalInvestment = 0;
+  let totalCurrentValue = 0;
+  
+  portfolio.forEach(holding => {
+    const company = companies.find(c => c.id === holding.id);
+    if (company) {
+      totalInvestment += holding.buyPrice * holding.quantity;
+      totalCurrentValue += company.price * holding.quantity;
+    }
+  });
+  
+  const totalPortfolioWorth = cash + totalCurrentValue;
+  const totalProfit = totalPortfolioWorth - 100000;
+  const totalProfitPercent = (totalProfit / 100000) * 100;
+  
+  return { 
+    totalInvestment, 
+    totalCurrentValue, 
+    cash,
+    totalPortfolioWorth,
+    totalProfit,
+    totalProfitPercent
+  };
+}
+
+function renderPortfolioSummary() {
+  if (currentSort !== 'portfolio') return '';
+  
+  const stats = calculatePortfolioStats();
+  const profitClass = stats.totalProfit >= 0 ? 'positive' : 'negative';
+  const profitSign = stats.totalProfit >= 0 ? '+' : '';
+  
+  return `
+    <div class="portfolio-summary">
+      <h2>💼 סיכום התיק שלי</h2>
+      <div class="portfolio-stats">
+        <div class="portfolio-stat">
+          <div class="portfolio-stat-label">💰 כסף בקופה</div>
+          <div class="portfolio-stat-value">₪${stats.cash.toLocaleString('he-IL', {minimumFractionDigits: 2})}</div>
+        </div>
+        <div class="portfolio-stat">
+          <div class="portfolio-stat-label">📊 שווי מניות</div>
+          <div class="portfolio-stat-value">₪${stats.totalCurrentValue.toLocaleString('he-IL', {minimumFractionDigits: 2})}</div>
+        </div>
+        <div class="portfolio-stat">
+          <div class="portfolio-stat-label">💎 סך הכל</div>
+          <div class="portfolio-stat-value">₪${stats.totalPortfolioWorth.toLocaleString('he-IL', {minimumFractionDigits: 2})}</div>
+        </div>
+        <div class="portfolio-stat">
+          <div class="portfolio-stat-label">🎯 רווח/הפסד כולל</div>
+          <div class="portfolio-stat-value ${profitClass}">
+            ${profitSign}₪${Math.abs(stats.totalProfit).toLocaleString('he-IL', {minimumFractionDigits: 2})}<br>
+            <small style="font-size:16px">${profitSign}${stats.totalProfitPercent.toFixed(2)}%</small>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:16px;text-align:center">
+        <button onclick="resetPortfolio()" style="background:#ef4444;color:white;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-weight:600;font-size:13px;transition:all 0.2s" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">
+          🔄 אפס תיק (חזרה ל-100,000 ₪)
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function resetPortfolio() {
+  if (confirm('האם לאפס את התיק ולחזור ל-100,000 ₪?\n\nכל המניות יימחקו!')) {
+    portfolio = [];
+    cash = 100000;
+    saveUserData();
+    render();
+    alert('✅ התיק אופס בהצלחה! יש לך 100,000 ₪ בקופה.');
+  }
+}
+
+function renderPortfolioTable() {
+  if (currentSort !== 'portfolio' || portfolio.length === 0) return '';
+  
+  const items = portfolio.map(holding => {
+    const company = companies.find(c => c.id === holding.id);
+    if (!company) return '';
+    
+    const investment = holding.buyPrice * holding.quantity;
+    const currentValue = company.price * holding.quantity;
+    const profit = currentValue - investment;
+    const profitPercent = (profit / investment) * 100;
+    const profitClass = profit >= 0 ? 'positive' : 'negative';
+    const profitSign = profit >= 0 ? '+' : '';
+    
+    return `
+      <div class="portfolio-item" id="portfolio-item-${holding.id}" onclick="togglePortfolioItem('${holding.id}')">
+        <div class="portfolio-item-header">
+          <div>
+            <div class="portfolio-item-name">${company.name}</div>
+            <div class="portfolio-item-symbol">${company.id}</div>
+          </div>
+          <div class="portfolio-item-quantity">
+            <div class="portfolio-item-quantity-label">כמות</div>
+            <div><strong>${holding.quantity}</strong></div>
+          </div>
+          <div class="portfolio-item-profit ${profitClass}">
+            ${profitSign}${profitPercent.toFixed(2)}%
+          </div>
+        </div>
+        
+        <div class="portfolio-item-details">
+          <div class="portfolio-details-grid">
+            <div class="portfolio-detail-item">
+              <div class="portfolio-detail-label">מחיר קנייה ממוצע</div>
+              <div class="portfolio-detail-value">₪${holding.buyPrice.toFixed(2)}</div>
+            </div>
+            <div class="portfolio-detail-item">
+              <div class="portfolio-detail-label">מחיר נוכחי</div>
+              <div class="portfolio-detail-value">₪${company.price.toFixed(2)}</div>
+            </div>
+            <div class="portfolio-detail-item">
+              <div class="portfolio-detail-label">סכום השקעה</div>
+              <div class="portfolio-detail-value">₪${investment.toLocaleString('he-IL', {minimumFractionDigits: 2})}</div>
+            </div>
+            <div class="portfolio-detail-item">
+              <div class="portfolio-detail-label">שווי נוכחי</div>
+              <div class="portfolio-detail-value">₪${currentValue.toLocaleString('he-IL', {minimumFractionDigits: 2})}</div>
+            </div>
+            <div class="portfolio-detail-item">
+              <div class="portfolio-detail-label">רווח/הפסד כולל</div>
+              <div class="portfolio-detail-value ${profitClass}">
+                ${profitSign}₪${Math.abs(profit).toFixed(2)}
+              </div>
+            </div>
+            <div class="portfolio-detail-item">
+              <div class="portfolio-detail-label">רווח/הפסד %</div>
+              <div class="portfolio-detail-value ${profitClass}">
+                ${profitSign}${profitPercent.toFixed(2)}%
+              </div>
+            </div>
+          </div>
+          
+          <div class="portfolio-actions">
+            <button class="portfolio-action-button portfolio-buy-btn" onclick="event.stopPropagation(); openModal('${holding.id}')">קנייה נוספת</button>
+            <button class="portfolio-action-button portfolio-sell-btn-expanded" onclick="event.stopPropagation(); openSellPopup('${holding.id}')">מכירה</button>
+            <button class="portfolio-action-button portfolio-close-btn" onclick="event.stopPropagation(); togglePortfolioItem('${holding.id}')">סגור</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  return `
+    <div class="portfolio-compact">
+      ${items}
+    </div>
+  `;
+}
+
+function setSort(type) {
+  currentSort = type;
+  document.querySelectorAll('.sort-btn').forEach(b => {
+    b.classList.remove('active','green','red');
+  });
+  const btn = document.getElementById('sort-' + type);
+  if (btn) {
+    btn.classList.add('active');
+    if (type === 'gainers') btn.classList.add('green');
+    if (type === 'losers') btn.classList.add('red');
+  }
+  render();
+}
+
+function toggleMoreMenu() {
+  const dropdown = document.getElementById('more-dropdown');
+  dropdown.classList.toggle('show');
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.more-menu')) {
+    const dropdown = document.getElementById('more-dropdown');
+    if (dropdown) dropdown.classList.remove('show');
+  }
+});
+
+function setSector(sector) {
+  currentSector = sector;
+  document.querySelectorAll('.sector-tag').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.sector-tag').forEach(b => {
+    if ((sector === '' && b.textContent === 'הכל') || b.textContent === sector) {
+      b.classList.add('active');
+    }
+  });
+  render();
+}
+
+function renderFilters() {
+  const container = document.getElementById('sector-tags');
+  const sectorFilter = document.querySelector('.sector-filter');
+  
+  // Hide sector filter for favorites and portfolio
+  if (currentSort === 'favorites' || currentSort === 'portfolio') {
+    if (sectorFilter) sectorFilter.style.display = 'none';
+    return;
+  }
+  
+  if (sectorFilter) sectorFilter.style.display = 'block';
+  
+  const sectors = [...new Set(companies.map(c => c.sector))].sort();
+  container.innerHTML = '';
+
+  // הכל
+  const allTag = document.createElement('button');
+  allTag.className = 'sector-tag' + (currentSector === '' ? ' active' : '');
+  allTag.textContent = `הכל`;
+  allTag.onclick = () => setSector('');
+  container.appendChild(allTag);
+
+  // כל הענפים
+  sectors.forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'sector-tag' + (currentSector === s ? ' active' : '');
+    btn.textContent = s;
+    btn.onclick = () => setSector(s);
+    container.appendChild(btn);
+  });
+}
+
+function getFiltered() {
+  const q = document.getElementById('search-input').value.trim().toLowerCase();
+  let list = companies.filter(c => {
+    const matchSearch = !q || c.name.includes(q) || c.id.toLowerCase().includes(q) || c.sector.includes(q);
+    const matchSector = !currentSector || c.sector === currentSector;
+    const matchFavorites = currentSort !== 'favorites' || isFavorite(c.id);
+    const matchPortfolio = currentSort !== 'portfolio' || isInPortfolio(c.id);
+    return matchSearch && matchSector && matchFavorites && matchPortfolio;
+  });
+  if (currentSort === 'gainers') list = [...list].sort((a,b) => b.changePercent - a.changePercent);
+  if (currentSort === 'losers') list = [...list].sort((a,b) => a.changePercent - b.changePercent);
+  if (currentSort === 'marketcap') list = [...list].sort((a,b) => b.marketCap - a.marketCap);
+  if (currentSort === 'volume') list = [...list].sort((a,b) => b.volume - a.volume);
+  return list;
+}
+
+function render() {
+  renderFilters();
+  const filtered = getFiltered();
+
+  document.getElementById('stat-up').textContent = companies.filter(c => c.changePercent > 0).length;
+  document.getElementById('stat-down').textContent = companies.filter(c => c.changePercent < 0).length;
+  document.getElementById('stat-favs').textContent = favorites.length;
+  document.getElementById('stat-portfolio').textContent = portfolio.length;
+
+  document.getElementById('portfolio-summary-container').innerHTML = renderPortfolioSummary();
+
+  const resultText = filtered.length === companies.length
+    ? `מציג ${filtered.length} חברות`
+    : `נמצאו ${filtered.length} תוצאות`;
+  
+  document.getElementById('results-count').textContent = resultText;
+
+  const grid = document.getElementById('cards-grid');
+
+  if (currentSort === 'portfolio' && portfolio.length > 0) {
+    grid.innerHTML = renderPortfolioTable();
+    return;
+  }
+
+  if (filtered.length === 0) {
+    const emptyMsg = currentSort === 'favorites'
+      ? `<div class="empty">
+           <div class="empty-icon">📊</div>
+           <h3>עדיין לא בחרת מניות</h3>
+           <p>התחל למעקב אחר המניות שמעניינות אותך</p>
+           <button class="empty-btn" onclick="openAddStocksModal()">
+             <span>+</span>
+             <span>הוסף מניות</span>
+           </button>
+         </div>`
+      : currentSort === 'portfolio'
+        ? '<div class="empty"><div class="empty-icon">💼</div><h3>התיק ריק</h3><p>התחל לקנות מניות לתיק הדמה</p></div>'
+        : '<div class="empty"><div class="empty-icon">🔍</div><h3>לא נמצאו תוצאות</h3><p>נסה לחפש משהו אחר</p></div>';
+    grid.innerHTML = emptyMsg;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(c => {
+    const up = c.changePercent >= 0;
+    const cls = up ? 'up' : 'down';
+    const sign = up ? '+' : '';
+    const fav = isFavorite(c.id);
+    const favIcon = fav ? '⭐' : '☆';
+    const favClass = fav ? 'active' : '';
+    
+    return `
+      <div class="card" onclick="openModal('${c.id}')">
+        <div class="card-top">
+          <div class="card-name">
+            <div class="card-hname">${c.name}</div>
+            <div class="card-symbol">${c.id}</div>
+          </div>
+          <div class="card-price-wrap">
+            <div class="card-price">₪${c.price.toFixed(2)}</div>
+            <div class="card-change ${cls}">${sign}${c.changePercent.toFixed(2)}%</div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function openModal(id) {
+  const c = companies.find(x => x.id === id);
+  if (!c) return;
+  const up = c.changePercent >= 0;
+  const sign = up ? '+' : '';
+  const cls = up ? 'up' : 'down';
+  
+  const inPortfolio = isInPortfolio(id);
+  const portfolioBtn = inPortfolio 
+    ? '<div style="background:#f1f5f9;padding:12px;border-radius:8px;text-align:center;color:#64748b;font-size:13px">✓ מניה זו כבר בתיק</div>'
+    : '<button class="modal-action-btn" onclick="openAddToPortfolio(\'' + id + '\')">💼 הוסף לתיק הדמה</button>';
+  
+  document.getElementById('modal-box').innerHTML = `
+    <div class="modal-header">
+      <div class="modal-header-top">
+        <div>
+          <span class="modal-badge">${c.id}</span>
+          <div class="modal-title">${c.name}</div>
+          <div class="modal-subtitle">מדד ת"א 35</div>
+        </div>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:12px;margin-top:8px">
+        <span class="modal-price">₪${c.price.toFixed(2)}</span>
+        <span class="modal-change ${cls}">${sign}${c.change.toFixed(2)} (${sign}${c.changePercent.toFixed(2)}%)</span>
+      </div>
+    </div>
+    <div class="modal-body">
+      ${portfolioBtn}
+      
+      <div class="modal-section">
+        <h3>📋 תיאור</h3>
+        <p class="modal-desc">חברה ציבורית במדד ת"א 35</p>
+        <span class="modal-sector-tag">${c.sector}</span>
+      </div>
+      <div class="modal-section">
+        <h3>📊 נתונים עיקריים</h3>
+        <div class="modal-stats-grid">
+          <div class="modal-stat">
+            <div class="modal-stat-label">שווי שוק</div>
+            <div class="modal-stat-value">₪${c.marketCap}B</div>
+          </div>
+          <div class="modal-stat">
+            <div class="modal-stat-label">נפח 24H</div>
+            <div class="modal-stat-value">${formatVolume(c.volume)}</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-section">
+        <h3>🔗 קישורים</h3>
+        <div class="modal-links">
+          <a href="${c.website}" target="_blank" class="modal-link">
+            <span class="modal-link-icon">🌐</span> אתר החברה
+          </a>
+          <a href="https://www.tase.co.il/he/market_data/security/${c.id}" target="_blank" class="modal-link">
+            <span class="modal-link-icon">📈</span> בורסה
+          </a>
+        </div>
+      </div>
+    </div>`;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal-overlay')) {
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+}
+
+// Add Stocks Modal Functions
+function openAddStocksModal() {
+  document.getElementById('add-stocks-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  renderAddStocksList();
+}
+
+function closeAddStocksModal() {
+  document.getElementById('add-stocks-modal').classList.remove('open');
+  document.body.style.overflow = '';
+  document.getElementById('add-stocks-search-input').value = '';
+}
+
+function renderAddStocksList() {
+  const list = document.getElementById('add-stocks-list');
+  const searchQuery = document.getElementById('add-stocks-search-input').value.toLowerCase();
+  
+  const filtered = searchQuery 
+    ? companies.filter(c => 
+        c.name.includes(searchQuery) || 
+        c.id.toLowerCase().includes(searchQuery) ||
+        c.sector.includes(searchQuery)
+      )
+    : companies;
+  
+  list.innerHTML = filtered.map(c => {
+    const up = c.changePercent >= 0;
+    const cls = up ? 'up' : 'down';
+    const sign = up ? '+' : '';
+    const isFav = isFavorite(c.id);
+    const favIcon = isFav ? '⭐' : '☆';
+    const favClass = isFav ? 'active' : '';
+    
+    return `
+      <div class="add-stock-item">
+        <div class="add-stock-info">
+          <div class="add-stock-name">${c.name}</div>
+          <div class="add-stock-symbol">${c.id}</div>
+        </div>
+        <div class="add-stock-price">
+          <div class="add-stock-price-value">₪${c.price.toFixed(2)}</div>
+          <div class="add-stock-change ${cls}">${sign}${c.changePercent.toFixed(2)}%</div>
+        </div>
+        <button class="add-stock-fav ${favClass}" onclick="toggleFavoriteInModal('${c.id}')">
+          ${favIcon}
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+function filterAddStocksList() {
+  renderAddStocksList();
+}
+
+function toggleFavoriteInModal(id) {
+  toggleFavorite(id);
+  renderAddStocksList();
+  render(); // Update main view if needed
+}
+
+document.addEventListener('keydown', e => { 
+  if (e.key === 'Escape') { 
+    closeModal(); 
+    closeAddPortfolioPopup(); 
+    closeSellPopup();
+    closeAddStocksModal();
+  } 
+});
+</script>
+
+</div><!-- end app-container -->
+
+</body>
+</html>
