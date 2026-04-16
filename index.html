@@ -4447,16 +4447,23 @@ function sanitizeHTML(str) {
   return str.replace(/[&<>"']/g, c => map[c]);
 }
 
-// Rate limiter for database operations
+// Rate limiter (debounce) for database operations
 const rateLimiter = {
-  operations: {},
+  timers: {},
+  lastRun: {},
+  // Returns true if allowed immediately, false if debounced (will run later)
   check(key, limitMs = 1000) {
     const now = Date.now();
-    if (this.operations[key] && (now - this.operations[key]) < limitMs) {
-      return false; // rate limited
+    if (this.lastRun[key] && (now - this.lastRun[key]) < limitMs) {
+      return false;
     }
-    this.operations[key] = now;
-    return true; // allowed
+    this.lastRun[key] = now;
+    return true;
+  },
+  // Debounce: always runs, but delays rapid calls
+  debounce(key, fn, delayMs = 2000) {
+    clearTimeout(this.timers[key]);
+    this.timers[key] = setTimeout(fn, delayMs);
   }
 };
 
@@ -4703,7 +4710,6 @@ async function loadUserData(uid) {
 
 async function saveUserData() {
   if (!currentUser || !db) return;
-  if (!rateLimiter.check('saveUserData', 2000)) return; // max once per 2 seconds
 
   try {
     const user = auth.currentUser;
@@ -4836,7 +4842,7 @@ async function handleRegister() {
     return;
   }
 
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+  if (!/[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password)) {
     showError('סיסמה חייבת להכיל לפחות תו מיוחד אחד (!@#$%...)');
     return;
   }
@@ -8356,7 +8362,6 @@ function toggleStockInWatchlist(listId, stockId) {
 // ===== GENERIC FIREBASE SAVE/LOAD =====
 async function saveFieldToFirebase(fieldName, data) {
   if (!currentUser || !db) return;
-  if (!rateLimiter.check('saveField_' + fieldName, 1000)) return; // max once per second per field
 
   try {
     await db.collection('users').doc(currentUser).set({
