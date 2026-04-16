@@ -4459,6 +4459,33 @@ setTimeout(() => {
 </div>
 
 <script>
+// ===== SECURITY: XSS SANITIZATION =====
+function sanitizeHTML(str) {
+  if (typeof str !== 'string') return str;
+  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+  return str.replace(/[&<>"']/g, c => map[c]);
+}
+
+// Rate limiter (debounce) for database operations
+const rateLimiter = {
+  timers: {},
+  lastRun: {},
+  // Returns true if allowed immediately, false if debounced (will run later)
+  check(key, limitMs = 1000) {
+    const now = Date.now();
+    if (this.lastRun[key] && (now - this.lastRun[key]) < limitMs) {
+      return false;
+    }
+    this.lastRun[key] = now;
+    return true;
+  },
+  // Debounce: always runs, but delays rapid calls
+  debounce(key, fn, delayMs = 2000) {
+    clearTimeout(this.timers[key]);
+    this.timers[key] = setTimeout(fn, delayMs);
+  }
+};
+
 const SECTOR_MAP = {
   'OPCE':'אנרגיה ותשתיות','ORA':'אנרגיה ותשתיות','ICL':'כימיה וחומרים',
   'ESLT':'תעשייה ביטחונית','AMOT':'נדל"ן','ENLT':'אנרגיה ותשתיות',
@@ -4702,7 +4729,7 @@ async function loadUserData(uid) {
 
 async function saveUserData() {
   if (!currentUser || !db) return;
-  
+
   try {
     const user = auth.currentUser;
     const userName = user ? (user.email || '').replace('@ta35-stocks.com', '') : '';
@@ -4819,11 +4846,26 @@ async function handleRegister() {
     return;
   }
   
-  if (password.length < 6) {
-    showError('סיסמה חייבת להיות לפחות 6 תווים');
+  if (password.length < 8) {
+    showError('סיסמה חייבת להיות לפחות 8 תווים');
     return;
   }
-  
+
+  if (!/[A-Z]/.test(password)) {
+    showError('סיסמה חייבת להכיל לפחות אות גדולה אחת באנגלית');
+    return;
+  }
+
+  if (!/[0-9]/.test(password)) {
+    showError('סיסמה חייבת להכיל לפחות ספרה אחת');
+    return;
+  }
+
+  if (!/[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password)) {
+    showError('סיסמה חייבת להכיל לפחות תו מיוחד אחד (!@#$%...)');
+    return;
+  }
+
   if (password !== passwordConfirm) {
     showError('הסיסמאות לא תואמות');
     return;
@@ -4977,7 +5019,7 @@ function showToast(message, type = 'info', duration = 3000) {
   const icons = { success: '<i data-lucide="check-circle" style="width:16px;height:16px;color:#10b981"></i>', error: '<i data-lucide="x-circle" style="width:16px;height:16px;color:#ef4444"></i>', warning: '<i data-lucide="alert-triangle" style="width:16px;height:16px;color:#f59e0b"></i>', info: '<i data-lucide="info" style="width:16px;height:16px;color:#0ea5e9"></i>' };
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
-  toast.innerHTML = `<span style="margin-left:6px;display:flex;align-items:center">${icons[type] || 'ℹ️'}</span>${message}`;
+  toast.innerHTML = `<span style="margin-left:6px;display:flex;align-items:center">${icons[type] || 'ℹ️'}</span>${sanitizeHTML(message)}`;
   container.appendChild(toast);
   
   // Click to dismiss
@@ -5340,9 +5382,9 @@ async function renderDashboardLeaderboard() {
       const isMe = e.userId === currentUser;
       const retColor = e.returnPercent >= 0 ? '#10b981' : '#ef4444';
       return `
-        <div onclick="${!isMe ? `viewFriendPortfolio('${e.userId}','${e.displayName}')` : ''}" style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);${isMe?'background:rgba(14,165,233,0.04);margin:0 -4px;padding:6px 4px;border-radius:3px;':''}${!isMe?'cursor:pointer':''}">
+        <div onclick="${!isMe ? `viewFriendPortfolio('${e.userId}','${sanitizeHTML(e.displayName)}')` : ''}" style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);${isMe?'background:rgba(14,165,233,0.04);margin:0 -4px;padding:6px 4px;border-radius:3px;':''}${!isMe?'cursor:pointer':''}">
           <span style="font-size:14px;min-width:22px;text-align:center">${medal}</span>
-          <span style="flex:1;font-size:12px;font-weight:600;color:var(--text-primary)">${e.displayName || '\\u05DE\\u05E9\\u05E7\\u05D9\\u05E2'}${isMe?' (\\u05D0\\u05E0\\u05D9)':''}</span>
+          <span style="flex:1;font-size:12px;font-weight:600;color:var(--text-primary)">${sanitizeHTML(e.displayName) || '\\u05DE\\u05E9\\u05E7\\u05D9\\u05E2'}${isMe?' (\\u05D0\\u05E0\\u05D9)':''}</span>
           <span style="font-size:12px;font-weight:700;font-family:var(--font-mono);color:${retColor}">${e.returnPercent>=0?'+':''}${e.returnPercent.toFixed(1)}%</span>
         </div>
       `;
@@ -7273,7 +7315,7 @@ function renderDashboard() {
     const avatarEl = document.getElementById('dashboard-avatar-img');
     if (avatarEl) {
       if (profilePic) {
-        avatarEl.innerHTML = `<img src="${profilePic}" style="width:40px;height:40px;border-radius:50%;object-fit:cover">`;
+        avatarEl.innerHTML = `<img src="${sanitizeHTML(profilePic)}" style="width:40px;height:40px;border-radius:50%;object-fit:cover">`;
       } else {
         avatarEl.textContent = avatar;
       }
@@ -7562,10 +7604,10 @@ async function loadLeaderboard() {
       const returnSign = entry.returnPercent >= 0 ? '+' : '';
       
       return `
-        <div class="leaderboard-item ${isMe ? 'me' : ''}" ${!isMe ? `onclick="viewFriendPortfolio('${entry.userId}','${entry.displayName}')" style="cursor:pointer"` : ''}>
+        <div class="leaderboard-item ${isMe ? 'me' : ''}" ${!isMe ? `onclick="viewFriendPortfolio('${entry.userId}','${sanitizeHTML(entry.displayName)}')" style="cursor:pointer"` : ''}>
           <div class="leaderboard-rank ${rankClass}">${rankEmoji}</div>
           <div class="leaderboard-info">
-            <div class="leaderboard-name">${entry.displayName || 'משקיע'}${isMe ? ' (אני)' : ''}</div>
+            <div class="leaderboard-name">${sanitizeHTML(entry.displayName) || 'משקיע'}${isMe ? ' (אני)' : ''}</div>
             <div class="leaderboard-details">${entry.stockCount || 0} מניות · ₪${(entry.portfolioValue || 0).toLocaleString('he-IL', {maximumFractionDigits: 0})}</div>
           </div>
           <div class="leaderboard-return ${returnClass}">
@@ -8156,7 +8198,7 @@ function renderStockCard(c) {
     notesHtml = `
       <div class="card-notes" onclick="event.stopPropagation()">
         <div class="card-notes-title">📝 ההערות שלי:</div>
-        <div class="card-notes-text">${displayText}</div>
+        <div class="card-notes-text">${sanitizeHTML(displayText)}</div>
         <button class="card-notes-btn" onclick="openNotesPopup('${c.id}')">
           ✏️ ערוך הערות
         </button>
@@ -8392,6 +8434,7 @@ function toggleStockInWatchlist(listId, stockId) {
 // ===== GENERIC FIREBASE SAVE/LOAD =====
 async function saveFieldToFirebase(fieldName, data) {
   if (!currentUser || !db) return;
+
   try {
     await db.collection('users').doc(currentUser).set({
       [fieldName]: data
@@ -9896,6 +9939,11 @@ function closeFriendSearch() {
 }
 
 async function searchFriend() {
+  if (!rateLimiter.check('searchFriend', 2000)) {
+    showToast('נא להמתין לפני חיפוש נוסף', 'warning');
+    return;
+  }
+
   const query = (document.getElementById('friend-search-input').value || '').trim().toLowerCase();
   if (!query || query.length < 2) {
     showToast('הזן לפחות 2 תווים', 'warning');
@@ -9982,10 +10030,10 @@ async function searchFriend() {
       html += `
         <div class="friend-card">
           <div class="friend-card-header">
-            <div class="friend-card-name">👤 ${d.username} ${isMe ? '(אתה)' : ''}</div>
+            <div class="friend-card-name">👤 ${sanitizeHTML(d.username)} ${isMe ? '(אתה)' : ''}</div>
             <div style="font-size:12px;color:var(--text-tertiary)">${d.portfolioCount || 0} מניות</div>
           </div>
-          ${!isMe ? `<button onclick="viewFriendPortfolio('${d.uid}','${d.username}')" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:4px;background:var(--bg-elevated);color:var(--text-secondary);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">📋 צפה בתיק</button>` : ''}
+          ${!isMe ? `<button onclick="viewFriendPortfolio('${sanitizeHTML(d.uid)}','${sanitizeHTML(d.username)}')" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:4px;background:var(--bg-elevated);color:var(--text-secondary);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">📋 צפה בתיק</button>` : ''}
         </div>
       `;
     });
@@ -10011,15 +10059,15 @@ async function viewFriendPortfolio(uid, username) {
     const friendCash = data.cash !== undefined ? data.cash : 30000;
     
     if (friendPortfolio.length === 0) {
-      showToast(`לתיק של ${username} אין מניות עדיין`, 'info');
+      showToast(`לתיק של ${sanitizeHTML(username)} אין מניות עדיין`, 'info');
       return;
     }
-    
+
     // Show friend portfolio in a view
     viewMode = 'stocks';
     currentSort = 'friend'; // prevent render() from interfering
     switchView();
-    showPageHeader(`התיק של ${username}`, '👤', `${friendPortfolio.length} מניות`, 'blue');
+    showPageHeader(`התיק של ${sanitizeHTML(username)}`, '👤', `${friendPortfolio.length} מניות`, 'blue');
     
     // Hide everything
     const hideIds = ['cards-grid', 'portfolio-summary-container', 'results-count', 'budget-view', 'challenges-view', 'simulator-view', 'compare-view', 'settings-view', 'sort-bar', 'filter-bar', 'watchlist-selector-container', 'stocks-search-bar'];
@@ -10055,7 +10103,7 @@ async function viewFriendPortfolio(uid, username) {
     
     spv.innerHTML = `
       <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:16px;margin-bottom:8px;text-align:center">
-        <div style="font-size:11px;color:var(--text-tertiary);font-weight:600;text-transform:uppercase;margin-bottom:4px">שווי התיק הכולל של ${username}</div>
+        <div style="font-size:11px;color:var(--text-tertiary);font-weight:600;text-transform:uppercase;margin-bottom:4px">שווי התיק הכולל של ${sanitizeHTML(username)}</div>
         <div style="font-size:28px;font-weight:700;font-family:var(--font-mono);color:var(--text-primary)">₪${totalWorth.toLocaleString('he-IL', {maximumFractionDigits: 0})}</div>
         <div style="font-size:14px;font-weight:600;font-family:var(--font-mono);color:${totalProfit >= 0 ? '#10b981' : '#ef4444'};margin-top:4px">${totalProfit >= 0 ? '+' : ''}${totalProfPct.toFixed(1)}%</div>
         <div style="display:flex;justify-content:center;gap:16px;margin-top:10px;font-size:12px;color:var(--text-tertiary)">
@@ -10381,9 +10429,9 @@ async function loadMarketLeaderboard() {
       const emoji = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
       const isMe = e.userId === currentUser;
       return `
-        <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);${isMe?'background:rgba(14,165,233,0.04);margin:0 -4px;padding:6px 4px;border-radius:4px;':''}" ${!isMe?`onclick="viewFriendPortfolio('${e.userId}','${e.displayName}')" style="cursor:pointer"`:''}>
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);${isMe?'background:rgba(14,165,233,0.04);margin:0 -4px;padding:6px 4px;border-radius:4px;':''}" ${!isMe?`onclick="viewFriendPortfolio('${e.userId}','${sanitizeHTML(e.displayName)}')" style="cursor:pointer"`:''}>
           <span style="font-size:14px;min-width:24px;text-align:center">${emoji}</span>
-          <span style="flex:1;font-size:13px;font-weight:600;color:var(--text-primary)">${e.displayName || 'משקיע'}${isMe?' (אני)':''}</span>
+          <span style="flex:1;font-size:13px;font-weight:600;color:var(--text-primary)">${sanitizeHTML(e.displayName) || 'משקיע'}${isMe?' (אני)':''}</span>
           <span style="font-size:13px;font-weight:700;font-family:var(--font-mono);color:${e.returnPercent>=0?'#10b981':'#ef4444'}">${e.returnPercent>=0?'+':''}${e.returnPercent.toFixed(1)}%</span>
         </div>
       `;
