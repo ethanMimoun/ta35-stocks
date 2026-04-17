@@ -7227,9 +7227,9 @@ function parseGlobalDataFromCSV(csvText) {
   let headerLineIdx = -1;
   for (let i = 0; i < Math.min(lines.length, 10); i++) {
     const cols = parseCSVLine(lines[i]);
-    const col11 = (cols[11] || '').trim();
-    // Header line: column 11 contains 'שם המדד' or 'שם' or is empty (skip first data rows)
-    if (col11 === 'שם המדד' || col11 === 'שם' || col11 === 'Name') {
+    const col11 = (cols[12] || '').trim();
+    // Header line: column 12 contains 'שם המדד' or 'שם' or is empty (skip first data rows)
+    if (col12 === 'שם המדד' || col12 === 'שם' || col12 === 'Name') {
       headerLineIdx = i;
       break;
     }
@@ -7240,12 +7240,12 @@ function parseGlobalDataFromCSV(csvText) {
   
   for (let i = startRow; i < lines.length; i++) {
     const cols = parseCSVLine(lines[i]);
-    if (cols.length < 13) continue;
+    if (cols.length < 16) continue;
     
-    const nameCol   = (cols[11] || '').trim().replace(/^"|"$/g, '');
-    const tickerCol = (cols[12] || '').trim().replace(/^"|"$/g, '');
-    const priceCol  = (cols[13] || '').trim().replace(/^"|"$/g, '');
-    const changeCol = (cols[14] || '').trim().replace(/^"|"$/g, '');
+    const nameCol   = (cols[12] || '').trim().replace(/^"|"$/g, '');
+    const tickerCol = (cols[13] || '').trim().replace(/^"|"$/g, '');
+    const priceCol  = (cols[14] || '').trim().replace(/^"|"$/g, '');
+    const changeCol = (cols[15] || '').trim().replace(/^"|"$/g, '');
     
     // דלג על שורות ריקות, שגיאות, או headers
     if (!nameCol || !priceCol) continue;
