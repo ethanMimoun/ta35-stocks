@@ -7227,7 +7227,7 @@ function parseGlobalDataFromCSV(csvText) {
   let headerLineIdx = -1;
   for (let i = 0; i < Math.min(lines.length, 10); i++) {
     const cols = parseCSVLine(lines[i]);
-    const col11 = (cols[12] || '').trim();
+    const col12 = (cols[12] || '').trim();
     // Header line: column 12 contains 'שם המדד' or 'שם' or is empty (skip first data rows)
     if (col12 === 'שם המדד' || col12 === 'שם' || col12 === 'Name') {
       headerLineIdx = i;
