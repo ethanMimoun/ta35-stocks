@@ -409,7 +409,8 @@ const C = {
   ...THEMES.charcoal
 };
 const MONO = "ui-monospace,'SF Mono',Menlo,Consolas,monospace";
-const API = "d8034s9r01qj3ct8sej0d8034s9r01qj3ct8sejg";
+// מפתח Finnhub נשמר בהגדרות (על המכשיר / בענן של המשתמש) ולא בקוד הציבורי
+let FINNHUB_KEY = "";
 const KEY = "exit-terminal:v1";
 const DEFAULTS = {
   schema: 1,
@@ -433,6 +434,7 @@ const DEFAULTS = {
     autoRefresh: true,
     lossMode: "ignore",
     theme: "charcoal",
+    finnhubKey: "",
     ai: {
       url: "",
       model: "llama-3.3-70b-versatile"
@@ -689,7 +691,8 @@ function enqueue(fn, priority) {
 }
 async function api(p, priority) {
   return enqueue(async () => {
-    const r = await fetch("https://finnhub.io/api/v1/" + p + "&token=" + API);
+    if (!FINNHUB_KEY) throw new Error("no-key");
+    const r = await fetch("https://finnhub.io/api/v1/" + p + "&token=" + encodeURIComponent(FINNHUB_KEY));
     if (r.status === 429) throw new Error("rate");
     if (!r.ok) throw new Error("api " + r.status);
     return r.json();
@@ -4604,6 +4607,23 @@ function Settings({
       paddingTop: 10
     }
   }, "בלי חיבור לענן האפליקציה עובדת רגיל — הכל נשמר על המכשיר. הסנכרון רק מוסיף שכבה מעל, ואם האינטרנט נופל ממשיכים לעבוד מקומית והנתונים יעלו בפעם הבאה.")), React.createElement(Card, {
+    title: "מפתח Finnhub (נתוני מניות)"
+  }, React.createElement(Field, {
+    label: "API Key"
+  }, React.createElement(Inp, {
+    value: s.finnhubKey || "",
+    placeholder: "הדבק כאן את המפתח מ-finnhub.io",
+    onChange: e => setS({
+      finnhubKey: e.target.value.trim()
+    })
+  })), React.createElement("div", {
+    style: {
+      fontSize: 10.5,
+      color: C.dim,
+      lineHeight: 1.8,
+      marginTop: 10
+    }
+  }, "המפתח נשמר רק אצלך ולא בקוד של האתר. בלי מפתח המחירים והחדשות לא יתעדכנו.")), React.createElement(Card, {
     title: "עוזר מחקר AI"
   }, React.createElement(Field, {
     label: "כתובת ה-Worker (תואם OpenAI/Groq)"
@@ -5051,6 +5071,7 @@ function App() {
   const [db, setDb] = useState(null),
     [quotes, setQuotes] = useState({}),
     [shadow, setShadow] = useState({});
+  FINNHUB_KEY = db && db.settings && db.settings.finnhubKey || "";
   const [tab, setTab] = useState("portfolio"),
     [busy, setBusy] = useState(false),
     [shBusy, setShBusy] = useState(false);

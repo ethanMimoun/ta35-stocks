@@ -2,12 +2,12 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>מגמת צמיחה • The Israeli Bourse</title>
   
   <!-- PWA Meta Tags -->
   <meta name="description" content="מרכז המניות הישראליות - נתוני שוק, מעקב אישי ותיק דמה">
-  <meta name="theme-color" content="#0ea5e9">
+  <meta name="theme-color" content="#0f3b33">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="מגמת צמיחה">
@@ -26,7 +26,7 @@
   <!-- Inter + JetBrains Mono - Modern & Clean -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Firebase SDK (loaded first - critical) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
@@ -7471,6 +7471,11 @@
     }
   </style>
 <style id="premium-polish-layer">
+html { touch-action: manipulation; }
+/* Pinch-zoom is allowed now; 16px inputs on touch devices stop iOS from auto-zooming on focus */
+@media (pointer: coarse) {
+  input, select, textarea { font-size: 16px !important; }
+}
 /* ============================================================
    PREMIUM POLISH LAYER — subtle motion for a fast, modern feel
    Refined, not flashy. Appropriate for a financial app.
@@ -7593,7 +7598,7 @@ button, [onclick] {
 /* ---- Focus ring for inputs (keyboard accessibility + polish) ---- */
 input:focus, select:focus, textarea:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18);
+  box-shadow: 0 0 0 3px var(--accent-glow, rgba(14, 165, 233, 0.18));
   border-color: var(--accent, #0ea5e9) !important;
   transition: box-shadow 0.18s var(--ease-out-quart), border-color 0.18s ease;
 }
@@ -7657,11 +7662,11 @@ setTimeout(() => {
 <div class="login-screen" id="login-screen">
   <div class="login-box">
     <!-- Animated chart line decoration -->
-    <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#0ea5e9,#8b5cf6,transparent);opacity:0.6"></div>
+    <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#6ef0be,#3fd1a1,transparent);opacity:0.6"></div>
     
     <div style="text-align:center;margin-bottom:24px">
-      <div style="display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,rgba(14,165,233,0.15),rgba(99,102,241,0.15));border:1px solid rgba(14,165,233,0.2);margin-bottom:14px">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+      <div style="display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,rgba(110,240,190,0.12),rgba(63,209,161,0.06));border:1px solid rgba(110,240,190,0.25);margin-bottom:14px">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#6ef0be" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
       </div>
       <h2 class="login-title">מגמת צמיחה</h2>
       <p style="font-size:13px;color:rgba(255,255,255,0.4);margin:6px 0 0;letter-spacing:0.04em">MEGAMAT TZMCHA</p>
@@ -7670,17 +7675,17 @@ setTimeout(() => {
     <!-- Animated stats ticker -->
     <div style="display:flex;justify-content:center;gap:12px;margin-bottom:24px;padding:10px;background:rgba(255,255,255,0.02);border-radius:4px;border:1px solid rgba(255,255,255,0.04)">
       <div style="text-align:center;flex:1">
-        <div style="font-size:16px;font-weight:700;font-family:var(--font-mono);color:#10b981;animation:loginPulseNum 3s ease-in-out infinite">+2.4%</div>
+        <div style="font-size:16px;font-weight:700;font-family:var(--font-mono);color:#10b981;animation:loginPulseNum 3s ease-in-out infinite" id="login-index-change">—</div>
         <div style="font-size:8px;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px">ת"א 35</div>
       </div>
       <div style="width:1px;background:rgba(255,255,255,0.06)"></div>
       <div style="text-align:center;flex:1">
-        <div style="font-size:16px;font-weight:700;font-family:var(--font-mono);color:#0ea5e9">35</div>
+        <div style="font-size:16px;font-weight:700;font-family:var(--font-mono);color:#6ef0be">35</div>
         <div style="font-size:8px;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px">מניות</div>
       </div>
       <div style="width:1px;background:rgba(255,255,255,0.06)"></div>
       <div style="text-align:center;flex:1">
-        <div style="font-size:16px;font-weight:700;font-family:var(--font-mono);color:#a855f7">₪30K</div>
+        <div style="font-size:16px;font-weight:700;font-family:var(--font-mono);color:#eafff7">₪30K</div>
         <div style="font-size:8px;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px">תיק דמה</div>
       </div>
     </div>
@@ -7706,23 +7711,23 @@ setTimeout(() => {
     <!-- Feature icons -->
     <div style="display:flex;justify-content:center;gap:16px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.04)">
       <div style="text-align:center;opacity:0.4">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6ef0be" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
         <div style="font-size:7px;color:white;margin-top:2px">מעקב</div>
       </div>
       <div style="text-align:center;opacity:0.4">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 3h-8l-2 4h12z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6ef0be" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 3h-8l-2 4h12z"/></svg>
         <div style="font-size:7px;color:white;margin-top:2px">תיק</div>
       </div>
       <div style="text-align:center;opacity:0.4">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><rect x="2" y="6" width="20" height="12" rx="2"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6ef0be" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><rect x="2" y="6" width="20" height="12" rx="2"/></svg>
         <div style="font-size:7px;color:white;margin-top:2px">סימולציה</div>
       </div>
       <div style="text-align:center;opacity:0.4">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6ef0be" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
         <div style="font-size:7px;color:white;margin-top:2px">לימוד</div>
       </div>
       <div style="text-align:center;opacity:0.4">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 8 6 8 6s1-2 3.5-2a2.5 2.5 0 0 1 0 5H10"/><path d="M12 6v13"/><path d="M6 12h12"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6ef0be" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5C7 4 8 6 8 6s1-2 3.5-2a2.5 2.5 0 0 1 0 5H10"/><path d="M12 6v13"/><path d="M6 12h12"/></svg>
         <div style="font-size:7px;color:white;margin-top:2px">תחרות</div>
       </div>
     </div>
@@ -7948,63 +7953,44 @@ setTimeout(() => {
       </div>
     </div>
 
-    <!-- Hero Card - Dark gradient (refined elegant) -->
-    <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);border-radius:12px;padding:18px;margin-bottom:8px;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.04)">
-      <div style="position:absolute;top:-30%;left:-20%;width:50%;height:140%;background:radial-gradient(circle,rgba(14,165,233,0.08),transparent 70%);pointer-events:none"></div>
-      <div style="position:absolute;bottom:-30%;right:-10%;width:40%;height:120%;background:radial-gradient(circle,rgba(139,92,246,0.06),transparent 70%);pointer-events:none"></div>
-      <div style="position:relative;z-index:1">
-        <!-- Top row: avatar + greeting + value (inline) -->
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
-          <div id="dashboard-avatar-img" style="font-size:28px;flex-shrink:0">👋</div>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:13px;font-weight:600;color:#e2e8f0;line-height:1.2">שלום, <span id="dashboard-user-name">משתמש</span></div>
-            <div style="font-size:10px;color:#64748b;margin-top:2px">תיק דמה · ₪30,000 וירטואליים</div>
-          </div>
-          <div style="text-align:left;flex-shrink:0">
-            <div style="font-size:9px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px">שווי תיק</div>
-            <div style="font-size:20px;font-weight:800;font-family:var(--font-mono);color:#ffffff;letter-spacing:-0.02em;line-height:1" id="dashboard-portfolio-value">₪0</div>
-            <div style="font-size:11px;font-weight:700;font-family:var(--font-mono);margin-top:2px" id="dashboard-today-change">+0%</div>
-          </div>
+    <!-- Hero Card (design B): portfolio value + chart -->
+    <div class="b-hero" id="dashboard-hero">
+      <div class="b-hero-top">
+        <div id="dashboard-avatar-img" class="b-hero-avatar">👋</div>
+        <div class="b-hero-greet">
+          <span>שלום, <span id="dashboard-user-name">משתמש</span></span>
+          <small>תיק דמה · כסף וירטואלי</small>
         </div>
-        <!-- Compact stats row -->
-        <div style="display:flex;gap:6px">
-          <div style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);padding:8px;border-radius:8px;text-align:center">
-            <div style="font-size:8px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.06em">במעקב</div>
-            <div style="font-size:16px;font-weight:700;font-family:var(--font-mono);color:#e2e8f0;margin-top:2px" id="dashboard-watchlist-count">0</div>
-          </div>
-          <div style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);padding:8px;border-radius:8px;text-align:center">
-            <div style="font-size:8px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.06em">בתיק</div>
-            <div style="font-size:16px;font-weight:700;font-family:var(--font-mono);color:#e2e8f0;margin-top:2px" id="dashboard-portfolio-count">0</div>
-          </div>
-          <div style="flex:1;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);padding:8px;border-radius:8px;text-align:center">
-            <div style="font-size:8px;color:#64748b;font-weight:700;text-transform:uppercase;letter-spacing:0.06em">מזומן</div>
-            <div style="font-size:16px;font-weight:700;font-family:var(--font-mono);color:#e2e8f0;margin-top:2px" id="dashboard-cash">₪0</div>
-          </div>
-        </div>
+      </div>
+      <div class="b-hero-label">שווי התיק</div>
+      <div class="b-hero-value" id="dashboard-portfolio-value">₪0</div>
+      <div class="b-hero-pill" id="dashboard-today-change">—</div>
+      <div class="b-hero-chart">
+        <svg id="dashboard-portfolio-chart" viewBox="0 0 300 84" preserveAspectRatio="none" aria-hidden="true"></svg>
+        <div class="b-hero-chart-note" id="dashboard-chart-note"></div>
+      </div>
+      <div class="b-hero-ranges" id="dashboard-chart-ranges" role="tablist" aria-label="טווח הגרף">
+        <button type="button" data-range="1">יום</button>
+        <button type="button" data-range="7">שבוע</button>
+        <button type="button" data-range="30">חודש</button>
+        <button type="button" data-range="all" class="on">הכל</button>
+      </div>
+      <div class="b-hero-stats">
+        <div><span>מזומן</span><b id="dashboard-cash">₪0</b></div>
+        <div><span>בתיק</span><b id="dashboard-portfolio-count">0</b></div>
+        <div><span>במעקב</span><b id="dashboard-watchlist-count">0</b></div>
       </div>
     </div>
 
     <!-- Real Holdings Summary (loaded async, dashboard view) -->
     <div id="dashboard-real-holdings-summary"></div>
 
-    <!-- Quick Actions - 4 columns -->
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-bottom:8px">
-      <button onclick="goToAllStocks()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:10px 4px;cursor:pointer;font-family:inherit;text-align:center">
-        <div style="margin-bottom:2px;color:var(--accent)"><i data-lucide="list" style="width:20px;height:20px"></i></div>
-        <div style="font-size:9px;font-weight:600;color:var(--text-tertiary)">מניות</div>
-      </button>
-      <button onclick="goToFunctions()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:10px 4px;cursor:pointer;font-family:inherit;text-align:center">
-        <div style="margin-bottom:2px;color:var(--accent)"><i data-lucide="layout-grid" style="width:20px;height:20px"></i></div>
-        <div style="font-size:9px;font-weight:600;color:var(--text-tertiary)">כלים</div>
-      </button>
-      <button onclick="goToMarket()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:10px 4px;cursor:pointer;font-family:inherit;text-align:center">
-        <div style="margin-bottom:2px;color:var(--accent)"><i data-lucide="bar-chart-3" style="width:20px;height:20px"></i></div>
-        <div style="font-size:9px;font-weight:600;color:var(--text-tertiary)">שוק</div>
-      </button>
-      <button onclick="goToPortfolio()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:10px 4px;cursor:pointer;font-family:inherit;text-align:center">
-        <div style="margin-bottom:2px;color:var(--accent)"><i data-lucide="briefcase" style="width:20px;height:20px"></i></div>
-        <div style="font-size:9px;font-weight:600;color:var(--text-tertiary)">תיק</div>
-      </button>
+    <!-- Quick Actions (design B) -->
+    <div class="b-actions">
+      <button type="button" class="b-act" onclick="goToAllStocks()"><i class="b-act-ic"><i data-lucide="list" style="width:18px;height:18px"></i></i><span>מניות</span></button>
+      <button type="button" class="b-act" onclick="goToPortfolio()"><i class="b-act-ic"><i data-lucide="briefcase" style="width:18px;height:18px"></i></i><span>התיק שלי</span></button>
+      <button type="button" class="b-act" onclick="goToMarket()"><i class="b-act-ic"><i data-lucide="bar-chart-3" style="width:18px;height:18px"></i></i><span>שוק</span></button>
+      <button type="button" class="b-act" onclick="goToFunctions()"><i class="b-act-ic"><i data-lucide="layout-grid" style="width:18px;height:18px"></i></i><span>כלים</span></button>
     </div>
 
     <!-- Dashboard Search Bar -->
@@ -8079,12 +8065,12 @@ setTimeout(() => {
   </div>
 
   <!-- Search + Filter Card -->
-  <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:10px 12px;margin-bottom:6px">
+  <div id="stocks-filter-card" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:10px 12px;margin-bottom:6px">
     <!-- Search -->
     <div id="stocks-search-bar" style="display:none;margin-bottom:8px">
       <div style="position:relative">
         <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-tertiary);pointer-events:none"><i data-lucide="search" style="width:14px;height:14px"></i></span>
-        <input type="text" id="stocks-inline-search" placeholder="חפש לפי שם או טיקר..." oninput="document.getElementById('search-input').value=this.value;render()" style="width:100%;padding:9px 14px 9px 38px;border:1px solid var(--border);border-radius:4px;background:var(--bg-base);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;direction:rtl">
+        <input type="text" id="stocks-inline-search" placeholder="חפש לפי שם או טיקר..." oninput="document.getElementById('search-input').value=this.value;render()" style="width:100%;padding:9px 38px 9px 14px;border:1px solid var(--border);border-radius:4px;background:var(--bg-base);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;direction:rtl">
       </div>
     </div>
     
@@ -9112,29 +9098,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Firebase יטפל בהתחברות דרך onAuthStateChanged
   setInterval(fetchData, REFRESH_INTERVAL);
 
-  // ===== PREVENT PINCH ZOOM (iOS Safari workaround) =====
-  // The viewport meta tag has user-scalable=no, but iOS Safari ignores it sometimes.
-  // These event listeners block pinch-zoom and double-tap-zoom.
-  document.addEventListener('gesturestart', e => e.preventDefault(), { passive: false });
-  document.addEventListener('gesturechange', e => e.preventDefault(), { passive: false });
-  document.addEventListener('gestureend', e => e.preventDefault(), { passive: false });
-
-  // Block double-tap zoom while still allowing single taps
-  let lastTouchEnd = 0;
-  document.addEventListener('touchend', (e) => {
-    const now = Date.now();
-    if (now - lastTouchEnd <= 300) {
-      e.preventDefault();
-    }
-    lastTouchEnd = now;
-  }, { passive: false });
-
-  // Block multi-touch (2+ finger gestures that aren't pinch-to-zoom)
-  document.addEventListener('touchmove', (e) => {
-    if (e.touches && e.touches.length > 1) {
-      e.preventDefault();
-    }
-  }, { passive: false });
+  // Zoom: pinch-zoom is allowed (accessibility). Double-tap zoom is disabled
+  // via CSS touch-action: manipulation, which does not swallow quick taps.
 
   // הסתר splash screen אחרי 1.8 שניות
   setTimeout(() => {
@@ -9492,7 +9457,7 @@ async function fetchHistoricalDataFromYahoo() {
   }
 }
 
-function checkAlerts(newCompanies) {
+function checkFavoriteAlerts(newCompanies) {
   if (!alertsEnabled || favorites.length === 0) return;
   newCompanies.forEach(company => {
     if (!favorites.includes(company.id)) return;
@@ -9560,6 +9525,20 @@ async function fetchData() {
 
         // בדוק התראות
         checkAlerts();
+        checkFavoriteAlerts(companies);
+
+        // Login screen: market-cap weighted average change of the tracked stocks
+        try {
+          const loginChg = document.getElementById('login-index-change');
+          if (loginChg) {
+            const totalCap = companies.reduce((t, c) => t + (c.marketCap || 0), 0);
+            if (totalCap > 0) {
+              const avg = companies.reduce((t, c) => t + (c.changePercent || 0) * (c.marketCap || 0), 0) / totalCap;
+              loginChg.textContent = (avg >= 0 ? '+' : '') + avg.toFixed(1) + '%';
+              loginChg.style.color = avg >= 0 ? '#10b981' : '#ef4444';
+            }
+          }
+        } catch (e) { /* cosmetic only */ }
 
         const now = new Date().toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
         window._lastUpdateTime = Date.now();
@@ -10112,7 +10091,7 @@ function openSellPopup(id) {
   const holding = portfolio.find(p => p.id === id);
   if (!holding) return;
   
-  document.getElementById('sell-popup-title').textContent = `מכור ${holding.name}`;
+  document.getElementById('sell-popup-title').textContent = `מכור ${holding.name || (companies.find(c => c.id === id) || {}).name || id}`;
   document.getElementById('sell-popup-info').textContent = `יש לך ${holding.quantity} מניות`;
   document.getElementById('sell-quantity').value = '';
   document.getElementById('sell-quantity').max = holding.quantity;
@@ -10389,21 +10368,21 @@ function renderPortfolioPieChart() {
   
   // צבעים לענפים
   const sectorColors = {
-    'בנקאות': '#3b82f6',
-    'טכנולוגיה וחצאים': '#8b5cf6',
-    'טכנולוגיה ותוכנה': '#a855f7',
-    'ביטוח ופיננסים': '#06b6d4',
-    'תרופות וביוטכנולוגיה': '#10b981',
-    'אנרגיה ותשתיות': '#f59e0b',
-    'נדל"ן': '#ef4444',
-    'תעשייה ביטחונית': '#64748b',
-    'תעשייה': '#78716c',
-    'קמעונאות': '#ec4899',
-    'מזון ומשקאות': '#f97316',
-    'בנייה ותשתיות': '#84cc16',
-    'תקשורת': '#14b8a6',
-    'כימיה וחומרים': '#6366f1',
-    'כללי': '#94a3b8'
+    'בנקאות': '#13775c',
+    'טכנולוגיה וחצאים': '#3fd1a1',
+    'טכנולוגיה ותוכנה': '#8de8c6',
+    'ביטוח ופיננסים': '#2f8f9d',
+    'תרופות וביוטכנולוגיה': '#9cc5a1',
+    'אנרגיה ותשתיות': '#e9b44c',
+    'נדל"ן': '#d4825a',
+    'תעשייה ביטחונית': '#6b8578',
+    'תעשייה': '#b3ad86',
+    'קמעונאות': '#cf7b7a',
+    'מזון ומשקאות': '#e4ad72',
+    'בנייה ותשתיות': '#7fa585',
+    'תקשורת': '#5aa9a5',
+    'כימיה וחומרים': '#3e7f6c',
+    'כללי': '#b0bdb7'
   };
   
   const labels = sorted.map(([s]) => s);
@@ -10423,10 +10402,11 @@ function renderPortfolioPieChart() {
       datasets: [{
         data: values,
         backgroundColor: colors,
-        borderWidth: 1.5,
-        borderColor: 'var(--bg-base)',
+        borderWidth: 2,
+        // Canvas can't read CSS variables, so resolve the card color here
+        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-elevated').trim() || '#ffffff',
         hoverBorderWidth: 2,
-        hoverBorderColor: 'var(--text-primary)',
+        hoverBorderColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-elevated').trim() || '#ffffff',
         hoverOffset: 4
       }]
     },
@@ -10437,11 +10417,11 @@ function renderPortfolioPieChart() {
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: 'rgba(15,23,42,0.95)',
-          titleFont: { size: 12, weight: '700', family: 'inherit' },
-          bodyFont: { size: 11, family: 'inherit' },
-          padding: 8,
-          cornerRadius: 4,
+          backgroundColor: 'rgba(10,38,33,0.95)',
+          titleFont: { size: 12, weight: '600', family: 'Rubik' },
+          bodyFont: { size: 11, family: 'Rubik' },
+          padding: 10,
+          cornerRadius: 10,
           displayColors: false,
           callbacks: {
             label: function(context) {
@@ -11527,7 +11507,7 @@ function openModal(id) {
         type: 'bar',
         data: {
           labels: volumes.map((_, i) => ''),
-          datasets: [{ data: volumes, backgroundColor: volumes.map(v => v > c.volume ? 'rgba(14,165,233,0.4)' : 'rgba(14,165,233,0.15)'), borderRadius: 3 }]
+          datasets: [{ data: volumes, backgroundColor: volumes.map(v => v > c.volume ? 'rgba(15,122,92,0.55)' : 'rgba(15,122,92,0.18)'), borderRadius: 3 }]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { display: false } } }
       });
@@ -11791,8 +11771,8 @@ function renderDiscussPost(post, stockId) {
   const commentCount = post.commentCount || 0;
 
   const avatarHTML = post.userProfilePic
-    ? `<img src="${post.userProfilePic}" alt="">`
-    : (post.userAvatar || '👤');
+    ? `<img src="${escapeAttr(post.userProfilePic)}" alt="">`
+    : escapeHtml(post.userAvatar || '👤');
 
   // Escape content for safe HTML rendering
   const safeContent = (post.content || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -11802,7 +11782,7 @@ function renderDiscussPost(post, stockId) {
       <div class="discuss-post-header">
         <div class="discuss-post-avatar">${avatarHTML}</div>
         <div class="discuss-post-meta">
-          <div class="discuss-post-name">${post.userName || 'משקיע'}${isMe ? ' (אני)' : ''}</div>
+          <div class="discuss-post-name">${escapeHtml(post.userName || 'משקיע')}${isMe ? ' (אני)' : ''}</div>
           <div class="discuss-post-time">${discussFormatTime(post.createdAt)}</div>
         </div>
         ${isMe
@@ -12021,15 +12001,15 @@ function renderDiscussComments(postId, comments) {
 
   list.innerHTML = comments.map(c => {
     const avatarHTML = c.userProfilePic
-      ? `<img src="${c.userProfilePic}" alt="">`
-      : (c.userAvatar || '👤');
+      ? `<img src="${escapeAttr(c.userProfilePic)}" alt="">`
+      : escapeHtml(c.userAvatar || '👤');
     const safeContent = (c.content || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     return `
       <div class="discuss-comment">
         <div class="discuss-comment-avatar">${avatarHTML}</div>
         <div class="discuss-comment-body">
           <div class="discuss-comment-meta">
-            <div class="discuss-comment-name">${c.userName || 'משקיע'}</div>
+            <div class="discuss-comment-name">${escapeHtml(c.userName || 'משקיע')}</div>
             <div class="discuss-comment-time">${discussFormatTime(c.createdAt)}</div>
           </div>
           <div class="discuss-comment-content">${safeContent}</div>
@@ -12498,8 +12478,8 @@ function renderFeedPost(post) {
   const commentCount = post.commentCount || 0;
 
   const avatarHTML = post.userProfilePic
-    ? `<img src="${post.userProfilePic}" alt="">`
-    : (post.userAvatar || '👤');
+    ? `<img src="${escapeAttr(post.userProfilePic)}" alt="">`
+    : escapeHtml(post.userAvatar || '👤');
 
   const safeContent = (post.content || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -12509,17 +12489,17 @@ function renderFeedPost(post) {
   const stockShort = post.stockId ? post.stockId.replace('TLV:', '') : '';
 
   const nameHTML = isMe
-    ? `<div class="discuss-post-name">${post.userName || 'משקיע'} (אני)</div>`
-    : `<div class="discuss-post-name discuss-user-link" onclick="openUserProfile('${post.userId}')">${post.userName || 'משקיע'}</div>`;
+    ? `<div class="discuss-post-name">${escapeHtml(post.userName || 'משקיע')} (אני)</div>`
+    : `<div class="discuss-post-name discuss-user-link" onclick="openUserProfile('${escapeAttr(post.userId)}')">${escapeHtml(post.userName || 'משקיע')}</div>`;
 
   return `
     <div class="discuss-post">
       <div class="discuss-post-header">
-        <div class="discuss-post-avatar ${isMe ? '' : 'discuss-user-link'}" ${isMe ? '' : `onclick="openUserProfile('${post.userId}')" style="cursor:pointer"`}>${avatarHTML}</div>
+        <div class="discuss-post-avatar ${isMe ? '' : 'discuss-user-link'}" ${isMe ? '' : `onclick="openUserProfile('${escapeAttr(post.userId)}')" style="cursor:pointer"`}>${avatarHTML}</div>
         <div class="discuss-post-meta">
           <div style="display:flex;align-items:center;flex-wrap:wrap">
             ${nameHTML}
-            <span class="feed-post-stock-tag" onclick="openModal('${post.stockId}')">${stockShort}</span>
+            <span class="feed-post-stock-tag" onclick="openModal('${escapeAttr(post.stockId)}')">${escapeHtml(stockShort)}</span>
           </div>
           <div class="discuss-post-time">${discussFormatTime(post.createdAt)} · ${stockName}</div>
         </div>
@@ -12695,10 +12675,10 @@ async function openUserProfile(userId) {
       ? firstPost.createdAt.toDate().toLocaleDateString('he-IL', { year: 'numeric', month: 'long' })
       : '';
 
-    const displayName = personalProfile.displayName || 'משקיע';
-    const avatar = personalProfile.avatar || '👤';
-    const profilePic = personalProfile.profilePic || '';
-    const bio = personalProfile.bio || '';
+    const displayName = escapeHtml(personalProfile.displayName || 'משקיע');
+    const avatar = escapeHtml(personalProfile.avatar || '👤');
+    const profilePic = escapeHtml(personalProfile.profilePic || '');
+    const bio = escapeHtml(personalProfile.bio || '');
 
     const avatarHTML = profilePic
       ? `<img src="${profilePic}" alt="">`
@@ -12809,8 +12789,8 @@ async function openUserProfile(userId) {
     const isMe = userId === currentUser;
     const followButtonHTML = isMe ? '' : `
       <button class="up-follow-btn ${isFollowing ? 'following' : ''}"
-              id="up-follow-btn-${userId}"
-              onclick="toggleFollowUser('${userId}', event)">
+              id="up-follow-btn-${escapeAttr(userId)}"
+              onclick="toggleFollowUser('${escapeAttr(userId)}', event)">
         ${isFollowing ? '✓ עוקב/ת' : '+ עקוב/י'}
       </button>
     `;
@@ -13043,7 +13023,7 @@ async function getAIExplanation(stockId) {
 
     if (!response.ok || !data.explanation) {
       const errMsg = data.error || 'שגיאה לא צפויה';
-      resultDiv.innerHTML = `<div class="sp-ai-response error">❌ לא הצלחתי להביא הסבר כרגע. (${errMsg})<br>נסה שוב בעוד רגע.</div>`;
+      resultDiv.innerHTML = `<div class="sp-ai-response error">❌ לא הצלחתי להביא הסבר כרגע. (${escapeHtml(errMsg)})<br>נסה שוב בעוד רגע.</div>`;
       btn.disabled = false;
       btn.innerHTML = '<span>🔄</span><span>נסה שוב</span>';
       return;
@@ -13061,10 +13041,17 @@ async function getAIExplanation(stockId) {
   }
 }
 
+// AI output is untrusted text: escape it, then allow only line breaks and **bold**
+function formatAIText(text) {
+  return escapeHtml(String(text || ''))
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
+
 function showAIExplanation(resultDiv, text, fromCache) {
   const cacheLabel = fromCache ? '<span class="sp-ai-meta-item">⚡ מהזיכרון</span>' : '<span class="sp-ai-meta-item">🤖 Llama 3.3 70B</span>';
   resultDiv.innerHTML = `
-    <div class="sp-ai-response">${text}</div>
+    <div class="sp-ai-response">${formatAIText(text)}</div>
     <div class="sp-ai-meta">
       ${cacheLabel}
       <span class="sp-ai-meta-item">🔒 מאובטח דרך Cloudflare</span>
@@ -14833,6 +14820,80 @@ function renderMarketTicker() {
   }
 }
 
+// ===== Portfolio value history (design B hero chart) =====
+// Snapshots are kept on this device (localStorage), one point per 15 minutes.
+let _pvRange = 'all';
+function _pvKey() { return 'pv_history_' + (currentUser || 'guest'); }
+function _pvLoad() {
+  try { const a = JSON.parse(localStorage.getItem(_pvKey()) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; }
+}
+function recordPortfolioSnapshot(value) {
+  if (!currentUser || window._userDataLoading || !isFinite(value)) return;
+  const now = Date.now();
+  const hist = _pvLoad();
+  const last = hist[hist.length - 1];
+  if (last && now - last[0] < 15 * 60 * 1000) last[1] = Math.round(value);
+  else hist.push([now, Math.round(value)]);
+  while (hist.length > 3000) hist.shift();
+  try { localStorage.setItem(_pvKey(), JSON.stringify(hist)); } catch (e) {}
+}
+function _pvSeries() {
+  const hist = _pvLoad();
+  const startCash = (typeof initialCash === 'number' && initialCash > 0) ? initialCash : 30000;
+  // Anchor the line at the starting cash on the date of the first trade
+  const dates = (transactions || []).map(t => Date.parse(t.date)).filter(t => isFinite(t));
+  const pts = hist.slice();
+  if (dates.length) {
+    const first = Math.min(...dates);
+    if (!pts.length || first < pts[0][0]) pts.unshift([first, startCash]);
+  }
+  if (_pvRange !== 'all') {
+    const from = Date.now() - Number(_pvRange) * 864e5;
+    const inRange = pts.filter(p => p[0] >= from);
+    const before = pts.filter(p => p[0] < from).pop();
+    return before ? [[from, before[1]], ...inRange] : inRange;
+  }
+  return pts;
+}
+function renderPortfolioChart() {
+  const svg = document.getElementById('dashboard-portfolio-chart');
+  const note = document.getElementById('dashboard-chart-note');
+  if (!svg) return;
+  const pts = _pvSeries();
+  const W = 300, H = 84, PAD = 8;
+  svg.innerHTML = '';
+  if (pts.length < 2) {
+    if (note) note.textContent = 'הגרף יתמלא ככל שהתיק שלך יתעדכן';
+    const y = H / 2;
+    svg.innerHTML = `<path d="M0 ${y} L${W} ${y}" class="b-chart-line flat"/>`;
+    return;
+  }
+  if (note) note.textContent = '';
+  const t0 = pts[0][0], t1 = pts[pts.length - 1][0] || t0 + 1;
+  const vals = pts.map(p => p[1]);
+  let min = Math.min(...vals), max = Math.max(...vals);
+  if (max - min < 1) { min -= 1; max += 1; }
+  const x = t => ((t - t0) / Math.max(1, t1 - t0)) * W;
+  const y = v => PAD + (1 - (v - min) / (max - min)) * (H - PAD * 2);
+  const line = pts.map((p, i) => (i ? 'L' : 'M') + x(p[0]).toFixed(1) + ' ' + y(p[1]).toFixed(1)).join(' ');
+  const up = vals[vals.length - 1] >= vals[0];
+  const end = pts[pts.length - 1];
+  svg.innerHTML = `
+    <defs><linearGradient id="pvFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" class="b-chart-stop1 ${up ? '' : 'dn'}"/><stop offset="1" class="b-chart-stop2"/>
+    </linearGradient></defs>
+    <path d="${line} L${W} ${H} L0 ${H} Z" fill="url(#pvFill)"/>
+    <path d="${line}" class="b-chart-line ${up ? '' : 'dn'}"/>
+    <circle cx="${x(end[0]).toFixed(1)}" cy="${y(end[1]).toFixed(1)}" r="3.5" class="b-chart-dot ${up ? '' : 'dn'}"/>`;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('#dashboard-chart-ranges button');
+  if (!b) return;
+  _pvRange = b.dataset.range;
+  document.querySelectorAll('#dashboard-chart-ranges button').forEach(x => x.classList.toggle('on', x === b));
+  renderPortfolioChart();
+});
+
 function renderDashboard() {
   // Profile & greeting
   if (userName) {
@@ -14847,7 +14908,7 @@ function renderDashboard() {
     const avatarEl = document.getElementById('dashboard-avatar-img');
     if (avatarEl) {
       if (profilePic) {
-        avatarEl.innerHTML = `<img src="${profilePic}" style="width:40px;height:40px;border-radius:50%;object-fit:cover">`;
+        avatarEl.innerHTML = `<img src="${escapeAttr(profilePic)}" style="width:40px;height:40px;border-radius:50%;object-fit:cover">`;
       } else {
         avatarEl.textContent = avatar;
       }
@@ -14878,13 +14939,17 @@ function renderDashboard() {
   const cashEl = document.getElementById('dashboard-cash');
   if (cashEl) cashEl.textContent = '₪' + Math.round(cash).toLocaleString('he-IL');
   
-  const todayPercent = portfolioValue > 0 ? (todayProfit / portfolioValue) * 100 : 0;
+  // Total gain/loss since the start (vs. the starting virtual cash)
+  const startCash = (typeof initialCash === 'number' && initialCash > 0) ? initialCash : 30000;
+  const totalGain = portfolioValue - startCash;
+  const totalPercent = (totalGain / startCash) * 100;
   const todayChangeEl = document.getElementById('dashboard-today-change');
   if (todayChangeEl) {
-    const sign = todayProfit >= 0 ? '+' : '';
-    todayChangeEl.textContent = `${sign}${todayPercent.toFixed(2)}%`;
-    todayChangeEl.style.color = todayProfit >= 0 ? '#10b981' : '#ef4444';
+    const up = totalGain >= 0;
+    todayChangeEl.textContent = `${up ? '▲' : '▼'} ₪${Math.abs(Math.round(totalGain)).toLocaleString('he-IL')} · ${Math.abs(totalPercent).toFixed(2)}% מההתחלה`;
+    todayChangeEl.classList.toggle('dn', !up);
   }
+  try { recordPortfolioSnapshot(portfolioValue); renderPortfolioChart(); } catch (e) { console.warn('portfolio chart:', e); }
   
   // Watchlists on dashboard - collapsible with rename
   const watchlistsBody = document.getElementById('dashboard-watchlists-body');
@@ -15144,8 +15209,8 @@ async function loadLeaderboard() {
 
       // Avatar
       const avatarHTML = entry.userProfilePic
-        ? `<img src="${entry.userProfilePic}" style="width:28px;height:28px;border-radius:50%;object-fit:cover">`
-        : `<div style="width:28px;height:28px;border-radius:50%;background:var(--bg-base);display:flex;align-items:center;justify-content:center;font-size:16px">${entry.userAvatar || '👤'}</div>`;
+        ? `<img src="${escapeAttr(entry.userProfilePic)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover">`
+        : `<div style="width:28px;height:28px;border-radius:50%;background:var(--bg-base);display:flex;align-items:center;justify-content:center;font-size:16px">${escapeHtml(entry.userAvatar || '👤')}</div>`;
 
       // Medal badge (only for #1 with a crown)
       const medalBadge = (rank === 1 && entry.currentMedal) ? `
@@ -15155,11 +15220,11 @@ async function loadLeaderboard() {
       ` : '';
 
       return `
-        <div class="leaderboard-item ${isMe ? 'me' : ''}" ${!isMe ? `onclick="openUserProfile('${entry.userId}')" style="cursor:pointer"` : ''}>
+        <div class="leaderboard-item ${isMe ? 'me' : ''}" ${!isMe ? `onclick="openUserProfile('${escapeAttr(entry.userId)}')" style="cursor:pointer"` : ''}>
           <div class="leaderboard-rank ${rankClass}">${rankEmoji}</div>
           <div style="margin-left:6px">${avatarHTML}</div>
           <div class="leaderboard-info" style="margin-right:8px">
-            <div class="leaderboard-name">${entry.displayName || 'משקיע'}${isMe ? ' (אני)' : ''} ${medalBadge}</div>
+            <div class="leaderboard-name">${escapeHtml(entry.displayName || 'משקיע')}${isMe ? ' (אני)' : ''} ${medalBadge}</div>
             <div class="leaderboard-details">${entry.stockCount || 0} מניות · ₪${(entry.portfolioValue || 0).toLocaleString('he-IL', {maximumFractionDigits: 0})}</div>
           </div>
           <div class="leaderboard-return ${returnClass}">
@@ -15430,8 +15495,8 @@ function renderCompetition() {
 
     const isMe = slot.userId === currentUser;
     const avatarHTML = slot.userProfilePic
-      ? `<img src="${slot.userProfilePic}" alt="">`
-      : (slot.userAvatar || '👤');
+      ? `<img src="${escapeAttr(slot.userProfilePic)}" alt="">`
+      : escapeHtml(slot.userAvatar || '👤');
     const sign = slot.returnPercent >= 0 ? '+' : '';
     const color = slot.returnPercent >= 0 ? '#10b981' : '#ef4444';
 
@@ -15442,10 +15507,10 @@ function renderCompetition() {
 
     return `
       <div class="comp-podium-slot place-${place}">
-        <div class="comp-podium-card" ${!isMe ? `onclick="openUserProfile('${slot.userId}')"` : ''}>
+        <div class="comp-podium-card" ${!isMe ? `onclick="openUserProfile('${escapeAttr(slot.userId)}')"` : ''}>
           ${crown}
           <div class="comp-podium-avatar">${avatarHTML}</div>
-          <div class="comp-podium-name">${slot.displayName || 'משקיע'}${isMe ? ' (אני)' : ''}</div>
+          <div class="comp-podium-name">${escapeHtml(slot.displayName || 'משקיע')}${isMe ? ' (אני)' : ''}</div>
           <div class="comp-podium-return" style="color:${color}">${sign}${slot.returnPercent.toFixed(1)}%</div>
           ${medal}
         </div>
@@ -15506,17 +15571,17 @@ function renderCompetition() {
     const rank = i + 4;
     const isMe = e.userId === currentUser;
     const avatarHTML = e.userProfilePic
-      ? `<img src="${e.userProfilePic}" alt="">`
-      : (e.userAvatar || '👤');
+      ? `<img src="${escapeAttr(e.userProfilePic)}" alt="">`
+      : escapeHtml(e.userAvatar || '👤');
     const sign = e.returnPercent >= 0 ? '+' : '';
     const returnClass = e.returnPercent >= 0 ? 'positive' : 'negative';
 
     return `
-      <div class="comp-list-item ${isMe ? 'me' : ''}" ${!isMe ? `onclick="openUserProfile('${e.userId}')"` : ''}>
+      <div class="comp-list-item ${isMe ? 'me' : ''}" ${!isMe ? `onclick="openUserProfile('${escapeAttr(e.userId)}')"` : ''}>
         <div class="comp-list-rank">${rank}</div>
         <div class="comp-list-avatar">${avatarHTML}</div>
         <div class="comp-list-info">
-          <div class="comp-list-name">${e.displayName || 'משקיע'}${isMe ? ' (אני)' : ''}</div>
+          <div class="comp-list-name">${escapeHtml(e.displayName || 'משקיע')}${isMe ? ' (אני)' : ''}</div>
           <div class="comp-list-sub">₪${(e.portfolioValue || 0).toLocaleString('he-IL', {maximumFractionDigits: 0})} · ${e.stockCount || 0} מניות</div>
         </div>
         <div class="comp-list-return ${returnClass}">${sign}${e.returnPercent.toFixed(1)}%</div>
@@ -19240,10 +19305,10 @@ async function searchFriend() {
       html += `
         <div class="friend-card">
           <div class="friend-card-header">
-            <div class="friend-card-name">👤 ${d.username} ${isMe ? '(אתה)' : ''}</div>
+            <div class="friend-card-name">👤 ${escapeHtml(d.username)} ${isMe ? '(אתה)' : ''}</div>
             <div style="font-size:12px;color:var(--text-tertiary)">${d.portfolioCount || 0} מניות</div>
           </div>
-          ${!isMe ? `<button onclick="viewFriendPortfolio('${d.uid}','${d.username}')" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:4px;background:var(--bg-elevated);color:var(--text-secondary);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">📋 צפה בתיק</button>` : ''}
+          ${!isMe ? `<button onclick="viewFriendPortfolio('${escapeAttr(d.uid)}','${escapeAttr(d.username)}')" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:4px;background:var(--bg-elevated);color:var(--text-secondary);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">📋 צפה בתיק</button>` : ''}
         </div>
       `;
     });
@@ -19725,258 +19790,6 @@ function loadMarketNews() {
 // Replaces "Settings" as the primary nav target.
 // Settings now opens via a gear icon in the profile page header.
 
-function goToProfile() {
-  viewMode = 'stocks';
-  switchView();
-  showPageHeader('הפרופיל שלי', '👤', 'הפעילות שלך, הישגים והגדרות', 'blue');
-  setSort('profile');
-  updateBottomNav('nav-profile');
-  history.pushState({ page: 'profile' }, '', '#profile');
-}
-
-function renderProfile() {
-  const c = document.getElementById('profile-content');
-  if (!c) return;
-  scrollToTop();
-
-  const user = auth.currentUser;
-  const userName = user ? (user.email || '').replace('@ta35-stocks.com', '') : '';
-  const stats = calculatePortfolioStats();
-
-  // Load profile data from localStorage (existing system)
-  const profileData = JSON.parse(localStorage.getItem('user_profile_' + currentUser) || '{}');
-  const displayName = profileData.displayName || userName;
-  const bio = profileData.bio || '';
-  const avatar = profileData.avatar || '👤';
-  const profilePic = profileData.profilePic || '';
-
-  // Avatar HTML
-  const avatarHTML = profilePic
-    ? `<img src="${profilePic}" alt="" style="width:88px;height:88px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.2)">`
-    : `<div style="width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,rgba(255,255,255,0.15),rgba(255,255,255,0.05));display:flex;align-items:center;justify-content:center;font-size:48px;border:3px solid rgba(255,255,255,0.2)">${avatar}</div>`;
-
-  // Investor profile
-  const investorProfile = window.investorProfile || null;
-  let investorBadgeHTML = '';
-  if (investorProfile && investorProfile.emoji && investorProfile.name) {
-    investorBadgeHTML = `
-      <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);border-radius:20px;font-size:12px;font-weight:600;color:white;margin-top:10px">
-        ${investorProfile.emoji} ${investorProfile.name}
-      </div>
-    `;
-  } else {
-    investorBadgeHTML = `
-      <button onclick="startInvestorQuiz()" style="margin-top:10px;padding:6px 14px;background:rgba(255,255,255,0.1);border:1px dashed rgba(255,255,255,0.3);border-radius:20px;font-size:11px;color:rgba(255,255,255,0.85);cursor:pointer;font-family:inherit">
-        ✨ גלה איזה משקיע אתה
-      </button>
-    `;
-  }
-
-  // Portfolio summary
-  const totalValue = stats.totalValue || 0;
-  const totalReturn = stats.totalReturnPct || 0;
-  const returnColor = totalReturn >= 0 ? '#10b981' : '#ef4444';
-  const returnSign = totalReturn >= 0 ? '+' : '';
-
-  // Get my rank from leaderboard cache (if loaded recently)
-  const myLeaderboardData = window._myLeaderboardCache || null;
-  const myRank = myLeaderboardData?.rank || null;
-  const crownDays = myLeaderboardData?.crownDays || 0;
-
-  // Counts
-  const myPostsCount = (window._myPostsCache || []).length;
-  const myFollowingCount = window._myFollowingCount || 0;
-  const myFollowersCount = window._myFollowersCount || 0;
-
-  // ============ BUILD HTML ============
-  c.innerHTML = `
-    <!-- HERO: Avatar (left), Name + Bio + Badges (right), Settings (top corner) -->
-    <div class="profile-hero">
-      <div class="profile-hero-actions">
-        <button class="profile-hero-btn" onclick="openSettingsFromProfile()" title="הגדרות">
-          <i data-lucide="settings" style="width:14px;height:14px"></i>
-        </button>
-        <button class="profile-hero-btn" onclick="openProfileEdit()" title="עריכת פרופיל">
-          <i data-lucide="edit-3" style="width:13px;height:13px"></i>
-        </button>
-      </div>
-
-      <div class="profile-hero-content">
-        <div class="profile-hero-avatar">${avatarHTML}</div>
-        <div class="profile-hero-text">
-          <div class="profile-hero-name">${displayName}</div>
-          ${bio
-            ? `<div class="profile-hero-bio">"${bio}"</div>`
-            : `<div class="profile-hero-bio profile-hero-bio-empty">לחץ על העפרון להוסיף תיאור</div>`
-          }
-          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">
-            ${investorProfile && investorProfile.emoji ? `
-              <div class="profile-hero-investor">
-                ${investorProfile.emoji} ${investorProfile.name}
-              </div>
-            ` : ''}
-            ${myRank ? `
-              <div class="profile-hero-rank">
-                ${myRank === 1 ? '👑' : myRank <= 3 ? '🏆' : '📊'} מקום #${myRank}
-                ${crownDays > 0 ? ` · ${crownDays}ד'` : ''}
-              </div>
-            ` : ''}
-          </div>
-        </div>
-      </div>
-
-      ${(!investorProfile || !investorProfile.emoji) ? `
-        <button onclick="startInvestorQuiz()" style="display:block;width:100%;margin-top:12px;padding:8px 12px;background:rgba(168,85,247,0.08);border:1px dashed rgba(168,85,247,0.3);border-radius:6px;font-size:11px;color:#a855f7;cursor:pointer;font-family:inherit;font-weight:600">
-          ✨ ענה/י על שאלון 6 שאלות וגלה איזה משקיע את/ה
-        </button>
-      ` : ''}
-    </div>
-
-    <!-- STATS GRID: posts, returns, followers, following -->
-    <div class="profile-stats-grid">
-      <div class="profile-stat-tile">
-        <div class="profile-stat-val">${myPostsCount}</div>
-        <div class="profile-stat-label">פוסטים</div>
-      </div>
-      <div class="profile-stat-tile">
-        <div class="profile-stat-val" style="color:${returnColor}">${returnSign}${totalReturn.toFixed(1)}%</div>
-        <div class="profile-stat-label">תשואה</div>
-      </div>
-      <div class="profile-stat-tile" onclick="showFollowersList(currentUser)" style="cursor:pointer">
-        <div class="profile-stat-val">${myFollowersCount}</div>
-        <div class="profile-stat-label">עוקבים</div>
-      </div>
-      <div class="profile-stat-tile" onclick="showFollowingList(currentUser)" style="cursor:pointer">
-        <div class="profile-stat-val">${myFollowingCount}</div>
-        <div class="profile-stat-label">עוקב/ת</div>
-      </div>
-    </div>
-
-    <!-- QUICK ACCESS CARDS -->
-    <div class="profile-cards">
-      <!-- Portfolio shortcut -->
-      <div class="profile-card" onclick="goToPortfolio()">
-        <div class="profile-card-icon" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">
-          <i data-lucide="briefcase" style="width:18px;height:18px;color:white"></i>
-        </div>
-        <div class="profile-card-content">
-          <div class="profile-card-title">תיק ההשקעות שלי</div>
-          <div class="profile-card-subtitle">₪${totalValue.toLocaleString('he-IL', {maximumFractionDigits: 0})} · <span style="color:${returnColor}">${returnSign}${totalReturn.toFixed(1)}%</span></div>
-        </div>
-        <i data-lucide="chevron-left" style="width:18px;height:18px;color:var(--text-tertiary)"></i>
-      </div>
-
-      <!-- Trader Academy progress -->
-      <div class="profile-card" onclick="goToLessons()">
-        <div class="profile-card-icon" style="background:linear-gradient(135deg,#a855f7,#7c3aed)">
-          <i data-lucide="book-open" style="width:18px;height:18px;color:white"></i>
-        </div>
-        <div class="profile-card-content">
-          <div class="profile-card-title">Trader Academy</div>
-          <div class="profile-card-subtitle">המשך ללמוד וצבור ידע פיננסי</div>
-        </div>
-        <i data-lucide="chevron-left" style="width:18px;height:18px;color:var(--text-tertiary)"></i>
-      </div>
-
-      <!-- Trade Calculator - personal profit estimator with saved trades -->
-      <div class="profile-card" onclick="goToTradeCalculator()">
-        <div class="profile-card-icon" style="background:linear-gradient(135deg,#10b981,#059669)">
-          <i data-lucide="calculator" style="width:18px;height:18px;color:white"></i>
-        </div>
-        <div class="profile-card-content">
-          <div class="profile-card-title">מחשבון רווח</div>
-          <div class="profile-card-subtitle">חשב/י רווח אחרי מס · שמור/י תוכניות מסחר</div>
-        </div>
-        <i data-lucide="chevron-left" style="width:18px;height:18px;color:var(--text-tertiary)"></i>
-      </div>
-
-      <!-- Challenges -->
-      <div class="profile-card" onclick="goToChallenges()">
-        <div class="profile-card-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)">
-          <i data-lucide="award" style="width:18px;height:18px;color:white"></i>
-        </div>
-        <div class="profile-card-content">
-          <div class="profile-card-title">האתגרים שלי</div>
-          <div class="profile-card-subtitle">צור ועקוב אחרי אתגרי השקעה</div>
-        </div>
-        <i data-lucide="chevron-left" style="width:18px;height:18px;color:var(--text-tertiary)"></i>
-      </div>
-
-      <!-- Competition arena -->
-      <div class="profile-card" onclick="goToCompetition()">
-        <div class="profile-card-icon" style="background:linear-gradient(135deg,#ec4899,#db2777)">
-          <i data-lucide="trophy" style="width:18px;height:18px;color:white"></i>
-        </div>
-        <div class="profile-card-content">
-          <div class="profile-card-title">זירת התחרות</div>
-          <div class="profile-card-subtitle">${myRank ? `מקום #${myRank} כרגע` : 'לוח המובילים השבועי'}</div>
-        </div>
-        <i data-lucide="chevron-left" style="width:18px;height:18px;color:var(--text-tertiary)"></i>
-      </div>
-    </div>
-
-    <!-- POSTS SECTION -->
-    <div class="profile-section">
-      <div class="profile-section-header">
-        <div class="profile-section-title">📝 הפוסטים שלי</div>
-        <button class="profile-section-action" onclick="openNewPostModal()">+ פוסט חדש</button>
-      </div>
-      <div id="profile-posts-list">
-        <div style="padding:24px;text-align:center;color:var(--text-tertiary);font-size:11px">⏳ טוען פוסטים...</div>
-      </div>
-    </div>
-
-    <!-- MEDALS & ACHIEVEMENTS (loaded async) -->
-    <div class="profile-section" id="profile-medals-section" style="display:none">
-      <div class="profile-section-header">
-        <div class="profile-section-title">🏆 מדליות והישגים</div>
-      </div>
-      <div id="profile-medals-list" style="padding:14px"></div>
-    </div>
-
-    <!-- ACTIVITY FEED (toggleable in settings) -->
-    <div class="profile-section" id="profile-activity-section" style="display:none">
-      <div class="profile-section-header">
-        <div class="profile-section-title">⏱️ פעילות אחרונה</div>
-      </div>
-      <div id="profile-activity-list">
-        <div style="padding:24px;text-align:center;color:var(--text-tertiary);font-size:11px">⏳ טוען פעילות...</div>
-      </div>
-    </div>
-
-    <!-- FOOTER: legal & version -->
-    <div style="padding:24px 12px;text-align:center;color:var(--text-tertiary);font-size:11px;line-height:1.6">
-      <div style="margin-bottom:6px">⚠️ אפליקציה חינוכית · נתונים אינדיקטיביים בלבד</div>
-      <div>מגמת צמיחה v2.5 · © 2026 Ethan Mimoun</div>
-    </div>
-  `;
-
-  // Re-initialize Lucide icons
-  if (window.lucide && lucide.createIcons) {
-    setTimeout(() => lucide.createIcons(), 50);
-  }
-
-  // Load my posts in background
-  loadMyPostsForProfile();
-
-  // Load follower counts in background
-  loadMyFollowCounts();
-
-  // Show activity feed if not hidden by user preference
-  const activityHidden = localStorage.getItem('activity_feed_hidden_' + currentUser) === 'true';
-  if (!activityHidden) {
-    const section = document.getElementById('profile-activity-section');
-    if (section) section.style.display = 'block';
-    loadMyActivityFeed();
-  }
-
-  // Try to load my rank from leaderboard
-  loadMyLeaderboardPosition();
-
-  // Load medals & achievements
-  loadMyMedals();
-}
-
 // Open settings from profile (gear icon)
 function openSettingsFromProfile() {
   setSort('settings');
@@ -19990,86 +19803,6 @@ function openProfileEdit() {
 }
 
 // Load my posts for profile page
-async function loadMyPostsForProfile() {
-  const container = document.getElementById('profile-posts-list');
-  if (!container || !db || !currentUser) return;
-
-  try {
-    const snap = await db.collection('stock_posts')
-      .where('userId', '==', currentUser)
-      .get();
-
-    const posts = [];
-    snap.forEach(doc => {
-      const data = doc.data();
-      if (!data.hidden) posts.push({ id: doc.id, ...data });
-    });
-
-    // Sort newest first
-    posts.sort((a, b) => {
-      const aT = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
-      const bT = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
-      return bT - aT;
-    });
-
-    window._myPostsCache = posts;
-
-    // Update post count in stats
-    const statTile = document.querySelector('.profile-stats-grid .profile-stat-tile:first-child .profile-stat-val');
-    if (statTile) statTile.textContent = posts.length;
-
-    if (posts.length === 0) {
-      container.innerHTML = `
-        <div style="padding:24px 16px;text-align:center;color:var(--text-tertiary);font-size:12px">
-          עוד אין לך פוסטים<br>
-          <span style="font-size:11px;opacity:0.7">לחץ על "פוסט חדש" כדי לשתף את דעתך הראשונה</span>
-        </div>
-      `;
-      return;
-    }
-
-    container.innerHTML = posts.slice(0, 8).map(p => {
-      const stock = companies.find(c => c.id === p.stockId);
-      const stockShort = p.stockId ? p.stockId.replace('TLV:', '') : '';
-      const safeContent = (p.content || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-      // Sentiment badge
-      const sentimentBadges = {
-        bullish: { emoji: '📈', label: 'בעלי', color: '#10b981' },
-        bearish: { emoji: '📉', label: 'דובי', color: '#ef4444' },
-        holding: { emoji: '💎', label: 'מחזיק', color: '#0ea5e9' },
-        caution: { emoji: '⚠️', label: 'זהירות', color: '#f59e0b' }
-      };
-      const badge = sentimentBadges[p.sentiment];
-      const badgeHTML = badge
-        ? `<span style="display:inline-flex;align-items:center;gap:3px;padding:1px 6px;background:${badge.color}15;border:1px solid ${badge.color}40;border-radius:8px;font-size:9px;font-weight:700;color:${badge.color};margin-right:6px">${badge.emoji} ${badge.label}</span>`
-        : '';
-
-      return `
-        <div class="profile-post-item" onclick="openModal('${p.stockId}')">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
-            <div class="profile-post-stock" style="margin:0">${stockShort} · ${stock?.name || ''}</div>
-            ${badgeHTML}
-          </div>
-          <div class="profile-post-content">${safeContent}</div>
-          <div class="profile-post-meta">
-            <span>❤️ ${p.likeCount || 0}</span>
-            <span>💬 ${p.commentCount || 0}</span>
-            <span style="opacity:0.6">· ${typeof discussFormatTime === 'function' ? discussFormatTime(p.createdAt) : ''}</span>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    if (posts.length > 8) {
-      container.innerHTML += `<div style="padding:12px;text-align:center;font-size:11px;color:var(--text-tertiary)">ועוד ${posts.length - 8} פוסטים...</div>`;
-    }
-  } catch(e) {
-    console.warn('Load my posts:', e);
-    container.innerHTML = `<div style="padding:16px;text-align:center;color:var(--text-tertiary);font-size:11px">שגיאה בטעינת פוסטים</div>`;
-  }
-}
-
 // Load my follower/following counts
 async function loadMyFollowCounts() {
   if (!db || !currentUser) return;
@@ -20556,9 +20289,9 @@ async function openFollowsModal(userId, type) {
       const data = userDoc.data();
       const profile = data.personalProfile || {};
       const uid = userIds[idx];
-      const name = profile.displayName || 'משקיע';
-      const avatar = profile.avatar || '👤';
-      const profilePic = profile.profilePic || '';
+      const name = escapeHtml(profile.displayName || 'משקיע');
+      const avatar = escapeHtml(profile.avatar || '👤');
+      const profilePic = escapeHtml(profile.profilePic || '');
       const avatarHTML = profilePic
         ? `<img src="${profilePic}" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover">`
         : `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:20px;color:white">${avatar}</div>`;
@@ -21088,10 +20821,10 @@ async function renderProfile() {
 
     const personalProfile = userData.personalProfile || {};
     const investorProfile = userData.investorProfile || null;
-    const displayName = personalProfile.displayName || userName;
-    const bio = personalProfile.bio || '';
-    const avatar = personalProfile.avatar || '👤';
-    const profilePic = personalProfile.profilePic || '';
+    const displayName = escapeHtml(personalProfile.displayName || userName);
+    const bio = escapeHtml(personalProfile.bio || '');
+    const avatar = escapeHtml(personalProfile.avatar || '👤');
+    const profilePic = escapeHtml(personalProfile.profilePic || '');
 
     // Calculate portfolio stats
     const stats = (typeof calculatePortfolioStats === 'function')
@@ -21169,10 +20902,7 @@ async function renderProfile() {
     // Build the page
     c.innerHTML = `
       <!-- ========== HERO SECTION (PROFESSIONAL) ========== -->
-      <div style="position:relative;background:radial-gradient(circle at top right, rgba(99,102,241,0.4) 0%, transparent 50%), radial-gradient(circle at bottom left, rgba(14,165,233,0.5) 0%, transparent 50%), linear-gradient(135deg,#0c4a6e 0%,#1e293b 100%);border-radius:14px;padding:24px 18px 20px;margin-bottom:14px;color:white;overflow:hidden;box-shadow:0 8px 24px rgba(14,165,233,0.15)">
-
-        <!-- subtle grid bg -->
-        <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);background-size:24px 24px;pointer-events:none;opacity:0.5"></div>
+      <div style="position:relative;background:linear-gradient(160deg,var(--b-hero-1) 0%,var(--b-hero-2) 100%);border-radius:24px;padding:24px 18px 20px;margin-bottom:14px;color:white;overflow:hidden;box-shadow:var(--shadow-md)">
 
         <!-- top bar: settings + share -->
         <div style="position:relative;display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
@@ -21194,7 +20924,7 @@ async function renderProfile() {
           <div style="position:relative;flex-shrink:0">
             ${profilePic
               ? `<img src="${profilePic}" style="width:72px;height:72px;border-radius:18px;object-fit:cover;border:2px solid rgba(255,255,255,0.18);box-shadow:0 6px 20px rgba(0,0,0,0.3)">`
-              : `<div style="width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:36px;border:2px solid rgba(255,255,255,0.18);box-shadow:0 6px 20px rgba(0,0,0,0.3)">${avatar}</div>`}
+              : `<div style="width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,#6ef0be,#3fd1a1);display:flex;align-items:center;justify-content:center;font-size:36px;border:2px solid rgba(255,255,255,0.18);box-shadow:0 6px 20px rgba(0,0,0,0.3)">${avatar}</div>`}
             ${myRank && myRank.position <= 3 ? `<div style="position:absolute;bottom:-4px;right:-4px;width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#fbbf24,#f59e0b);display:flex;align-items:center;justify-content:center;font-size:14px;border:2px solid #0c4a6e">${myRank.position === 1 ? '👑' : myRank.position === 2 ? '🥈' : '🥉'}</div>` : ''}
           </div>
           <div style="flex:1;min-width:0">
@@ -21202,11 +20932,11 @@ async function renderProfile() {
             ${bio ? `<div style="font-size:12px;color:rgba(255,255,255,0.7);font-style:italic;line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">"${bio}"</div>` : ''}
             <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">
               ${investorProfile && investorProfile.emoji ? `
-                <div style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:rgba(99,102,241,0.25);border:1px solid rgba(139,92,246,0.4);border-radius:8px;font-size:11px;font-weight:600;color:#c7d2fe">
+                <div style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:rgba(255,255,255,0.1);border:0;border-radius:99px;font-size:11px;font-weight:500;color:var(--b-on-hero)">
                   ${investorProfile.emoji} ${investorProfile.name}
                 </div>` : ''}
               ${myRank ? `
-                <div style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:rgba(14,165,233,0.2);border:1px solid rgba(14,165,233,0.4);border-radius:8px;font-size:11px;font-weight:600;color:#7dd3fc">
+                <div style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:rgba(110,240,190,0.16);border:0;border-radius:99px;font-size:11px;font-weight:500;color:var(--b-mint)">
                   📊 #${myRank.position} מתוך ${myRank.total}
                 </div>` : ''}
             </div>
@@ -21219,7 +20949,7 @@ async function renderProfile() {
       <div onclick="goToPortfolio()" style="background:linear-gradient(135deg,var(--bg-elevated) 0%,var(--bg-elevated) 70%, ${pfReturn >= 0 ? 'rgba(16,185,129,0.06)' : 'rgba(239,68,68,0.06)'} 100%);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;transition:all 0.2s"
            onmouseover="this.style.borderColor='${pfReturn >= 0 ? '#10b981' : '#ef4444'}';this.style.transform='translateY(-1px)'"
            onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-        <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(245,158,11,0.3)">
+        <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(160deg,var(--b-hero-1),var(--accent));display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(15,59,51,0.25)">
           <i data-lucide="briefcase" style="width:22px;height:22px;color:white"></i>
         </div>
         <div style="flex:1;min-width:0">
@@ -21238,31 +20968,31 @@ async function renderProfile() {
 
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">
         <div onclick="scrollToProfileSection('posts-section')" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden"
-             onmouseover="this.style.borderColor='#0ea5e9';this.style.transform='translateY(-2px)'"
+             onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-2px)'"
              onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-          <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,rgba(14,165,233,0.18),rgba(14,165,233,0.06));display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
-            <i data-lucide="message-square" style="width:16px;height:16px;color:#0ea5e9"></i>
+          <div style="width:32px;height:32px;border-radius:10px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
+            <i data-lucide="message-square" style="width:16px;height:16px;color:var(--accent)"></i>
           </div>
           <div style="font-size:18px;font-weight:800;color:var(--text-primary);font-family:var(--font-mono, monospace);line-height:1">${postCount}</div>
           <div style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;margin-top:4px">פוסטים</div>
         </div>
         <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center">
-          <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,rgba(239,68,68,0.18),rgba(239,68,68,0.06));display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
-            <i data-lucide="heart" style="width:16px;height:16px;color:#ef4444"></i>
+          <div style="width:32px;height:32px;border-radius:10px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
+            <i data-lucide="heart" style="width:16px;height:16px;color:var(--accent)"></i>
           </div>
           <div style="font-size:18px;font-weight:800;color:var(--text-primary);font-family:var(--font-mono, monospace);line-height:1">${totalLikes}</div>
           <div style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;margin-top:4px">לייקים</div>
         </div>
         <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center">
-          <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,rgba(139,92,246,0.18),rgba(139,92,246,0.06));display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
-            <i data-lucide="users" style="width:16px;height:16px;color:#8b5cf6"></i>
+          <div style="width:32px;height:32px;border-radius:10px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
+            <i data-lucide="users" style="width:16px;height:16px;color:var(--accent)"></i>
           </div>
           <div style="font-size:18px;font-weight:800;color:var(--text-primary);font-family:var(--font-mono, monospace);line-height:1">${followerCount}</div>
           <div style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;margin-top:4px">עוקבים</div>
         </div>
         <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center">
-          <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,rgba(245,158,11,0.18),rgba(245,158,11,0.06));display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
-            <i data-lucide="user-check" style="width:16px;height:16px;color:#f59e0b"></i>
+          <div style="width:32px;height:32px;border-radius:10px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
+            <i data-lucide="user-check" style="width:16px;height:16px;color:var(--accent)"></i>
           </div>
           <div style="font-size:18px;font-weight:800;color:var(--text-primary);font-family:var(--font-mono, monospace);line-height:1">${followingCount}</div>
           <div style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;margin-top:4px">עוקב</div>
@@ -21279,60 +21009,60 @@ async function renderProfile() {
 
           <!-- Simulator -->
           <button onclick="goToSimulator()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s"
-                  onmouseover="this.style.borderColor='#06b6d4';this.style.transform='translateY(-1px)'"
+                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
                   onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-            <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,rgba(6,182,212,0.2),rgba(6,182,212,0.06));display:flex;align-items:center;justify-content:center">
-              <i data-lucide="zap" style="width:18px;height:18px;color:#06b6d4"></i>
+            <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
+              <i data-lucide="zap" style="width:18px;height:18px;color:var(--accent)"></i>
             </div>
             <div style="font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.2">סימולטור</div>
           </button>
 
           <!-- Calculator -->
           <button onclick="goToCalculator()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s"
-                  onmouseover="this.style.borderColor='#10b981';this.style.transform='translateY(-1px)'"
+                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
                   onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-            <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(16,185,129,0.06));display:flex;align-items:center;justify-content:center">
-              <i data-lucide="calculator" style="width:18px;height:18px;color:#10b981"></i>
+            <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
+              <i data-lucide="calculator" style="width:18px;height:18px;color:var(--accent)"></i>
             </div>
             <div style="font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.2">מחשבון</div>
           </button>
 
           <!-- Budget -->
           <button onclick="goToBudget()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s"
-                  onmouseover="this.style.borderColor='#14b8a6';this.style.transform='translateY(-1px)'"
+                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
                   onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-            <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,rgba(20,184,166,0.2),rgba(20,184,166,0.06));display:flex;align-items:center;justify-content:center">
-              <i data-lucide="wallet" style="width:18px;height:18px;color:#14b8a6"></i>
+            <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
+              <i data-lucide="wallet" style="width:18px;height:18px;color:var(--accent)"></i>
             </div>
             <div style="font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.2">תקציב</div>
           </button>
 
           <!-- Lessons (קורס) -->
           <button onclick="setSort('lessons');goToFunctions();" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s"
-                  onmouseover="this.style.borderColor='#8b5cf6';this.style.transform='translateY(-1px)'"
+                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
                   onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-            <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(139,92,246,0.06));display:flex;align-items:center;justify-content:center">
-              <i data-lucide="book-open" style="width:18px;height:18px;color:#8b5cf6"></i>
+            <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
+              <i data-lucide="book-open" style="width:18px;height:18px;color:var(--accent)"></i>
             </div>
             <div style="font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.2">הקורס</div>
           </button>
 
           <!-- Challenges -->
           <button onclick="setSort('challenges');goToFunctions();" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s"
-                  onmouseover="this.style.borderColor='#fbbf24';this.style.transform='translateY(-1px)'"
+                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
                   onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-            <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,rgba(251,191,36,0.2),rgba(251,191,36,0.06));display:flex;align-items:center;justify-content:center">
-              <i data-lucide="trophy" style="width:18px;height:18px;color:#fbbf24"></i>
+            <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
+              <i data-lucide="trophy" style="width:18px;height:18px;color:var(--accent)"></i>
             </div>
             <div style="font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.2">אתגרים</div>
           </button>
 
           <!-- Competition -->
           <button onclick="goToCompetition()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s"
-                  onmouseover="this.style.borderColor='#ef4444';this.style.transform='translateY(-1px)'"
+                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
                   onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-            <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,rgba(239,68,68,0.2),rgba(239,68,68,0.06));display:flex;align-items:center;justify-content:center">
-              <i data-lucide="medal" style="width:18px;height:18px;color:#ef4444"></i>
+            <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
+              <i data-lucide="medal" style="width:18px;height:18px;color:var(--accent)"></i>
             </div>
             <div style="font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.2">תחרות</div>
           </button>
@@ -21344,11 +21074,11 @@ async function renderProfile() {
       <div id="posts-section" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px">
         <div style="padding:12px 14px;font-size:11px;font-weight:800;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,rgba(14,165,233,0.04),transparent)">
           <div style="display:flex;align-items:center;gap:8px">
-            <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#0ea5e9,#6366f1);font-size:13px">📝</span>
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:8px;background:var(--accent-soft);color:var(--accent);font-size:13px"><i data-lucide="pen-line" style="width:14px;height:14px"></i></span>
             <span>הפוסטים שלי</span>
             <span style="background:var(--bg-base);padding:2px 8px;border-radius:10px;font-size:10px;color:var(--text-tertiary);font-weight:700">${postCount}</span>
           </div>
-          <button onclick="goToCommunity()" style="background:none;border:none;color:#0ea5e9;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px;transition:background 0.15s"
+          <button onclick="goToCommunity()" style="background:none;border:none;color:var(--accent);font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px;transition:background 0.15s"
                   onmouseover="this.style.background='rgba(14,165,233,0.08)'"
                   onmouseout="this.style.background='transparent'">לקהילה ›</button>
         </div>
@@ -21407,10 +21137,10 @@ function renderSettings() {
   
   // Load saved profile data
   const profileData = JSON.parse(localStorage.getItem('user_profile_' + currentUser) || '{}');
-  const displayName = profileData.displayName || userName;
-  const bio = profileData.bio || '';
-  const avatar = profileData.avatar || '';
-  const profilePic = profileData.profilePic || '';
+  const displayName = escapeHtml(profileData.displayName || userName);
+  const bio = escapeHtml(profileData.bio || '');
+  const avatar = escapeHtml(profileData.avatar || '');
+  const profilePic = escapeHtml(profileData.profilePic || '');
   
   const avatarEmojis = ['👤','👨‍💼','👩‍💼','👨‍💻','👩‍💻','🧑‍🎓','👨‍🎓','👩‍🎓','🦸‍♂️','🦸‍♀️','🧙‍♂️','🐂','🐻','📊','💹','🏆'];
   
@@ -22897,14 +22627,14 @@ function renderTransactions() {
   
   let summaryHtml = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-      <div style="background:rgba(16,185,129,0.08);padding:12px;border-radius:4px;text-align:center">
+      <div class="tx-sum-tile buy">
         <div style="font-size:10px;color:var(--text-tertiary);font-weight:600;text-transform:uppercase;letter-spacing:0.03em">סך קניות</div>
-        <div style="font-size:18px;font-weight:800;color:var(--success);margin-top:4px">${buys.length}</div>
+        <div style="font-size:18px;font-weight:700;color:var(--text-primary);margin-top:4px">${buys.length}</div>
         <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">₪${totalBought.toLocaleString('he-IL', {maximumFractionDigits: 0})}</div>
       </div>
-      <div style="background:rgba(245,158,11,0.08);padding:12px;border-radius:4px;text-align:center">
+      <div class="tx-sum-tile sell">
         <div style="font-size:10px;color:var(--text-tertiary);font-weight:600;text-transform:uppercase;letter-spacing:0.03em">סך מכירות</div>
-        <div style="font-size:18px;font-weight:800;color:#f59e0b;margin-top:4px">${sells.length}</div>
+        <div style="font-size:18px;font-weight:700;color:var(--text-primary);margin-top:4px">${sells.length}</div>
         <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">₪${totalSold.toLocaleString('he-IL', {maximumFractionDigits: 0})}</div>
       </div>
     </div>
@@ -22920,14 +22650,14 @@ function renderTransactions() {
   summaryHtml += `
     <div style="display:flex;gap:6px;margin-bottom:12px">
       <button class="sort-btn active" onclick="filterTransactions('all', this)" style="font-size:11px;padding:6px 12px">הכל (${transactions.length})</button>
-      <button class="sort-btn" onclick="filterTransactions('buy', this)" style="font-size:11px;padding:6px 12px">🟢 קניות (${buys.length})</button>
-      <button class="sort-btn" onclick="filterTransactions('sell', this)" style="font-size:11px;padding:6px 12px">🟠 מכירות (${sells.length})</button>
+      <button class="sort-btn" onclick="filterTransactions('buy', this)" style="font-size:11px;padding:6px 12px">קניות (${buys.length})</button>
+      <button class="sort-btn" onclick="filterTransactions('sell', this)" style="font-size:11px;padding:6px 12px">מכירות (${sells.length})</button>
     </div>
   `;
   
   const itemsHtml = sorted.map(tx => {
     const isBuy = tx.type === 'buy';
-    const icon = isBuy ? '🟢' : '🟠';
+    const txIcon = isBuy ? icon('arrow-down-left', 18) : icon('arrow-up-right', 18);
     const typeText = isBuy ? 'קנייה' : 'מכירה';
     const date = new Date(tx.date);
     const dateStr = date.toLocaleDateString('he-IL', { day: 'numeric', month: 'short' });
@@ -22947,7 +22677,7 @@ function renderTransactions() {
     
     return `
       <div class="tx-item" data-tx-type="${tx.type}">
-        <div class="tx-icon ${tx.type}">${icon}</div>
+        <div class="tx-icon ${tx.type}">${txIcon}</div>
         <div class="tx-info">
           <div class="tx-name">${tx.stockName || tx.stockId}</div>
           <div class="tx-details">${typeText} · ${tx.quantity} מניות · ₪${tx.price.toFixed(2)} · ${dateStr} ${timeStr}</div>
@@ -22955,13 +22685,14 @@ function renderTransactions() {
         <div class="tx-amount">
           <div class="tx-total ${tx.type}">${isBuy ? '-' : '+'}₪${tx.total.toLocaleString('he-IL', {maximumFractionDigits: 0})}</div>
           ${profitHtml}
-          ${!isBuy ? `<button onclick="event.stopPropagation();shareTradeFromTx('${tx.id}')" style="margin-top:6px;padding:5px 10px;border:none;border-radius:6px;background:linear-gradient(135deg, #0ea5e9, #6366f1);color:white;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px">📢 שתף</button>` : ''}
+          ${!isBuy ? `<button onclick="event.stopPropagation();shareTradeFromTx('${tx.id}')" class="tx-share-btn">${icon('share-2', 12)} שתף</button>` : ''}
         </div>
       </div>
     `;
   }).join('');
   
   body.innerHTML = summaryHtml + itemsHtml;
+  if (window.lucide && lucide.createIcons) lucide.createIcons();
 }
 
 // פילטר עסקאות
@@ -25670,7 +25401,7 @@ function renderPostV2(post) {
       ${reactionsHTML}
       <div class="feed-post-v2-actions">
         <button class="feed-action-v2 ${isLiked ? 'liked' : ''}" onclick="event.stopPropagation();togglePostLikeV2('${escapeAttr(post.id)}')">
-          <span class="feed-action-v2-icon">${isLiked ? '❤️' : '🤍'}</span>
+          <span class="feed-action-v2-icon">${isLiked ? '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>'}</span>
           <span class="feed-action-v2-count">${likeCount > 0 ? likeCount : ''}</span>
         </button>
         <button class="feed-action-v2" onclick="event.stopPropagation();toggleCommentsThread('${escapeAttr(post.id)}')">
@@ -26378,7 +26109,7 @@ function renderCommentNode(comment, postId, replies, depth) {
           <div class="comment-text">${contentHTML}</div>
         </div>
         <div class="comment-actions">
-          <button class="comment-action ${isLiked ? 'liked' : ''}" onclick="toggleCommentLike('${escapeAttr(postId)}','${escapeAttr(comment.id)}')">${isLiked ? '❤️' : '🤍'} ${likeCount > 0 ? likeCount : ''}</button>
+          <button class="comment-action ${isLiked ? 'liked' : ''}" onclick="toggleCommentLike('${escapeAttr(postId)}','${escapeAttr(comment.id)}')">${isLiked ? '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>'} ${likeCount > 0 ? likeCount : ''}</button>
           ${depth === 0 ? `<button class="comment-action" onclick="startReply('${escapeAttr(postId)}','${escapeAttr(comment.id)}','${escapeAttr(comment.userName || '')}')">השב</button>` : ''}
           ${isMine ? `<button class="comment-action" onclick="deleteComment('${escapeAttr(postId)}','${escapeAttr(comment.id)}')" style="color:var(--text-tertiary)">מחק</button>` : ''}
           <span class="comment-action-time">${formatPostTime(comment.createdAt)}</span>
@@ -27183,97 +26914,6 @@ async function shareTradeFromTx(txId) {
     }, 100);
   } else {
     if (typeof showToast === 'function') showToast('פתח את טאב הקהילה תחילה', 'info');
-  }
-}
-
-// ===== LOAD AND RENDER MY POSTS IN PROFILE =====
-async function loadMyPostsForProfile() {
-  const target = document.getElementById('profile-my-posts-list');
-  if (!target || !currentUser || !db) return;
-
-  target.innerHTML = `<div style="padding:24px;text-align:center;color:var(--text-tertiary);font-size:11px">טוען פוסטים...</div>`;
-
-  try {
-    const snapshot = await db.collection('stock_posts')
-      .where('userId', '==', currentUser)
-      .get();
-
-    const posts = [];
-    snapshot.forEach(doc => {
-      const d = doc.data();
-      if (!d.hidden) posts.push({ id: doc.id, ...d });
-    });
-    posts.sort((a, b) => {
-      const ta = a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0;
-      const tb = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
-      return tb - ta;
-    });
-
-    if (posts.length === 0) {
-      target.innerHTML = `
-        <div style="padding:32px 20px;text-align:center">
-          <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(99,102,241,0.08));display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px">💬</div>
-          <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px">עדיין לא פרסמת פוסטים</div>
-          <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:16px;line-height:1.5">שתף את הדעות שלך על מניות,<br>הצלחות וטעויות עם הקהילה</div>
-          <button onclick="if(typeof openCompose==='function')openCompose();else goToCommunity();" style="padding:10px 20px;border:none;border-radius:8px;background:linear-gradient(135deg,#0ea5e9,#6366f1);color:white;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(14,165,233,0.3)">
-            פרסם פוסט ראשון ›
-          </button>
-        </div>
-      `;
-      return;
-    }
-
-    const limit = 5;
-    const shown = posts.slice(0, limit);
-    const items = shown.map(p => {
-      const date = p.createdAt && p.createdAt.toDate ? p.createdAt.toDate() : new Date();
-      const dateStr = date.toLocaleDateString('he-IL', { day: 'numeric', month: 'short' });
-      const timeStr = date.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
-      const content = p.content || '';
-      const preview = content.length > 140 ? content.slice(0, 140) + '…' : content;
-
-      // Sentiment badge
-      let sentBadge = '';
-      if (p.sentiment === 'bullish') sentBadge = '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;background:rgba(16,185,129,0.12);color:#10b981;border-radius:8px;font-size:10px;font-weight:700">📈 שורי</span>';
-      else if (p.sentiment === 'bearish') sentBadge = '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;background:rgba(239,68,68,0.12);color:#ef4444;border-radius:8px;font-size:10px;font-weight:700">📉 דובי</span>';
-      else if (p.sentiment === 'question') sentBadge = '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;background:rgba(245,158,11,0.12);color:#f59e0b;border-radius:8px;font-size:10px;font-weight:700">❓ שאלה</span>';
-      else if (p.sentiment === 'news') sentBadge = '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;background:rgba(99,102,241,0.12);color:#6366f1;border-radius:8px;font-size:10px;font-weight:700">📰 חדשות</span>';
-
-      const stockTag = p.stockName ? `<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;background:rgba(14,165,233,0.1);color:#0ea5e9;border-radius:8px;font-size:10px;font-weight:700;font-family:var(--font-mono, monospace)">$${escapeHtml(p.stockName)}</span>` : '';
-
-      return `
-        <div style="padding:12px 14px;border-bottom:1px solid var(--border);transition:background 0.15s"
-             onmouseover="this.style.background='var(--bg-base)'"
-             onmouseout="this.style.background='transparent'">
-          <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;align-items:center">
-            ${sentBadge}
-            ${stockTag}
-            <span style="margin-${(document.body.dir === 'rtl' || document.documentElement.dir === 'rtl') ? 'right' : 'left'}:auto;font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono, monospace)">${dateStr} · ${timeStr}</span>
-          </div>
-          <div style="font-size:13px;color:var(--text-primary);line-height:1.45;white-space:pre-wrap;word-wrap:break-word;margin-bottom:8px">${escapeHtml(preview)}</div>
-          <div style="display:flex;gap:14px;font-size:11px;color:var(--text-tertiary)">
-            <span style="display:inline-flex;align-items:center;gap:4px">❤️ ${p.likeCount || 0}</span>
-            <span style="display:inline-flex;align-items:center;gap:4px">💬 ${p.commentCount || 0}</span>
-            <button onclick="deleteMyPost('${p.id}')" style="margin-${(document.body.dir === 'rtl' || document.documentElement.dir === 'rtl') ? 'right' : 'left'}:auto;background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:11px;padding:0;font-family:inherit;display:inline-flex;align-items:center;gap:3px;transition:color 0.15s"
-                    onmouseover="this.style.color='#ef4444'"
-                    onmouseout="this.style.color='var(--text-tertiary)'">🗑 מחק</button>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    const moreFooter = posts.length > limit ? `
-      <div style="padding:10px 14px;text-align:center;border-top:1px dashed var(--border)">
-        <button onclick="goToCommunity()" style="background:none;border:none;color:#0ea5e9;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">
-          הצג עוד ${posts.length - limit} פוסטים בקהילה ›
-        </button>
-      </div>
-    ` : '';
-
-    target.innerHTML = items + moreFooter;
-  } catch (err) {
-    console.error('loadMyPostsForProfile error:', err);
-    target.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-tertiary);font-size:11px">לא ניתן לטעון פוסטים כרגע</div>`;
   }
 }
 
@@ -29031,6 +28671,482 @@ console.log('[dashboard-holdings] summary card loaded');
   console.log('[premium-polish] motion hooks active');
 })();
 </script>
+
+<style id="design-b-layer">
+/* ============================================================
+   DESIGN B — "Fintech" layer
+   Deep-green hero, soft white cards, mint accent, Rubik type.
+   Loaded last so it wins over older styles. Logic is untouched.
+   ============================================================ */
+:root {
+  --bg-base: #f3f5f4;
+  --bg-elevated: #ffffff;
+  --bg-glass: rgba(255, 255, 255, 0.78);
+  --text-primary: #10201b;
+  --text-secondary: #4d5f58;
+  --text-tertiary: #7f8f89;
+  --accent: #0f7a5c;
+  --accent-soft: rgba(15, 122, 92, 0.08);
+  --accent-glow: rgba(15, 122, 92, 0.18);
+  --success: #0f9d6b;
+  --danger: #e0474c;
+  --border: rgba(16, 32, 27, 0.07);
+  --border-strong: rgba(16, 32, 27, 0.13);
+  --font-sans: 'Rubik', 'Heebo', -apple-system, system-ui, sans-serif;
+  --font-mono: 'Rubik', 'Heebo', -apple-system, system-ui, sans-serif;
+  --shadow-sm: 0 1px 2px rgba(16, 32, 27, 0.06);
+  --shadow-md: 0 6px 18px rgba(16, 32, 27, 0.07);
+  --shadow-lg: 0 16px 40px rgba(16, 32, 27, 0.12);
+
+  --b-hero-1: #0f3b33;
+  --b-hero-2: #0a2621;
+  --b-mint: #6ef0be;
+  --b-on-hero: #eafff7;
+  --b-card-radius: 18px;
+  --b-ctl-radius: 12px;
+  --b-act-ic-bg: #e3f6ef;
+}
+:root[data-theme="dark"] {
+  --bg-base: #0b1311;
+  --bg-elevated: #14201c;
+  --bg-glass: rgba(20, 32, 28, 0.78);
+  --text-primary: #e6f2ee;
+  --text-secondary: #a7b8b1;
+  --text-tertiary: #71847c;
+  --accent: #3fd1a1;
+  --accent-soft: rgba(63, 209, 161, 0.12);
+  --accent-glow: rgba(63, 209, 161, 0.24);
+  --success: #3fd1a1;
+  --danger: #ff6b70;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.13);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+  --b-hero-1: #12403a;
+  --b-hero-2: #0a221d;
+  --b-act-ic-bg: rgba(63, 209, 161, 0.12);
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  background: var(--bg-base);
+  color: var(--text-primary);
+}
+
+/* ---------- Header ---------- */
+.header, [data-theme="dark"] .header {
+  background: var(--b-hero-1);
+  box-shadow: none;
+}
+.header-brand { font-weight: 600; letter-spacing: 0; }
+.notif-bell-btn { border-radius: 50% !important; }
+
+/* ---------- Hero card ---------- */
+.b-hero {
+  background: linear-gradient(160deg, var(--b-hero-1) 0%, var(--b-hero-2) 100%);
+  color: var(--b-on-hero);
+  border-radius: 24px;
+  padding: 18px 18px 16px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: var(--shadow-md);
+}
+.b-hero-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.b-hero-avatar { font-size: 24px; width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.08); display: grid; place-items: center; overflow: hidden; flex-shrink: 0; }
+.b-hero-greet { display: flex; flex-direction: column; line-height: 1.3; min-width: 0; }
+.b-hero-greet > span { font-size: 14px; font-weight: 500; }
+.b-hero-greet small { font-size: 11px; opacity: 0.6; }
+.b-hero-label { font-size: 12px; opacity: 0.65; }
+.b-hero-value { font-size: 36px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; direction: ltr; text-align: right; }
+.b-hero-pill {
+  align-self: flex-start;
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: rgba(110, 240, 190, 0.16);
+  color: var(--b-mint);
+}
+.b-hero-pill.dn { background: rgba(255, 120, 124, 0.16); color: #ff9a9d; }
+.b-hero-chart { position: relative; margin: 12px -4px 4px; }
+.b-hero-chart svg { display: block; width: 100%; height: 84px; overflow: visible; }
+.b-chart-line { fill: none; stroke: var(--b-mint); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.b-chart-line.dn { stroke: #ff9a9d; }
+.b-chart-line.flat { stroke: rgba(234, 255, 247, 0.25); stroke-dasharray: 4 5; }
+.b-chart-stop1 { stop-color: var(--b-mint); stop-opacity: 0.22; }
+.b-chart-stop1.dn { stop-color: #ff9a9d; }
+.b-chart-stop2 { stop-color: var(--b-mint); stop-opacity: 0; }
+.b-chart-dot { fill: var(--b-mint); }
+.b-chart-dot.dn { fill: #ff9a9d; }
+.b-hero-chart-note { position: absolute; inset: 0; display: grid; place-items: center; font-size: 11px; opacity: 0.6; pointer-events: none; }
+.b-hero-chart-note:empty { display: none; }
+.b-hero-ranges { display: flex; gap: 4px; margin-top: 4px; }
+.b-hero-ranges button {
+  font: inherit; font-size: 11px; color: var(--b-on-hero); opacity: 0.7;
+  background: none; border: 0; padding: 4px 11px; border-radius: 99px; cursor: pointer;
+}
+.b-hero-ranges button.on { background: var(--b-mint); color: var(--b-hero-2); opacity: 1; font-weight: 600; }
+.b-hero-ranges button:focus-visible { outline: 2px solid var(--b-mint); outline-offset: 2px; }
+.b-hero-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  margin-top: 12px; padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.b-hero-stats div { display: flex; flex-direction: column; gap: 2px; text-align: center; }
+.b-hero-stats div + div { border-inline-start: 1px solid rgba(255, 255, 255, 0.08); }
+.b-hero-stats span { font-size: 11px; opacity: 0.6; }
+.b-hero-stats b { font-size: 15px; font-weight: 600; }
+
+/* ---------- Quick actions ---------- */
+.b-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+.b-act {
+  background: var(--bg-elevated); border: 0; border-radius: 16px;
+  padding: 12px 4px 10px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+  font: inherit; font-size: 11px; font-weight: 500; color: var(--text-primary);
+  box-shadow: var(--shadow-sm); cursor: pointer;
+}
+.b-act-ic { width: 36px; height: 36px; border-radius: 12px; background: var(--b-act-ic-bg); color: var(--accent); display: grid; place-items: center; font-style: normal; }
+.b-act:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- Cards everywhere (inline-styled blocks + .card) ---------- */
+.main [style*="background:var(--bg-elevated)"][style*="border:1px solid var(--border)"][style*="border-radius:4px"],
+.main [style*="background:var(--bg-elevated)"][style*="border:1px solid var(--border)"][style*="border-radius:6px"],
+.main [style*="background:var(--bg-elevated)"][style*="border:1px solid var(--border)"][style*="border-radius:8px"],
+.card {
+  border-radius: var(--b-card-radius) !important;
+  border-color: transparent !important;
+  box-shadow: var(--shadow-sm);
+}
+[data-theme="dark"] .main [style*="background:var(--bg-elevated)"][style*="border:1px solid var(--border)"],
+[data-theme="dark"] .card { border-color: var(--border) !important; }
+.main button[style*="border-radius:4px"],
+.main input[style*="border-radius:4px"],
+.main select[style*="border-radius:4px"] { border-radius: var(--b-ctl-radius) !important; }
+#market-ticker { border-radius: var(--b-card-radius) !important; border-color: transparent !important; box-shadow: var(--shadow-sm); }
+#daily-tip { border-left-width: 1px !important; border-left-color: transparent !important; }
+.edu-banner { border-radius: 14px; }
+.modal, .simple-popup-box { border-radius: 22px !important; }
+.skeleton { border-radius: 12px; }
+
+/* ---------- Bottom nav ---------- */
+.bottom-nav {
+  background: var(--bg-glass);
+  -webkit-backdrop-filter: saturate(1.6) blur(18px);
+  backdrop-filter: saturate(1.6) blur(18px);
+  border-top: 1px solid var(--border);
+  box-shadow: none;
+}
+[data-theme="dark"] .bottom-nav { background: var(--bg-glass); border-top-color: var(--border); }
+.bottom-nav-item { font-weight: 500; }
+.bottom-nav-item.active { color: var(--accent); font-weight: 600; }
+.bottom-nav-item.active::after { display: none; }
+.bottom-nav-icon { padding: 0 14px; border-radius: 99px; transition: background 0.15s; }
+.bottom-nav-item.active .bottom-nav-icon { background: var(--accent-soft); }
+.bottom-nav-compose-fab {
+  background: linear-gradient(160deg, var(--b-hero-1) 0%, var(--accent) 100%);
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(15, 59, 51, 0.35);
+}
+.bottom-nav-compose:active .bottom-nav-compose-fab { box-shadow: 0 2px 8px rgba(15, 59, 51, 0.3); }
+
+/* ---------- Login ---------- */
+.login-screen { background: linear-gradient(170deg, var(--b-hero-1) 0%, #06140f 100%); }
+.login-screen::before { background: radial-gradient(ellipse, rgba(110, 240, 190, 0.10) 0%, transparent 60%); }
+.login-screen::after { background: radial-gradient(ellipse, rgba(63, 209, 161, 0.06) 0%, transparent 60%); }
+.login-box { border-radius: 24px; background: rgba(255, 255, 255, 0.04); border-color: rgba(255, 255, 255, 0.08); }
+.login-input { border-radius: 14px; }
+.login-input:focus { border-color: rgba(110, 240, 190, 0.5); box-shadow: 0 0 0 3px rgba(110, 240, 190, 0.12); }
+.login-btn { border-radius: 14px; background: var(--b-mint); color: #0a2621; }
+.login-btn:hover { box-shadow: 0 8px 24px rgba(110, 240, 190, 0.25); }
+.login-btn.secondary { background: transparent; color: rgba(255, 255, 255, 0.7); }
+
+@media (prefers-reduced-motion: reduce) {
+  .b-act, .b-hero-ranges button { transition: none; }
+}
+
+/* ============================================================
+   DESIGN B — step 2: market, all-stocks and stock page
+   ============================================================ */
+/* Page banner (top of inner pages) and arena banners: green hero */
+.page-banner,
+.page-banner.green, .page-banner.orange, .page-banner.purple, .page-banner.blue,
+[data-theme="dark"] .page-banner,
+[data-theme="dark"] .page-banner.green, [data-theme="dark"] .page-banner.orange,
+[data-theme="dark"] .page-banner.purple, [data-theme="dark"] .page-banner.blue,
+.comp-arena-banner,
+.main [style*="background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%)"] {
+  background: linear-gradient(160deg, var(--b-hero-1) 0%, var(--b-hero-2) 100%) !important;
+  border-radius: 20px !important;
+  border: 0 !important;
+}
+.page-banner-icon { color: var(--b-mint); }
+.page-title { color: var(--b-on-hero); font-weight: 600; font-size: 16px; }
+.page-subtitle { color: rgba(234, 255, 247, 0.6); }
+.page-back-btn { border-radius: 50%; width: 36px; height: 36px; padding: 0; display: grid; place-items: center; background: rgba(255, 255, 255, 0.1); border-color: transparent; color: var(--b-on-hero); }
+.main [style*="background:#f59e0b;color:#0f172a"] { background: var(--b-mint) !important; color: var(--b-hero-2) !important; border-radius: 99px !important; }
+
+/* Filter + sector chips: pills */
+.sort-btn { border-radius: 99px; font-weight: 500; }
+.sort-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+[data-theme="dark"] .sort-btn { background: var(--bg-elevated); border-color: var(--border); color: var(--text-secondary); }
+[data-theme="dark"] .sort-btn.active { background: var(--accent); border-color: var(--accent); color: #0a2621; }
+.main .sort-btn[style*="139,92,246"], .main .sort-btn[style*="139, 92, 246"] { background: var(--accent-soft) !important; color: var(--accent) !important; border-color: transparent !important; }
+.sector-tag { border-radius: 99px; border-color: var(--border); }
+.sector-tag.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+[data-theme="dark"] .sector-tag.active { color: #0a2621; }
+
+/* Screener and stock cards */
+.screener-panel { border-radius: var(--b-card-radius); border-color: transparent; box-shadow: var(--shadow-sm); }
+[data-theme="dark"] .screener-panel { border-color: var(--border); }
+.screener-input, .screener-select { border-radius: var(--b-ctl-radius); }
+.screener-btn { border-radius: 99px; }
+.card-change { border-radius: 99px; }
+.card-change.up { color: var(--success); background: rgba(15, 157, 107, 0.1); }
+.card-change.down { color: var(--danger); background: rgba(224, 71, 76, 0.1); }
+
+/* Stock page hero */
+.sp-hero {
+  background: linear-gradient(160deg, var(--b-hero-1) 0%, var(--b-hero-2) 100%);
+  border-radius: 24px;
+  border-bottom: 0;
+  padding: 22px 18px;
+  box-shadow: var(--shadow-md);
+}
+.sp-hero-badge { background: rgba(255, 255, 255, 0.1); color: var(--b-on-hero); border-radius: 99px; padding: 3px 10px; letter-spacing: 0.04em; }
+.sp-hero-price { color: var(--b-on-hero); font-weight: 600; font-size: 38px; }
+.sp-hero.up .sp-hero-change { color: var(--b-mint) !important; }
+.sp-hero.down .sp-hero-change { color: #ff9a9d !important; }
+
+/* Action buttons under the hero */
+.sp-actions { gap: 8px; }
+.sp-action { border-radius: 14px; border-color: transparent; box-shadow: var(--shadow-sm); font-weight: 500; padding: 10px 8px; color: var(--text-secondary); }
+.sp-action.active { border-color: transparent; background: var(--accent-soft); color: var(--accent); }
+[data-theme="dark"] .sp-action { border-color: var(--border); }
+
+/* Sections, stats, range tabs */
+.sp-section { border-radius: var(--b-card-radius); border-color: transparent; box-shadow: var(--shadow-sm); padding: 16px; margin-bottom: 10px; }
+[data-theme="dark"] .sp-section { border-color: var(--border); }
+.sp-section-title { text-transform: none; letter-spacing: 0; font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.sp-stats { border-radius: 14px; }
+.sp-stat-label { text-transform: none; letter-spacing: 0; font-size: 11px; font-weight: 500; }
+.sp-chart-tabs { border: 0; gap: 4px; background: var(--bg-base); border-radius: 99px; padding: 3px; }
+.sp-tab { border: 0 !important; border-radius: 99px; background: transparent; font-weight: 500; }
+.sp-tab.active { background: var(--b-hero-1); color: var(--b-on-hero); font-weight: 600; }
+[data-theme="dark"] .sp-tab.active { background: var(--accent); color: #0a2621; }
+.sp-tab:hover:not(.active) { background: transparent; color: var(--text-primary); }
+.sp-section [style*="background:var(--bg-base)"][style*="border-radius:4px"] { border-radius: 12px !important; }
+
+/* "Hold this stock for real?" card */
+.main [style*="rgba(16,185,129,0.08),rgba(6,182,212"] {
+  background: var(--bg-elevated) !important;
+  border: 0 !important; border-radius: var(--b-card-radius) !important; box-shadow: var(--shadow-sm);
+}
+.main button[style*="linear-gradient(135deg,#10b981,#06b6d4)"] {
+  background: var(--b-hero-1) !important; border-radius: 99px !important; box-shadow: none !important;
+}
+[data-theme="dark"] .main button[style*="linear-gradient(135deg,#10b981,#06b6d4)"] { background: var(--accent) !important; color: #0a2621 !important; }
+
+/* AI explanation card */
+.sp-ai-section { border-radius: var(--b-card-radius); border: 0; border-inline-start: 0; box-shadow: var(--shadow-sm); }
+[data-theme="dark"] .sp-ai-section { border: 1px solid var(--border); }
+.sp-ai-badge { background: var(--accent-soft); color: var(--accent); border-radius: 99px; }
+.sp-ai-button { background: linear-gradient(160deg, var(--b-hero-1) 0%, var(--accent) 100%); border-radius: 14px; box-shadow: none; }
+.sp-ai-response { border-radius: 14px; }
+
+/* Hide the search/filter card when all of its rows are hidden */
+#stocks-filter-card:not(:has(> div:not([style*="display:none"]):not([style*="display: none"]))) { display: none; }
+
+/* Sticky tabs on the stock page */
+.sp-sticky-tab.active { color: var(--accent); }
+
+/* ============================================================
+   DESIGN B — step 3: portfolio and trade journal
+   ============================================================ */
+/* Summary card */
+.portfolio-summary { border-radius: 20px; border-color: transparent; box-shadow: var(--shadow-sm); padding: 18px; }
+[data-theme="dark"] .portfolio-summary { border-color: var(--border); }
+.portfolio-summary-title, .portfolio-stat-label { text-transform: none; letter-spacing: 0; font-weight: 500; font-size: 12px; }
+.portfolio-summary-total { font-size: 28px; font-weight: 600; }
+.portfolio-summary-total-pct { font-weight: 500; }
+.portfolio-stats { background: transparent; gap: 8px; border-radius: 0; }
+.portfolio-stat { background: var(--bg-base); border-radius: 14px; padding: 10px 12px; }
+.portfolio-stat-value { font-weight: 600; }
+.portfolio-summary [style*="letter-spacing"][style*="font-size:10px"] { text-transform: none !important; letter-spacing: 0 !important; font-size: 12px !important; font-weight: 500 !important; }
+
+/* Toolbar: soft tiles like the home quick actions */
+.portfolio-toolbar { gap: 8px; }
+.portfolio-toolbar-btn { border: 0; border-radius: 14px; background: var(--bg-base); color: var(--text-primary); font-weight: 500; }
+.portfolio-toolbar-btn svg { color: var(--accent); }
+.portfolio-toolbar-btn:hover { background: var(--accent-soft); }
+.portfolio-toolbar-btn.danger svg { color: var(--danger); }
+.portfolio-toolbar-btn.danger:hover { background: rgba(224, 71, 76, 0.08); }
+
+/* Holdings list: one rounded card with soft dividers */
+.portfolio-compact { border: 0; border-radius: 20px; box-shadow: var(--shadow-sm); }
+[data-theme="dark"] .portfolio-compact { border: 1px solid var(--border); }
+.portfolio-item { border-bottom: 1px solid var(--border); }
+.portfolio-item-header { padding: 14px 18px; }
+.portfolio-item-name { font-weight: 600; }
+.portfolio-item-quantity-label { text-transform: none; font-weight: 500; }
+.portfolio-item-profit { font-weight: 600; }
+.portfolio-item-details { border-top-color: var(--border); }
+.portfolio-action-btn { border-radius: 99px; }
+.portfolio-sell-btn { background: var(--b-hero-1); }
+.portfolio-sell-btn:hover { background: var(--accent); }
+
+/* Trade journal */
+.tx-overlay { background: rgba(6, 20, 15, 0.55); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+.tx-box { border-radius: 24px; box-shadow: var(--shadow-lg); }
+.tx-header { border-bottom-color: var(--border); }
+.tx-title { font-weight: 600; }
+.tx-close { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-base); font-size: 18px; display: grid; place-items: center; }
+.tx-sum-tile { padding: 12px; border-radius: 16px; text-align: center; background: var(--bg-base); }
+.tx-sum-tile.buy { background: var(--accent-soft); }
+#tx-body > div[style*="border-radius:12px"] { border-radius: 18px !important; }
+.tx-item { border: 0; border-radius: 16px; background: var(--bg-base); padding: 12px 14px; }
+.tx-icon { width: 38px; height: 38px; border-radius: 12px; }
+.tx-icon.buy { background: var(--accent-soft); color: var(--accent); }
+.tx-icon.sell { background: rgba(233, 180, 76, 0.16); color: #b7791f; }
+[data-theme="dark"] .tx-icon.sell { color: #e9b44c; }
+.tx-total { font-weight: 600; }
+.tx-total.buy { color: var(--text-primary); }
+.tx-share-btn {
+  margin-top: 6px; padding: 5px 11px; border: 0; border-radius: 99px;
+  background: var(--accent-soft); color: var(--accent);
+  font: inherit; font-size: 11px; font-weight: 600; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.tx-share-btn:hover { background: var(--accent); color: #fff; }
+[data-theme="dark"] .tx-box, [data-theme="dark"] .glossary-box, [data-theme="dark"] .simple-popup-box { background: var(--bg-elevated); }
+.portfolio-toolbar-btn { padding-block: 10px; }
+
+/* ============================================================
+   DESIGN B — step 4: community, feed and composer
+   ============================================================ */
+/* The empty .main above the community view kept its bottom padding */
+body:has(#community-view[style*="display: block"]) .main { display: none; }
+
+/* Tabs: segmented pill bar */
+.community-tabs {
+  background: var(--bg-glass);
+  -webkit-backdrop-filter: saturate(1.6) blur(18px);
+  backdrop-filter: saturate(1.6) blur(18px);
+  border-bottom: 0;
+  padding: 10px 12px;
+  padding-top: max(10px, env(safe-area-inset-top, 0px));
+  gap: 4px;
+}
+.community-tab { padding: 8px 6px; border-radius: 99px; font-weight: 500; }
+.community-tab.active { background: var(--b-hero-1); color: var(--b-on-hero); font-weight: 600; }
+.community-tab.active::after { display: none; }
+[data-theme="dark"] .community-tab.active { background: var(--accent); color: #0a2621; }
+#community-content { padding: 4px 12px 24px; }
+
+/* Posts: separate rounded cards */
+.feed-post-v2 {
+  border-bottom: 0;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+[data-theme="dark"] .feed-post-v2 { border: 1px solid var(--border); }
+.feed-post-v2:active { background: var(--bg-elevated); }
+.feed-post-v2-avatar { background: var(--accent-soft); border: 0; }
+.feed-post-v2-name { font-weight: 600; }
+.feed-post-v2-stock-tag { border-radius: 99px; border: 0; background: var(--accent-soft); color: var(--accent); }
+.feed-post-v2-sentiment { border-radius: 99px; }
+.feed-post-v2-trade {
+  background: var(--bg-base);
+  border: 0;
+  border-radius: 14px;
+}
+.feed-post-v2-trade-icon { background: var(--b-hero-1); border-radius: 10px; color: var(--b-mint); }
+[data-theme="dark"] .feed-post-v2-trade-icon { background: var(--accent); color: #0a2621; }
+.feed-action-v2 { border-radius: 99px; }
+.feed-action-v2.liked { color: var(--danger); }
+.feed-action-v2-icon svg { display: block; }
+.reaction-chip { border-radius: 99px; }
+.reaction-chip.mine { background: var(--accent-soft); border-color: transparent; }
+.feed-empty-v2-btn { border-radius: 99px; }
+.feed-skeleton { border-radius: 20px; margin-bottom: 10px; border-bottom: 0; }
+
+/* Composer sheet */
+.compose-overlay { background: rgba(6, 20, 15, 0.55); }
+.compose-modal { border-radius: 24px 24px 0 0; }
+.compose-publish { border-radius: 99px; background: var(--b-hero-1); }
+[data-theme="dark"] .compose-publish { background: var(--accent); color: #0a2621; }
+.compose-publish:disabled { background: var(--accent-soft); color: var(--text-tertiary); }
+.compose-textarea:focus { box-shadow: none; }
+
+/* ============================================================
+   DESIGN B — step 5: profile, settings and popups
+   ============================================================ */
+/* Leftover blue/purple and navy gradients set inline across the app */
+[style*="linear-gradient(135deg,#0ea5e9"], [style*="linear-gradient(135deg, #0ea5e9"],
+[style*="linear-gradient(135deg,#8b5cf6 0%,#6366f1"] {
+  background: linear-gradient(160deg, var(--b-hero-1) 0%, var(--accent) 100%) !important;
+  box-shadow: none !important;
+}
+[style*="linear-gradient(135deg,#0f172a"], [style*="linear-gradient(135deg, #0f172a"],
+[style*="linear-gradient(135deg,#1e293b"], [style*="linear-gradient(135deg, #1e293b"] {
+  background: linear-gradient(160deg, var(--b-hero-1) 0%, var(--b-hero-2) 100%) !important;
+}
+button[style*="linear-gradient(135deg,#0ea5e9"], button[style*="linear-gradient(135deg, #0ea5e9"] { border-radius: 99px !important; }
+[data-theme="dark"] button[style*="linear-gradient(135deg,#0ea5e9"] { background: var(--accent) !important; color: #0a2621 !important; }
+/* Soft blue-purple tinted promo cards (e.g. investor quiz) */
+.main [style*="linear-gradient(135deg,rgba(14,165,233,0.06),rgba(139,92,246"] {
+  background: var(--bg-elevated) !important;
+  border: 0 !important; border-radius: var(--b-card-radius) !important; box-shadow: var(--shadow-sm);
+}
+.tg-title { background: linear-gradient(160deg, var(--b-hero-1), var(--accent)); -webkit-background-clip: text; background-clip: text; }
+[data-theme="dark"] .tg-title { background: linear-gradient(160deg, var(--b-mint), var(--accent)); -webkit-background-clip: text; background-clip: text; }
+.tg-btn.primary { background: var(--b-hero-1); box-shadow: none; border-radius: 99px; }
+
+/* Settings list rows */
+.main button[style*="border-bottom:1px solid var(--border)"][style*="width:100%"] { font-weight: 500; }
+
+/* Simple popups (buy / sell / rename) */
+.simple-popup-input { border-radius: 14px; border-width: 1px; }
+.simple-popup-input:focus { border-color: var(--accent); }
+.simple-popup-btn { border-radius: 14px; font-weight: 600; }
+.simple-popup-btn.primary { background: var(--b-hero-1); }
+.simple-popup-btn.primary:hover { background: var(--accent); }
+[data-theme="dark"] .simple-popup-btn.primary { background: var(--accent); color: #0a2621; }
+.simple-popup-box .sort-btn[style*="flex:1"] { border-radius: 99px; }
+
+/* Another user's profile modal */
+.user-profile-overlay { background: rgba(6, 20, 15, 0.55) !important; }
+.user-profile-modal { border: 0; border-radius: 24px; box-shadow: var(--shadow-lg); }
+.user-profile-hero { background: linear-gradient(160deg, var(--b-hero-1) 0%, var(--b-hero-2) 100%); border-radius: 24px 24px 0 0; }
+.up-follow-btn { background: var(--b-mint); color: var(--b-hero-2); box-shadow: none; border-radius: 99px; font-weight: 600; }
+.up-follow-btn.following { background: rgba(255, 255, 255, 0.12); color: var(--b-on-hero); border: 0; }
+
+/* Notifications panel */
+.notif-panel { border-left: 0; border-radius: 24px 0 0 24px; box-shadow: var(--shadow-lg); }
+.notif-header { background: var(--bg-elevated); }
+.notif-item { border-radius: 16px; margin: 6px 10px; background: var(--bg-elevated); border-bottom: 0; }
+.notif-item.unread { background: var(--accent-soft); }
+.notif-item-icon { border-radius: 12px; }
+
+/* Section headers inside profile cards (tinted bar + uppercase label) */
+[style*="text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border)"] {
+  background: transparent !important;
+  text-transform: none !important; letter-spacing: 0 !important;
+  font-size: 14px !important; font-weight: 600 !important; color: var(--text-primary) !important;
+}
+[style*="color:#0ea5e9"] { color: var(--accent) !important; }
+[style*="rgba(14,165,233,0.12),rgba(99,102,241"] { background: var(--accent-soft) !important; }
+[style*="rgba(14,165,233,0.04),rgba(139,92,246,0.04)"] {
+  background: var(--bg-elevated) !important; border-color: transparent !important;
+}
+</style>
 
 </body>
 </html>
