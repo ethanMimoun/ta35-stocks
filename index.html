@@ -8414,6 +8414,8 @@ setTimeout(() => {
   <div id="calc-view">
     <div class="section-tabs" role="tablist" hidden></div>
     <div id="calc-content"></div>
+    <!-- Saved calculations live next to the calculator (loaded by loadSavedCalculationsForProfile) -->
+    <div id="profile-saved-calcs-section" style="margin-top:12px"></div>
   </div>
 
 </div>
@@ -20922,7 +20924,6 @@ async function renderProfile() {
       </div>
 
       <!-- ========== SAVED CALCULATIONS (rendered async) ========== -->
-      <div id="profile-saved-calcs-section"></div>
 
       <!-- ========== MY POSTS (loaded async) ========== -->
       <div id="posts-section" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px">
@@ -28574,6 +28575,7 @@ console.log('[dashboard-holdings] summary card loaded');
       rh.hidden = page !== 'portfolio';
       if (page === 'portfolio' && typeof loadRealHoldingsForProfile === 'function') loadRealHoldingsForProfile();
     }
+    if (page === 'calc' && typeof loadSavedCalculationsForProfile === 'function') loadSavedCalculationsForProfile();
     const bannerAvatar = document.getElementById('page-banner-avatar');
     if (bannerAvatar) bannerAvatar.hidden = page === 'profile' || page === 'settings';
     document.querySelectorAll('.community-tab').forEach(t => { if (t.id === 'ctab-competition') t.classList.toggle('active', page === 'competition'); });
