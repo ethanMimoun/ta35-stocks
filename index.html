@@ -7598,7 +7598,7 @@ button, [onclick] {
 /* ---- Focus ring for inputs (keyboard accessibility + polish) ---- */
 input:focus, select:focus, textarea:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.18);
+  box-shadow: 0 0 0 3px var(--accent-glow, rgba(14, 165, 233, 0.18));
   border-color: var(--accent, #0ea5e9) !important;
   transition: box-shadow 0.18s var(--ease-out-quart), border-color 0.18s ease;
 }
@@ -25404,7 +25404,7 @@ function renderPostV2(post) {
       ${reactionsHTML}
       <div class="feed-post-v2-actions">
         <button class="feed-action-v2 ${isLiked ? 'liked' : ''}" onclick="event.stopPropagation();togglePostLikeV2('${escapeAttr(post.id)}')">
-          <span class="feed-action-v2-icon">${isLiked ? '❤️' : '🤍'}</span>
+          <span class="feed-action-v2-icon">${isLiked ? '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>'}</span>
           <span class="feed-action-v2-count">${likeCount > 0 ? likeCount : ''}</span>
         </button>
         <button class="feed-action-v2" onclick="event.stopPropagation();toggleCommentsThread('${escapeAttr(post.id)}')">
@@ -26112,7 +26112,7 @@ function renderCommentNode(comment, postId, replies, depth) {
           <div class="comment-text">${contentHTML}</div>
         </div>
         <div class="comment-actions">
-          <button class="comment-action ${isLiked ? 'liked' : ''}" onclick="toggleCommentLike('${escapeAttr(postId)}','${escapeAttr(comment.id)}')">${isLiked ? '❤️' : '🤍'} ${likeCount > 0 ? likeCount : ''}</button>
+          <button class="comment-action ${isLiked ? 'liked' : ''}" onclick="toggleCommentLike('${escapeAttr(postId)}','${escapeAttr(comment.id)}')">${isLiked ? '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>'} ${likeCount > 0 ? likeCount : ''}</button>
           ${depth === 0 ? `<button class="comment-action" onclick="startReply('${escapeAttr(postId)}','${escapeAttr(comment.id)}','${escapeAttr(comment.userName || '')}')">השב</button>` : ''}
           ${isMine ? `<button class="comment-action" onclick="deleteComment('${escapeAttr(postId)}','${escapeAttr(comment.id)}')" style="color:var(--text-tertiary)">מחק</button>` : ''}
           <span class="comment-action-time">${formatPostTime(comment.createdAt)}</span>
@@ -29028,6 +29028,65 @@ body {
 .tx-share-btn:hover { background: var(--accent); color: #fff; }
 [data-theme="dark"] .tx-box, [data-theme="dark"] .glossary-box, [data-theme="dark"] .simple-popup-box { background: var(--bg-elevated); }
 .portfolio-toolbar-btn { padding-block: 10px; }
+
+/* ============================================================
+   DESIGN B — step 4: community, feed and composer
+   ============================================================ */
+/* The empty .main above the community view kept its bottom padding */
+body:has(#community-view[style*="display: block"]) .main { display: none; }
+
+/* Tabs: segmented pill bar */
+.community-tabs {
+  background: var(--bg-glass);
+  -webkit-backdrop-filter: saturate(1.6) blur(18px);
+  backdrop-filter: saturate(1.6) blur(18px);
+  border-bottom: 0;
+  padding: 10px 12px;
+  padding-top: max(10px, env(safe-area-inset-top, 0px));
+  gap: 4px;
+}
+.community-tab { padding: 8px 6px; border-radius: 99px; font-weight: 500; }
+.community-tab.active { background: var(--b-hero-1); color: var(--b-on-hero); font-weight: 600; }
+.community-tab.active::after { display: none; }
+[data-theme="dark"] .community-tab.active { background: var(--accent); color: #0a2621; }
+#community-content { padding: 4px 12px 24px; }
+
+/* Posts: separate rounded cards */
+.feed-post-v2 {
+  border-bottom: 0;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+[data-theme="dark"] .feed-post-v2 { border: 1px solid var(--border); }
+.feed-post-v2:active { background: var(--bg-elevated); }
+.feed-post-v2-avatar { background: var(--accent-soft); border: 0; }
+.feed-post-v2-name { font-weight: 600; }
+.feed-post-v2-stock-tag { border-radius: 99px; border: 0; background: var(--accent-soft); color: var(--accent); }
+.feed-post-v2-sentiment { border-radius: 99px; }
+.feed-post-v2-trade {
+  background: var(--bg-base);
+  border: 0;
+  border-radius: 14px;
+}
+.feed-post-v2-trade-icon { background: var(--b-hero-1); border-radius: 10px; color: var(--b-mint); }
+[data-theme="dark"] .feed-post-v2-trade-icon { background: var(--accent); color: #0a2621; }
+.feed-action-v2 { border-radius: 99px; }
+.feed-action-v2.liked { color: var(--danger); }
+.feed-action-v2-icon svg { display: block; }
+.reaction-chip { border-radius: 99px; }
+.reaction-chip.mine { background: var(--accent-soft); border-color: transparent; }
+.feed-empty-v2-btn { border-radius: 99px; }
+.feed-skeleton { border-radius: 20px; margin-bottom: 10px; border-bottom: 0; }
+
+/* Composer sheet */
+.compose-overlay { background: rgba(6, 20, 15, 0.55); }
+.compose-modal { border-radius: 24px 24px 0 0; }
+.compose-publish { border-radius: 99px; background: var(--b-hero-1); }
+[data-theme="dark"] .compose-publish { background: var(--accent); color: #0a2621; }
+.compose-publish:disabled { background: var(--accent-soft); color: var(--text-tertiary); }
+.compose-textarea:focus { box-shadow: none; }
 </style>
 
 </body>
