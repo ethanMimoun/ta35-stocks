@@ -8065,12 +8065,12 @@ setTimeout(() => {
   </div>
 
   <!-- Search + Filter Card -->
-  <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:10px 12px;margin-bottom:6px">
+  <div id="stocks-filter-card" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:10px 12px;margin-bottom:6px">
     <!-- Search -->
     <div id="stocks-search-bar" style="display:none;margin-bottom:8px">
       <div style="position:relative">
         <span style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--text-tertiary);pointer-events:none"><i data-lucide="search" style="width:14px;height:14px"></i></span>
-        <input type="text" id="stocks-inline-search" placeholder="חפש לפי שם או טיקר..." oninput="document.getElementById('search-input').value=this.value;render()" style="width:100%;padding:9px 14px 9px 38px;border:1px solid var(--border);border-radius:4px;background:var(--bg-base);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;direction:rtl">
+        <input type="text" id="stocks-inline-search" placeholder="חפש לפי שם או טיקר..." oninput="document.getElementById('search-input').value=this.value;render()" style="width:100%;padding:9px 38px 9px 14px;border:1px solid var(--border);border-radius:4px;background:var(--bg-base);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;direction:rtl">
       </div>
     </div>
     
@@ -11506,7 +11506,7 @@ function openModal(id) {
         type: 'bar',
         data: {
           labels: volumes.map((_, i) => ''),
-          datasets: [{ data: volumes, backgroundColor: volumes.map(v => v > c.volume ? 'rgba(14,165,233,0.4)' : 'rgba(14,165,233,0.15)'), borderRadius: 3 }]
+          datasets: [{ data: volumes, backgroundColor: volumes.map(v => v > c.volume ? 'rgba(15,122,92,0.55)' : 'rgba(15,122,92,0.18)'), borderRadius: 3 }]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { display: false } } }
       });
@@ -28870,6 +28870,101 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .b-act, .b-hero-ranges button { transition: none; }
 }
+
+/* ============================================================
+   DESIGN B — step 2: market, all-stocks and stock page
+   ============================================================ */
+/* Page banner (top of inner pages) and arena banners: green hero */
+.page-banner,
+.page-banner.green, .page-banner.orange, .page-banner.purple, .page-banner.blue,
+[data-theme="dark"] .page-banner,
+[data-theme="dark"] .page-banner.green, [data-theme="dark"] .page-banner.orange,
+[data-theme="dark"] .page-banner.purple, [data-theme="dark"] .page-banner.blue,
+.comp-arena-banner,
+.main [style*="background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%)"] {
+  background: linear-gradient(160deg, var(--b-hero-1) 0%, var(--b-hero-2) 100%) !important;
+  border-radius: 20px !important;
+  border: 0 !important;
+}
+.page-banner-icon { color: var(--b-mint); }
+.page-title { color: var(--b-on-hero); font-weight: 600; font-size: 16px; }
+.page-subtitle { color: rgba(234, 255, 247, 0.6); }
+.page-back-btn { border-radius: 50%; width: 36px; height: 36px; padding: 0; display: grid; place-items: center; background: rgba(255, 255, 255, 0.1); border-color: transparent; color: var(--b-on-hero); }
+.main [style*="background:#f59e0b;color:#0f172a"] { background: var(--b-mint) !important; color: var(--b-hero-2) !important; border-radius: 99px !important; }
+
+/* Filter + sector chips: pills */
+.sort-btn { border-radius: 99px; font-weight: 500; }
+.sort-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+[data-theme="dark"] .sort-btn { background: var(--bg-elevated); border-color: var(--border); color: var(--text-secondary); }
+[data-theme="dark"] .sort-btn.active { background: var(--accent); border-color: var(--accent); color: #0a2621; }
+.main .sort-btn[style*="139,92,246"], .main .sort-btn[style*="139, 92, 246"] { background: var(--accent-soft) !important; color: var(--accent) !important; border-color: transparent !important; }
+.sector-tag { border-radius: 99px; border-color: var(--border); }
+.sector-tag.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+[data-theme="dark"] .sector-tag.active { color: #0a2621; }
+
+/* Screener and stock cards */
+.screener-panel { border-radius: var(--b-card-radius); border-color: transparent; box-shadow: var(--shadow-sm); }
+[data-theme="dark"] .screener-panel { border-color: var(--border); }
+.screener-input, .screener-select { border-radius: var(--b-ctl-radius); }
+.screener-btn { border-radius: 99px; }
+.card-change { border-radius: 99px; }
+.card-change.up { color: var(--success); background: rgba(15, 157, 107, 0.1); }
+.card-change.down { color: var(--danger); background: rgba(224, 71, 76, 0.1); }
+
+/* Stock page hero */
+.sp-hero {
+  background: linear-gradient(160deg, var(--b-hero-1) 0%, var(--b-hero-2) 100%);
+  border-radius: 24px;
+  border-bottom: 0;
+  padding: 22px 18px;
+  box-shadow: var(--shadow-md);
+}
+.sp-hero-badge { background: rgba(255, 255, 255, 0.1); color: var(--b-on-hero); border-radius: 99px; padding: 3px 10px; letter-spacing: 0.04em; }
+.sp-hero-price { color: var(--b-on-hero); font-weight: 600; font-size: 38px; }
+.sp-hero.up .sp-hero-change { color: var(--b-mint) !important; }
+.sp-hero.down .sp-hero-change { color: #ff9a9d !important; }
+
+/* Action buttons under the hero */
+.sp-actions { gap: 8px; }
+.sp-action { border-radius: 14px; border-color: transparent; box-shadow: var(--shadow-sm); font-weight: 500; padding: 10px 8px; color: var(--text-secondary); }
+.sp-action.active { border-color: transparent; background: var(--accent-soft); color: var(--accent); }
+[data-theme="dark"] .sp-action { border-color: var(--border); }
+
+/* Sections, stats, range tabs */
+.sp-section { border-radius: var(--b-card-radius); border-color: transparent; box-shadow: var(--shadow-sm); padding: 16px; margin-bottom: 10px; }
+[data-theme="dark"] .sp-section { border-color: var(--border); }
+.sp-section-title { text-transform: none; letter-spacing: 0; font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.sp-stats { border-radius: 14px; }
+.sp-stat-label { text-transform: none; letter-spacing: 0; font-size: 11px; font-weight: 500; }
+.sp-chart-tabs { border: 0; gap: 4px; background: var(--bg-base); border-radius: 99px; padding: 3px; }
+.sp-tab { border: 0 !important; border-radius: 99px; background: transparent; font-weight: 500; }
+.sp-tab.active { background: var(--b-hero-1); color: var(--b-on-hero); font-weight: 600; }
+[data-theme="dark"] .sp-tab.active { background: var(--accent); color: #0a2621; }
+.sp-tab:hover:not(.active) { background: transparent; color: var(--text-primary); }
+.sp-section [style*="background:var(--bg-base)"][style*="border-radius:4px"] { border-radius: 12px !important; }
+
+/* "Hold this stock for real?" card */
+.main [style*="rgba(16,185,129,0.08),rgba(6,182,212"] {
+  background: var(--bg-elevated) !important;
+  border: 0 !important; border-radius: var(--b-card-radius) !important; box-shadow: var(--shadow-sm);
+}
+.main button[style*="linear-gradient(135deg,#10b981,#06b6d4)"] {
+  background: var(--b-hero-1) !important; border-radius: 99px !important; box-shadow: none !important;
+}
+[data-theme="dark"] .main button[style*="linear-gradient(135deg,#10b981,#06b6d4)"] { background: var(--accent) !important; color: #0a2621 !important; }
+
+/* AI explanation card */
+.sp-ai-section { border-radius: var(--b-card-radius); border: 0; border-inline-start: 0; box-shadow: var(--shadow-sm); }
+[data-theme="dark"] .sp-ai-section { border: 1px solid var(--border); }
+.sp-ai-badge { background: var(--accent-soft); color: var(--accent); border-radius: 99px; }
+.sp-ai-button { background: linear-gradient(160deg, var(--b-hero-1) 0%, var(--accent) 100%); border-radius: 14px; box-shadow: none; }
+.sp-ai-response { border-radius: 14px; }
+
+/* Hide the search/filter card when all of its rows are hidden */
+#stocks-filter-card:not(:has(> div:not([style*="display:none"]):not([style*="display: none"]))) { display: none; }
+
+/* Sticky tabs on the stock page */
+.sp-sticky-tab.active { color: var(--accent); }
 </style>
 
 </body>
