@@ -10091,7 +10091,7 @@ function openSellPopup(id) {
   const holding = portfolio.find(p => p.id === id);
   if (!holding) return;
   
-  document.getElementById('sell-popup-title').textContent = `מכור ${holding.name}`;
+  document.getElementById('sell-popup-title').textContent = `מכור ${holding.name || (companies.find(c => c.id === id) || {}).name || id}`;
   document.getElementById('sell-popup-info').textContent = `יש לך ${holding.quantity} מניות`;
   document.getElementById('sell-quantity').value = '';
   document.getElementById('sell-quantity').max = holding.quantity;
@@ -20902,10 +20902,7 @@ async function renderProfile() {
     // Build the page
     c.innerHTML = `
       <!-- ========== HERO SECTION (PROFESSIONAL) ========== -->
-      <div style="position:relative;background:radial-gradient(circle at top right, rgba(99,102,241,0.4) 0%, transparent 50%), radial-gradient(circle at bottom left, rgba(14,165,233,0.5) 0%, transparent 50%), linear-gradient(135deg,#0c4a6e 0%,#1e293b 100%);border-radius:14px;padding:24px 18px 20px;margin-bottom:14px;color:white;overflow:hidden;box-shadow:0 8px 24px rgba(14,165,233,0.15)">
-
-        <!-- subtle grid bg -->
-        <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);background-size:24px 24px;pointer-events:none;opacity:0.5"></div>
+      <div style="position:relative;background:linear-gradient(160deg,var(--b-hero-1) 0%,var(--b-hero-2) 100%);border-radius:24px;padding:24px 18px 20px;margin-bottom:14px;color:white;overflow:hidden;box-shadow:var(--shadow-md)">
 
         <!-- top bar: settings + share -->
         <div style="position:relative;display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
@@ -20927,7 +20924,7 @@ async function renderProfile() {
           <div style="position:relative;flex-shrink:0">
             ${profilePic
               ? `<img src="${profilePic}" style="width:72px;height:72px;border-radius:18px;object-fit:cover;border:2px solid rgba(255,255,255,0.18);box-shadow:0 6px 20px rgba(0,0,0,0.3)">`
-              : `<div style="width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:36px;border:2px solid rgba(255,255,255,0.18);box-shadow:0 6px 20px rgba(0,0,0,0.3)">${avatar}</div>`}
+              : `<div style="width:72px;height:72px;border-radius:18px;background:linear-gradient(135deg,#6ef0be,#3fd1a1);display:flex;align-items:center;justify-content:center;font-size:36px;border:2px solid rgba(255,255,255,0.18);box-shadow:0 6px 20px rgba(0,0,0,0.3)">${avatar}</div>`}
             ${myRank && myRank.position <= 3 ? `<div style="position:absolute;bottom:-4px;right:-4px;width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#fbbf24,#f59e0b);display:flex;align-items:center;justify-content:center;font-size:14px;border:2px solid #0c4a6e">${myRank.position === 1 ? '👑' : myRank.position === 2 ? '🥈' : '🥉'}</div>` : ''}
           </div>
           <div style="flex:1;min-width:0">
@@ -20935,11 +20932,11 @@ async function renderProfile() {
             ${bio ? `<div style="font-size:12px;color:rgba(255,255,255,0.7);font-style:italic;line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">"${bio}"</div>` : ''}
             <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">
               ${investorProfile && investorProfile.emoji ? `
-                <div style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:rgba(99,102,241,0.25);border:1px solid rgba(139,92,246,0.4);border-radius:8px;font-size:11px;font-weight:600;color:#c7d2fe">
+                <div style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:rgba(255,255,255,0.1);border:0;border-radius:99px;font-size:11px;font-weight:500;color:var(--b-on-hero)">
                   ${investorProfile.emoji} ${investorProfile.name}
                 </div>` : ''}
               ${myRank ? `
-                <div style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:rgba(14,165,233,0.2);border:1px solid rgba(14,165,233,0.4);border-radius:8px;font-size:11px;font-weight:600;color:#7dd3fc">
+                <div style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;background:rgba(110,240,190,0.16);border:0;border-radius:99px;font-size:11px;font-weight:500;color:var(--b-mint)">
                   📊 #${myRank.position} מתוך ${myRank.total}
                 </div>` : ''}
             </div>
@@ -20952,7 +20949,7 @@ async function renderProfile() {
       <div onclick="goToPortfolio()" style="background:linear-gradient(135deg,var(--bg-elevated) 0%,var(--bg-elevated) 70%, ${pfReturn >= 0 ? 'rgba(16,185,129,0.06)' : 'rgba(239,68,68,0.06)'} 100%);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;transition:all 0.2s"
            onmouseover="this.style.borderColor='${pfReturn >= 0 ? '#10b981' : '#ef4444'}';this.style.transform='translateY(-1px)'"
            onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-        <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(245,158,11,0.3)">
+        <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(160deg,var(--b-hero-1),var(--accent));display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(15,59,51,0.25)">
           <i data-lucide="briefcase" style="width:22px;height:22px;color:white"></i>
         </div>
         <div style="flex:1;min-width:0">
@@ -20971,31 +20968,31 @@ async function renderProfile() {
 
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">
         <div onclick="scrollToProfileSection('posts-section')" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden"
-             onmouseover="this.style.borderColor='#0ea5e9';this.style.transform='translateY(-2px)'"
+             onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-2px)'"
              onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-          <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,rgba(14,165,233,0.18),rgba(14,165,233,0.06));display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
-            <i data-lucide="message-square" style="width:16px;height:16px;color:#0ea5e9"></i>
+          <div style="width:32px;height:32px;border-radius:10px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
+            <i data-lucide="message-square" style="width:16px;height:16px;color:var(--accent)"></i>
           </div>
           <div style="font-size:18px;font-weight:800;color:var(--text-primary);font-family:var(--font-mono, monospace);line-height:1">${postCount}</div>
           <div style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;margin-top:4px">פוסטים</div>
         </div>
         <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center">
-          <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,rgba(239,68,68,0.18),rgba(239,68,68,0.06));display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
-            <i data-lucide="heart" style="width:16px;height:16px;color:#ef4444"></i>
+          <div style="width:32px;height:32px;border-radius:10px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
+            <i data-lucide="heart" style="width:16px;height:16px;color:var(--accent)"></i>
           </div>
           <div style="font-size:18px;font-weight:800;color:var(--text-primary);font-family:var(--font-mono, monospace);line-height:1">${totalLikes}</div>
           <div style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;margin-top:4px">לייקים</div>
         </div>
         <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center">
-          <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,rgba(139,92,246,0.18),rgba(139,92,246,0.06));display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
-            <i data-lucide="users" style="width:16px;height:16px;color:#8b5cf6"></i>
+          <div style="width:32px;height:32px;border-radius:10px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
+            <i data-lucide="users" style="width:16px;height:16px;color:var(--accent)"></i>
           </div>
           <div style="font-size:18px;font-weight:800;color:var(--text-primary);font-family:var(--font-mono, monospace);line-height:1">${followerCount}</div>
           <div style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;margin-top:4px">עוקבים</div>
         </div>
         <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center">
-          <div style="width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,rgba(245,158,11,0.18),rgba(245,158,11,0.06));display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
-            <i data-lucide="user-check" style="width:16px;height:16px;color:#f59e0b"></i>
+          <div style="width:32px;height:32px;border-radius:10px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;margin:0 auto 8px">
+            <i data-lucide="user-check" style="width:16px;height:16px;color:var(--accent)"></i>
           </div>
           <div style="font-size:18px;font-weight:800;color:var(--text-primary);font-family:var(--font-mono, monospace);line-height:1">${followingCount}</div>
           <div style="font-size:9px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;margin-top:4px">עוקב</div>
@@ -21012,60 +21009,60 @@ async function renderProfile() {
 
           <!-- Simulator -->
           <button onclick="goToSimulator()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s"
-                  onmouseover="this.style.borderColor='#06b6d4';this.style.transform='translateY(-1px)'"
+                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
                   onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-            <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,rgba(6,182,212,0.2),rgba(6,182,212,0.06));display:flex;align-items:center;justify-content:center">
-              <i data-lucide="zap" style="width:18px;height:18px;color:#06b6d4"></i>
+            <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
+              <i data-lucide="zap" style="width:18px;height:18px;color:var(--accent)"></i>
             </div>
             <div style="font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.2">סימולטור</div>
           </button>
 
           <!-- Calculator -->
           <button onclick="goToCalculator()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s"
-                  onmouseover="this.style.borderColor='#10b981';this.style.transform='translateY(-1px)'"
+                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
                   onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-            <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,rgba(16,185,129,0.2),rgba(16,185,129,0.06));display:flex;align-items:center;justify-content:center">
-              <i data-lucide="calculator" style="width:18px;height:18px;color:#10b981"></i>
+            <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
+              <i data-lucide="calculator" style="width:18px;height:18px;color:var(--accent)"></i>
             </div>
             <div style="font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.2">מחשבון</div>
           </button>
 
           <!-- Budget -->
           <button onclick="goToBudget()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s"
-                  onmouseover="this.style.borderColor='#14b8a6';this.style.transform='translateY(-1px)'"
+                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
                   onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-            <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,rgba(20,184,166,0.2),rgba(20,184,166,0.06));display:flex;align-items:center;justify-content:center">
-              <i data-lucide="wallet" style="width:18px;height:18px;color:#14b8a6"></i>
+            <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
+              <i data-lucide="wallet" style="width:18px;height:18px;color:var(--accent)"></i>
             </div>
             <div style="font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.2">תקציב</div>
           </button>
 
           <!-- Lessons (קורס) -->
           <button onclick="setSort('lessons');goToFunctions();" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s"
-                  onmouseover="this.style.borderColor='#8b5cf6';this.style.transform='translateY(-1px)'"
+                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
                   onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-            <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(139,92,246,0.06));display:flex;align-items:center;justify-content:center">
-              <i data-lucide="book-open" style="width:18px;height:18px;color:#8b5cf6"></i>
+            <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
+              <i data-lucide="book-open" style="width:18px;height:18px;color:var(--accent)"></i>
             </div>
             <div style="font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.2">הקורס</div>
           </button>
 
           <!-- Challenges -->
           <button onclick="setSort('challenges');goToFunctions();" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s"
-                  onmouseover="this.style.borderColor='#fbbf24';this.style.transform='translateY(-1px)'"
+                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
                   onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-            <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,rgba(251,191,36,0.2),rgba(251,191,36,0.06));display:flex;align-items:center;justify-content:center">
-              <i data-lucide="trophy" style="width:18px;height:18px;color:#fbbf24"></i>
+            <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
+              <i data-lucide="trophy" style="width:18px;height:18px;color:var(--accent)"></i>
             </div>
             <div style="font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.2">אתגרים</div>
           </button>
 
           <!-- Competition -->
           <button onclick="goToCompetition()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s"
-                  onmouseover="this.style.borderColor='#ef4444';this.style.transform='translateY(-1px)'"
+                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
                   onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-            <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,rgba(239,68,68,0.2),rgba(239,68,68,0.06));display:flex;align-items:center;justify-content:center">
-              <i data-lucide="medal" style="width:18px;height:18px;color:#ef4444"></i>
+            <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
+              <i data-lucide="medal" style="width:18px;height:18px;color:var(--accent)"></i>
             </div>
             <div style="font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.2">תחרות</div>
           </button>
@@ -21077,11 +21074,11 @@ async function renderProfile() {
       <div id="posts-section" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px">
         <div style="padding:12px 14px;font-size:11px;font-weight:800;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,rgba(14,165,233,0.04),transparent)">
           <div style="display:flex;align-items:center;gap:8px">
-            <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#0ea5e9,#6366f1);font-size:13px">📝</span>
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:8px;background:var(--accent-soft);color:var(--accent);font-size:13px"><i data-lucide="pen-line" style="width:14px;height:14px"></i></span>
             <span>הפוסטים שלי</span>
             <span style="background:var(--bg-base);padding:2px 8px;border-radius:10px;font-size:10px;color:var(--text-tertiary);font-weight:700">${postCount}</span>
           </div>
-          <button onclick="goToCommunity()" style="background:none;border:none;color:#0ea5e9;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px;transition:background 0.15s"
+          <button onclick="goToCommunity()" style="background:none;border:none;color:var(--accent);font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;padding:4px 8px;border-radius:6px;transition:background 0.15s"
                   onmouseover="this.style.background='rgba(14,165,233,0.08)'"
                   onmouseout="this.style.background='transparent'">לקהילה ›</button>
         </div>
@@ -29087,6 +29084,68 @@ body:has(#community-view[style*="display: block"]) .main { display: none; }
 [data-theme="dark"] .compose-publish { background: var(--accent); color: #0a2621; }
 .compose-publish:disabled { background: var(--accent-soft); color: var(--text-tertiary); }
 .compose-textarea:focus { box-shadow: none; }
+
+/* ============================================================
+   DESIGN B — step 5: profile, settings and popups
+   ============================================================ */
+/* Leftover blue/purple and navy gradients set inline across the app */
+[style*="linear-gradient(135deg,#0ea5e9"], [style*="linear-gradient(135deg, #0ea5e9"],
+[style*="linear-gradient(135deg,#8b5cf6 0%,#6366f1"] {
+  background: linear-gradient(160deg, var(--b-hero-1) 0%, var(--accent) 100%) !important;
+  box-shadow: none !important;
+}
+[style*="linear-gradient(135deg,#0f172a"], [style*="linear-gradient(135deg, #0f172a"],
+[style*="linear-gradient(135deg,#1e293b"], [style*="linear-gradient(135deg, #1e293b"] {
+  background: linear-gradient(160deg, var(--b-hero-1) 0%, var(--b-hero-2) 100%) !important;
+}
+button[style*="linear-gradient(135deg,#0ea5e9"], button[style*="linear-gradient(135deg, #0ea5e9"] { border-radius: 99px !important; }
+[data-theme="dark"] button[style*="linear-gradient(135deg,#0ea5e9"] { background: var(--accent) !important; color: #0a2621 !important; }
+/* Soft blue-purple tinted promo cards (e.g. investor quiz) */
+.main [style*="linear-gradient(135deg,rgba(14,165,233,0.06),rgba(139,92,246"] {
+  background: var(--bg-elevated) !important;
+  border: 0 !important; border-radius: var(--b-card-radius) !important; box-shadow: var(--shadow-sm);
+}
+.tg-title { background: linear-gradient(160deg, var(--b-hero-1), var(--accent)); -webkit-background-clip: text; background-clip: text; }
+[data-theme="dark"] .tg-title { background: linear-gradient(160deg, var(--b-mint), var(--accent)); -webkit-background-clip: text; background-clip: text; }
+.tg-btn.primary { background: var(--b-hero-1); box-shadow: none; border-radius: 99px; }
+
+/* Settings list rows */
+.main button[style*="border-bottom:1px solid var(--border)"][style*="width:100%"] { font-weight: 500; }
+
+/* Simple popups (buy / sell / rename) */
+.simple-popup-input { border-radius: 14px; border-width: 1px; }
+.simple-popup-input:focus { border-color: var(--accent); }
+.simple-popup-btn { border-radius: 14px; font-weight: 600; }
+.simple-popup-btn.primary { background: var(--b-hero-1); }
+.simple-popup-btn.primary:hover { background: var(--accent); }
+[data-theme="dark"] .simple-popup-btn.primary { background: var(--accent); color: #0a2621; }
+.simple-popup-box .sort-btn[style*="flex:1"] { border-radius: 99px; }
+
+/* Another user's profile modal */
+.user-profile-overlay { background: rgba(6, 20, 15, 0.55) !important; }
+.user-profile-modal { border: 0; border-radius: 24px; box-shadow: var(--shadow-lg); }
+.user-profile-hero { background: linear-gradient(160deg, var(--b-hero-1) 0%, var(--b-hero-2) 100%); border-radius: 24px 24px 0 0; }
+.up-follow-btn { background: var(--b-mint); color: var(--b-hero-2); box-shadow: none; border-radius: 99px; font-weight: 600; }
+.up-follow-btn.following { background: rgba(255, 255, 255, 0.12); color: var(--b-on-hero); border: 0; }
+
+/* Notifications panel */
+.notif-panel { border-left: 0; border-radius: 24px 0 0 24px; box-shadow: var(--shadow-lg); }
+.notif-header { background: var(--bg-elevated); }
+.notif-item { border-radius: 16px; margin: 6px 10px; background: var(--bg-elevated); border-bottom: 0; }
+.notif-item.unread { background: var(--accent-soft); }
+.notif-item-icon { border-radius: 12px; }
+
+/* Section headers inside profile cards (tinted bar + uppercase label) */
+[style*="text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border)"] {
+  background: transparent !important;
+  text-transform: none !important; letter-spacing: 0 !important;
+  font-size: 14px !important; font-weight: 600 !important; color: var(--text-primary) !important;
+}
+[style*="color:#0ea5e9"] { color: var(--accent) !important; }
+[style*="rgba(14,165,233,0.12),rgba(99,102,241"] { background: var(--accent-soft) !important; }
+[style*="rgba(14,165,233,0.04),rgba(139,92,246,0.04)"] {
+  background: var(--bg-elevated) !important; border-color: transparent !important;
+}
 </style>
 
 </body>
