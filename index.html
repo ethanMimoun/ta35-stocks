@@ -9492,7 +9492,7 @@ async function fetchHistoricalDataFromYahoo() {
   }
 }
 
-function checkAlerts(newCompanies) {
+function checkFavoriteAlerts(newCompanies) {
   if (!alertsEnabled || favorites.length === 0) return;
   newCompanies.forEach(company => {
     if (!favorites.includes(company.id)) return;
@@ -9560,6 +9560,7 @@ async function fetchData() {
 
         // בדוק התראות
         checkAlerts();
+        checkFavoriteAlerts(companies);
 
         const now = new Date().toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
         window._lastUpdateTime = Date.now();
@@ -11791,8 +11792,8 @@ function renderDiscussPost(post, stockId) {
   const commentCount = post.commentCount || 0;
 
   const avatarHTML = post.userProfilePic
-    ? `<img src="${post.userProfilePic}" alt="">`
-    : (post.userAvatar || '👤');
+    ? `<img src="${escapeAttr(post.userProfilePic)}" alt="">`
+    : escapeHtml(post.userAvatar || '👤');
 
   // Escape content for safe HTML rendering
   const safeContent = (post.content || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -11802,7 +11803,7 @@ function renderDiscussPost(post, stockId) {
       <div class="discuss-post-header">
         <div class="discuss-post-avatar">${avatarHTML}</div>
         <div class="discuss-post-meta">
-          <div class="discuss-post-name">${post.userName || 'משקיע'}${isMe ? ' (אני)' : ''}</div>
+          <div class="discuss-post-name">${escapeHtml(post.userName || 'משקיע')}${isMe ? ' (אני)' : ''}</div>
           <div class="discuss-post-time">${discussFormatTime(post.createdAt)}</div>
         </div>
         ${isMe
@@ -12021,15 +12022,15 @@ function renderDiscussComments(postId, comments) {
 
   list.innerHTML = comments.map(c => {
     const avatarHTML = c.userProfilePic
-      ? `<img src="${c.userProfilePic}" alt="">`
-      : (c.userAvatar || '👤');
+      ? `<img src="${escapeAttr(c.userProfilePic)}" alt="">`
+      : escapeHtml(c.userAvatar || '👤');
     const safeContent = (c.content || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     return `
       <div class="discuss-comment">
         <div class="discuss-comment-avatar">${avatarHTML}</div>
         <div class="discuss-comment-body">
           <div class="discuss-comment-meta">
-            <div class="discuss-comment-name">${c.userName || 'משקיע'}</div>
+            <div class="discuss-comment-name">${escapeHtml(c.userName || 'משקיע')}</div>
             <div class="discuss-comment-time">${discussFormatTime(c.createdAt)}</div>
           </div>
           <div class="discuss-comment-content">${safeContent}</div>
@@ -12498,8 +12499,8 @@ function renderFeedPost(post) {
   const commentCount = post.commentCount || 0;
 
   const avatarHTML = post.userProfilePic
-    ? `<img src="${post.userProfilePic}" alt="">`
-    : (post.userAvatar || '👤');
+    ? `<img src="${escapeAttr(post.userProfilePic)}" alt="">`
+    : escapeHtml(post.userAvatar || '👤');
 
   const safeContent = (post.content || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
@@ -12509,17 +12510,17 @@ function renderFeedPost(post) {
   const stockShort = post.stockId ? post.stockId.replace('TLV:', '') : '';
 
   const nameHTML = isMe
-    ? `<div class="discuss-post-name">${post.userName || 'משקיע'} (אני)</div>`
-    : `<div class="discuss-post-name discuss-user-link" onclick="openUserProfile('${post.userId}')">${post.userName || 'משקיע'}</div>`;
+    ? `<div class="discuss-post-name">${escapeHtml(post.userName || 'משקיע')} (אני)</div>`
+    : `<div class="discuss-post-name discuss-user-link" onclick="openUserProfile('${escapeAttr(post.userId)}')">${escapeHtml(post.userName || 'משקיע')}</div>`;
 
   return `
     <div class="discuss-post">
       <div class="discuss-post-header">
-        <div class="discuss-post-avatar ${isMe ? '' : 'discuss-user-link'}" ${isMe ? '' : `onclick="openUserProfile('${post.userId}')" style="cursor:pointer"`}>${avatarHTML}</div>
+        <div class="discuss-post-avatar ${isMe ? '' : 'discuss-user-link'}" ${isMe ? '' : `onclick="openUserProfile('${escapeAttr(post.userId)}')" style="cursor:pointer"`}>${avatarHTML}</div>
         <div class="discuss-post-meta">
           <div style="display:flex;align-items:center;flex-wrap:wrap">
             ${nameHTML}
-            <span class="feed-post-stock-tag" onclick="openModal('${post.stockId}')">${stockShort}</span>
+            <span class="feed-post-stock-tag" onclick="openModal('${escapeAttr(post.stockId)}')">${escapeHtml(stockShort)}</span>
           </div>
           <div class="discuss-post-time">${discussFormatTime(post.createdAt)} · ${stockName}</div>
         </div>
@@ -12695,10 +12696,10 @@ async function openUserProfile(userId) {
       ? firstPost.createdAt.toDate().toLocaleDateString('he-IL', { year: 'numeric', month: 'long' })
       : '';
 
-    const displayName = personalProfile.displayName || 'משקיע';
-    const avatar = personalProfile.avatar || '👤';
-    const profilePic = personalProfile.profilePic || '';
-    const bio = personalProfile.bio || '';
+    const displayName = escapeHtml(personalProfile.displayName || 'משקיע');
+    const avatar = escapeHtml(personalProfile.avatar || '👤');
+    const profilePic = escapeHtml(personalProfile.profilePic || '');
+    const bio = escapeHtml(personalProfile.bio || '');
 
     const avatarHTML = profilePic
       ? `<img src="${profilePic}" alt="">`
@@ -12809,8 +12810,8 @@ async function openUserProfile(userId) {
     const isMe = userId === currentUser;
     const followButtonHTML = isMe ? '' : `
       <button class="up-follow-btn ${isFollowing ? 'following' : ''}"
-              id="up-follow-btn-${userId}"
-              onclick="toggleFollowUser('${userId}', event)">
+              id="up-follow-btn-${escapeAttr(userId)}"
+              onclick="toggleFollowUser('${escapeAttr(userId)}', event)">
         ${isFollowing ? '✓ עוקב/ת' : '+ עקוב/י'}
       </button>
     `;
@@ -14847,7 +14848,7 @@ function renderDashboard() {
     const avatarEl = document.getElementById('dashboard-avatar-img');
     if (avatarEl) {
       if (profilePic) {
-        avatarEl.innerHTML = `<img src="${profilePic}" style="width:40px;height:40px;border-radius:50%;object-fit:cover">`;
+        avatarEl.innerHTML = `<img src="${escapeAttr(profilePic)}" style="width:40px;height:40px;border-radius:50%;object-fit:cover">`;
       } else {
         avatarEl.textContent = avatar;
       }
@@ -15144,8 +15145,8 @@ async function loadLeaderboard() {
 
       // Avatar
       const avatarHTML = entry.userProfilePic
-        ? `<img src="${entry.userProfilePic}" style="width:28px;height:28px;border-radius:50%;object-fit:cover">`
-        : `<div style="width:28px;height:28px;border-radius:50%;background:var(--bg-base);display:flex;align-items:center;justify-content:center;font-size:16px">${entry.userAvatar || '👤'}</div>`;
+        ? `<img src="${escapeAttr(entry.userProfilePic)}" style="width:28px;height:28px;border-radius:50%;object-fit:cover">`
+        : `<div style="width:28px;height:28px;border-radius:50%;background:var(--bg-base);display:flex;align-items:center;justify-content:center;font-size:16px">${escapeHtml(entry.userAvatar || '👤')}</div>`;
 
       // Medal badge (only for #1 with a crown)
       const medalBadge = (rank === 1 && entry.currentMedal) ? `
@@ -15155,11 +15156,11 @@ async function loadLeaderboard() {
       ` : '';
 
       return `
-        <div class="leaderboard-item ${isMe ? 'me' : ''}" ${!isMe ? `onclick="openUserProfile('${entry.userId}')" style="cursor:pointer"` : ''}>
+        <div class="leaderboard-item ${isMe ? 'me' : ''}" ${!isMe ? `onclick="openUserProfile('${escapeAttr(entry.userId)}')" style="cursor:pointer"` : ''}>
           <div class="leaderboard-rank ${rankClass}">${rankEmoji}</div>
           <div style="margin-left:6px">${avatarHTML}</div>
           <div class="leaderboard-info" style="margin-right:8px">
-            <div class="leaderboard-name">${entry.displayName || 'משקיע'}${isMe ? ' (אני)' : ''} ${medalBadge}</div>
+            <div class="leaderboard-name">${escapeHtml(entry.displayName || 'משקיע')}${isMe ? ' (אני)' : ''} ${medalBadge}</div>
             <div class="leaderboard-details">${entry.stockCount || 0} מניות · ₪${(entry.portfolioValue || 0).toLocaleString('he-IL', {maximumFractionDigits: 0})}</div>
           </div>
           <div class="leaderboard-return ${returnClass}">
@@ -15430,8 +15431,8 @@ function renderCompetition() {
 
     const isMe = slot.userId === currentUser;
     const avatarHTML = slot.userProfilePic
-      ? `<img src="${slot.userProfilePic}" alt="">`
-      : (slot.userAvatar || '👤');
+      ? `<img src="${escapeAttr(slot.userProfilePic)}" alt="">`
+      : escapeHtml(slot.userAvatar || '👤');
     const sign = slot.returnPercent >= 0 ? '+' : '';
     const color = slot.returnPercent >= 0 ? '#10b981' : '#ef4444';
 
@@ -15442,10 +15443,10 @@ function renderCompetition() {
 
     return `
       <div class="comp-podium-slot place-${place}">
-        <div class="comp-podium-card" ${!isMe ? `onclick="openUserProfile('${slot.userId}')"` : ''}>
+        <div class="comp-podium-card" ${!isMe ? `onclick="openUserProfile('${escapeAttr(slot.userId)}')"` : ''}>
           ${crown}
           <div class="comp-podium-avatar">${avatarHTML}</div>
-          <div class="comp-podium-name">${slot.displayName || 'משקיע'}${isMe ? ' (אני)' : ''}</div>
+          <div class="comp-podium-name">${escapeHtml(slot.displayName || 'משקיע')}${isMe ? ' (אני)' : ''}</div>
           <div class="comp-podium-return" style="color:${color}">${sign}${slot.returnPercent.toFixed(1)}%</div>
           ${medal}
         </div>
@@ -15506,17 +15507,17 @@ function renderCompetition() {
     const rank = i + 4;
     const isMe = e.userId === currentUser;
     const avatarHTML = e.userProfilePic
-      ? `<img src="${e.userProfilePic}" alt="">`
-      : (e.userAvatar || '👤');
+      ? `<img src="${escapeAttr(e.userProfilePic)}" alt="">`
+      : escapeHtml(e.userAvatar || '👤');
     const sign = e.returnPercent >= 0 ? '+' : '';
     const returnClass = e.returnPercent >= 0 ? 'positive' : 'negative';
 
     return `
-      <div class="comp-list-item ${isMe ? 'me' : ''}" ${!isMe ? `onclick="openUserProfile('${e.userId}')"` : ''}>
+      <div class="comp-list-item ${isMe ? 'me' : ''}" ${!isMe ? `onclick="openUserProfile('${escapeAttr(e.userId)}')"` : ''}>
         <div class="comp-list-rank">${rank}</div>
         <div class="comp-list-avatar">${avatarHTML}</div>
         <div class="comp-list-info">
-          <div class="comp-list-name">${e.displayName || 'משקיע'}${isMe ? ' (אני)' : ''}</div>
+          <div class="comp-list-name">${escapeHtml(e.displayName || 'משקיע')}${isMe ? ' (אני)' : ''}</div>
           <div class="comp-list-sub">₪${(e.portfolioValue || 0).toLocaleString('he-IL', {maximumFractionDigits: 0})} · ${e.stockCount || 0} מניות</div>
         </div>
         <div class="comp-list-return ${returnClass}">${sign}${e.returnPercent.toFixed(1)}%</div>
@@ -19240,10 +19241,10 @@ async function searchFriend() {
       html += `
         <div class="friend-card">
           <div class="friend-card-header">
-            <div class="friend-card-name">👤 ${d.username} ${isMe ? '(אתה)' : ''}</div>
+            <div class="friend-card-name">👤 ${escapeHtml(d.username)} ${isMe ? '(אתה)' : ''}</div>
             <div style="font-size:12px;color:var(--text-tertiary)">${d.portfolioCount || 0} מניות</div>
           </div>
-          ${!isMe ? `<button onclick="viewFriendPortfolio('${d.uid}','${d.username}')" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:4px;background:var(--bg-elevated);color:var(--text-secondary);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">📋 צפה בתיק</button>` : ''}
+          ${!isMe ? `<button onclick="viewFriendPortfolio('${escapeAttr(d.uid)}','${escapeAttr(d.username)}')" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:4px;background:var(--bg-elevated);color:var(--text-secondary);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">📋 צפה בתיק</button>` : ''}
         </div>
       `;
     });
@@ -19725,258 +19726,6 @@ function loadMarketNews() {
 // Replaces "Settings" as the primary nav target.
 // Settings now opens via a gear icon in the profile page header.
 
-function goToProfile() {
-  viewMode = 'stocks';
-  switchView();
-  showPageHeader('הפרופיל שלי', '👤', 'הפעילות שלך, הישגים והגדרות', 'blue');
-  setSort('profile');
-  updateBottomNav('nav-profile');
-  history.pushState({ page: 'profile' }, '', '#profile');
-}
-
-function renderProfile() {
-  const c = document.getElementById('profile-content');
-  if (!c) return;
-  scrollToTop();
-
-  const user = auth.currentUser;
-  const userName = user ? (user.email || '').replace('@ta35-stocks.com', '') : '';
-  const stats = calculatePortfolioStats();
-
-  // Load profile data from localStorage (existing system)
-  const profileData = JSON.parse(localStorage.getItem('user_profile_' + currentUser) || '{}');
-  const displayName = profileData.displayName || userName;
-  const bio = profileData.bio || '';
-  const avatar = profileData.avatar || '👤';
-  const profilePic = profileData.profilePic || '';
-
-  // Avatar HTML
-  const avatarHTML = profilePic
-    ? `<img src="${profilePic}" alt="" style="width:88px;height:88px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.2)">`
-    : `<div style="width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,rgba(255,255,255,0.15),rgba(255,255,255,0.05));display:flex;align-items:center;justify-content:center;font-size:48px;border:3px solid rgba(255,255,255,0.2)">${avatar}</div>`;
-
-  // Investor profile
-  const investorProfile = window.investorProfile || null;
-  let investorBadgeHTML = '';
-  if (investorProfile && investorProfile.emoji && investorProfile.name) {
-    investorBadgeHTML = `
-      <div style="display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);border-radius:20px;font-size:12px;font-weight:600;color:white;margin-top:10px">
-        ${investorProfile.emoji} ${investorProfile.name}
-      </div>
-    `;
-  } else {
-    investorBadgeHTML = `
-      <button onclick="startInvestorQuiz()" style="margin-top:10px;padding:6px 14px;background:rgba(255,255,255,0.1);border:1px dashed rgba(255,255,255,0.3);border-radius:20px;font-size:11px;color:rgba(255,255,255,0.85);cursor:pointer;font-family:inherit">
-        ✨ גלה איזה משקיע אתה
-      </button>
-    `;
-  }
-
-  // Portfolio summary
-  const totalValue = stats.totalValue || 0;
-  const totalReturn = stats.totalReturnPct || 0;
-  const returnColor = totalReturn >= 0 ? '#10b981' : '#ef4444';
-  const returnSign = totalReturn >= 0 ? '+' : '';
-
-  // Get my rank from leaderboard cache (if loaded recently)
-  const myLeaderboardData = window._myLeaderboardCache || null;
-  const myRank = myLeaderboardData?.rank || null;
-  const crownDays = myLeaderboardData?.crownDays || 0;
-
-  // Counts
-  const myPostsCount = (window._myPostsCache || []).length;
-  const myFollowingCount = window._myFollowingCount || 0;
-  const myFollowersCount = window._myFollowersCount || 0;
-
-  // ============ BUILD HTML ============
-  c.innerHTML = `
-    <!-- HERO: Avatar (left), Name + Bio + Badges (right), Settings (top corner) -->
-    <div class="profile-hero">
-      <div class="profile-hero-actions">
-        <button class="profile-hero-btn" onclick="openSettingsFromProfile()" title="הגדרות">
-          <i data-lucide="settings" style="width:14px;height:14px"></i>
-        </button>
-        <button class="profile-hero-btn" onclick="openProfileEdit()" title="עריכת פרופיל">
-          <i data-lucide="edit-3" style="width:13px;height:13px"></i>
-        </button>
-      </div>
-
-      <div class="profile-hero-content">
-        <div class="profile-hero-avatar">${avatarHTML}</div>
-        <div class="profile-hero-text">
-          <div class="profile-hero-name">${displayName}</div>
-          ${bio
-            ? `<div class="profile-hero-bio">"${bio}"</div>`
-            : `<div class="profile-hero-bio profile-hero-bio-empty">לחץ על העפרון להוסיף תיאור</div>`
-          }
-          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px">
-            ${investorProfile && investorProfile.emoji ? `
-              <div class="profile-hero-investor">
-                ${investorProfile.emoji} ${investorProfile.name}
-              </div>
-            ` : ''}
-            ${myRank ? `
-              <div class="profile-hero-rank">
-                ${myRank === 1 ? '👑' : myRank <= 3 ? '🏆' : '📊'} מקום #${myRank}
-                ${crownDays > 0 ? ` · ${crownDays}ד'` : ''}
-              </div>
-            ` : ''}
-          </div>
-        </div>
-      </div>
-
-      ${(!investorProfile || !investorProfile.emoji) ? `
-        <button onclick="startInvestorQuiz()" style="display:block;width:100%;margin-top:12px;padding:8px 12px;background:rgba(168,85,247,0.08);border:1px dashed rgba(168,85,247,0.3);border-radius:6px;font-size:11px;color:#a855f7;cursor:pointer;font-family:inherit;font-weight:600">
-          ✨ ענה/י על שאלון 6 שאלות וגלה איזה משקיע את/ה
-        </button>
-      ` : ''}
-    </div>
-
-    <!-- STATS GRID: posts, returns, followers, following -->
-    <div class="profile-stats-grid">
-      <div class="profile-stat-tile">
-        <div class="profile-stat-val">${myPostsCount}</div>
-        <div class="profile-stat-label">פוסטים</div>
-      </div>
-      <div class="profile-stat-tile">
-        <div class="profile-stat-val" style="color:${returnColor}">${returnSign}${totalReturn.toFixed(1)}%</div>
-        <div class="profile-stat-label">תשואה</div>
-      </div>
-      <div class="profile-stat-tile" onclick="showFollowersList(currentUser)" style="cursor:pointer">
-        <div class="profile-stat-val">${myFollowersCount}</div>
-        <div class="profile-stat-label">עוקבים</div>
-      </div>
-      <div class="profile-stat-tile" onclick="showFollowingList(currentUser)" style="cursor:pointer">
-        <div class="profile-stat-val">${myFollowingCount}</div>
-        <div class="profile-stat-label">עוקב/ת</div>
-      </div>
-    </div>
-
-    <!-- QUICK ACCESS CARDS -->
-    <div class="profile-cards">
-      <!-- Portfolio shortcut -->
-      <div class="profile-card" onclick="goToPortfolio()">
-        <div class="profile-card-icon" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">
-          <i data-lucide="briefcase" style="width:18px;height:18px;color:white"></i>
-        </div>
-        <div class="profile-card-content">
-          <div class="profile-card-title">תיק ההשקעות שלי</div>
-          <div class="profile-card-subtitle">₪${totalValue.toLocaleString('he-IL', {maximumFractionDigits: 0})} · <span style="color:${returnColor}">${returnSign}${totalReturn.toFixed(1)}%</span></div>
-        </div>
-        <i data-lucide="chevron-left" style="width:18px;height:18px;color:var(--text-tertiary)"></i>
-      </div>
-
-      <!-- Trader Academy progress -->
-      <div class="profile-card" onclick="goToLessons()">
-        <div class="profile-card-icon" style="background:linear-gradient(135deg,#a855f7,#7c3aed)">
-          <i data-lucide="book-open" style="width:18px;height:18px;color:white"></i>
-        </div>
-        <div class="profile-card-content">
-          <div class="profile-card-title">Trader Academy</div>
-          <div class="profile-card-subtitle">המשך ללמוד וצבור ידע פיננסי</div>
-        </div>
-        <i data-lucide="chevron-left" style="width:18px;height:18px;color:var(--text-tertiary)"></i>
-      </div>
-
-      <!-- Trade Calculator - personal profit estimator with saved trades -->
-      <div class="profile-card" onclick="goToTradeCalculator()">
-        <div class="profile-card-icon" style="background:linear-gradient(135deg,#10b981,#059669)">
-          <i data-lucide="calculator" style="width:18px;height:18px;color:white"></i>
-        </div>
-        <div class="profile-card-content">
-          <div class="profile-card-title">מחשבון רווח</div>
-          <div class="profile-card-subtitle">חשב/י רווח אחרי מס · שמור/י תוכניות מסחר</div>
-        </div>
-        <i data-lucide="chevron-left" style="width:18px;height:18px;color:var(--text-tertiary)"></i>
-      </div>
-
-      <!-- Challenges -->
-      <div class="profile-card" onclick="goToChallenges()">
-        <div class="profile-card-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)">
-          <i data-lucide="award" style="width:18px;height:18px;color:white"></i>
-        </div>
-        <div class="profile-card-content">
-          <div class="profile-card-title">האתגרים שלי</div>
-          <div class="profile-card-subtitle">צור ועקוב אחרי אתגרי השקעה</div>
-        </div>
-        <i data-lucide="chevron-left" style="width:18px;height:18px;color:var(--text-tertiary)"></i>
-      </div>
-
-      <!-- Competition arena -->
-      <div class="profile-card" onclick="goToCompetition()">
-        <div class="profile-card-icon" style="background:linear-gradient(135deg,#ec4899,#db2777)">
-          <i data-lucide="trophy" style="width:18px;height:18px;color:white"></i>
-        </div>
-        <div class="profile-card-content">
-          <div class="profile-card-title">זירת התחרות</div>
-          <div class="profile-card-subtitle">${myRank ? `מקום #${myRank} כרגע` : 'לוח המובילים השבועי'}</div>
-        </div>
-        <i data-lucide="chevron-left" style="width:18px;height:18px;color:var(--text-tertiary)"></i>
-      </div>
-    </div>
-
-    <!-- POSTS SECTION -->
-    <div class="profile-section">
-      <div class="profile-section-header">
-        <div class="profile-section-title">📝 הפוסטים שלי</div>
-        <button class="profile-section-action" onclick="openNewPostModal()">+ פוסט חדש</button>
-      </div>
-      <div id="profile-posts-list">
-        <div style="padding:24px;text-align:center;color:var(--text-tertiary);font-size:11px">⏳ טוען פוסטים...</div>
-      </div>
-    </div>
-
-    <!-- MEDALS & ACHIEVEMENTS (loaded async) -->
-    <div class="profile-section" id="profile-medals-section" style="display:none">
-      <div class="profile-section-header">
-        <div class="profile-section-title">🏆 מדליות והישגים</div>
-      </div>
-      <div id="profile-medals-list" style="padding:14px"></div>
-    </div>
-
-    <!-- ACTIVITY FEED (toggleable in settings) -->
-    <div class="profile-section" id="profile-activity-section" style="display:none">
-      <div class="profile-section-header">
-        <div class="profile-section-title">⏱️ פעילות אחרונה</div>
-      </div>
-      <div id="profile-activity-list">
-        <div style="padding:24px;text-align:center;color:var(--text-tertiary);font-size:11px">⏳ טוען פעילות...</div>
-      </div>
-    </div>
-
-    <!-- FOOTER: legal & version -->
-    <div style="padding:24px 12px;text-align:center;color:var(--text-tertiary);font-size:11px;line-height:1.6">
-      <div style="margin-bottom:6px">⚠️ אפליקציה חינוכית · נתונים אינדיקטיביים בלבד</div>
-      <div>מגמת צמיחה v2.5 · © 2026 Ethan Mimoun</div>
-    </div>
-  `;
-
-  // Re-initialize Lucide icons
-  if (window.lucide && lucide.createIcons) {
-    setTimeout(() => lucide.createIcons(), 50);
-  }
-
-  // Load my posts in background
-  loadMyPostsForProfile();
-
-  // Load follower counts in background
-  loadMyFollowCounts();
-
-  // Show activity feed if not hidden by user preference
-  const activityHidden = localStorage.getItem('activity_feed_hidden_' + currentUser) === 'true';
-  if (!activityHidden) {
-    const section = document.getElementById('profile-activity-section');
-    if (section) section.style.display = 'block';
-    loadMyActivityFeed();
-  }
-
-  // Try to load my rank from leaderboard
-  loadMyLeaderboardPosition();
-
-  // Load medals & achievements
-  loadMyMedals();
-}
-
 // Open settings from profile (gear icon)
 function openSettingsFromProfile() {
   setSort('settings');
@@ -19990,86 +19739,6 @@ function openProfileEdit() {
 }
 
 // Load my posts for profile page
-async function loadMyPostsForProfile() {
-  const container = document.getElementById('profile-posts-list');
-  if (!container || !db || !currentUser) return;
-
-  try {
-    const snap = await db.collection('stock_posts')
-      .where('userId', '==', currentUser)
-      .get();
-
-    const posts = [];
-    snap.forEach(doc => {
-      const data = doc.data();
-      if (!data.hidden) posts.push({ id: doc.id, ...data });
-    });
-
-    // Sort newest first
-    posts.sort((a, b) => {
-      const aT = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : 0;
-      const bT = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : 0;
-      return bT - aT;
-    });
-
-    window._myPostsCache = posts;
-
-    // Update post count in stats
-    const statTile = document.querySelector('.profile-stats-grid .profile-stat-tile:first-child .profile-stat-val');
-    if (statTile) statTile.textContent = posts.length;
-
-    if (posts.length === 0) {
-      container.innerHTML = `
-        <div style="padding:24px 16px;text-align:center;color:var(--text-tertiary);font-size:12px">
-          עוד אין לך פוסטים<br>
-          <span style="font-size:11px;opacity:0.7">לחץ על "פוסט חדש" כדי לשתף את דעתך הראשונה</span>
-        </div>
-      `;
-      return;
-    }
-
-    container.innerHTML = posts.slice(0, 8).map(p => {
-      const stock = companies.find(c => c.id === p.stockId);
-      const stockShort = p.stockId ? p.stockId.replace('TLV:', '') : '';
-      const safeContent = (p.content || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-      // Sentiment badge
-      const sentimentBadges = {
-        bullish: { emoji: '📈', label: 'בעלי', color: '#10b981' },
-        bearish: { emoji: '📉', label: 'דובי', color: '#ef4444' },
-        holding: { emoji: '💎', label: 'מחזיק', color: '#0ea5e9' },
-        caution: { emoji: '⚠️', label: 'זהירות', color: '#f59e0b' }
-      };
-      const badge = sentimentBadges[p.sentiment];
-      const badgeHTML = badge
-        ? `<span style="display:inline-flex;align-items:center;gap:3px;padding:1px 6px;background:${badge.color}15;border:1px solid ${badge.color}40;border-radius:8px;font-size:9px;font-weight:700;color:${badge.color};margin-right:6px">${badge.emoji} ${badge.label}</span>`
-        : '';
-
-      return `
-        <div class="profile-post-item" onclick="openModal('${p.stockId}')">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
-            <div class="profile-post-stock" style="margin:0">${stockShort} · ${stock?.name || ''}</div>
-            ${badgeHTML}
-          </div>
-          <div class="profile-post-content">${safeContent}</div>
-          <div class="profile-post-meta">
-            <span>❤️ ${p.likeCount || 0}</span>
-            <span>💬 ${p.commentCount || 0}</span>
-            <span style="opacity:0.6">· ${typeof discussFormatTime === 'function' ? discussFormatTime(p.createdAt) : ''}</span>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    if (posts.length > 8) {
-      container.innerHTML += `<div style="padding:12px;text-align:center;font-size:11px;color:var(--text-tertiary)">ועוד ${posts.length - 8} פוסטים...</div>`;
-    }
-  } catch(e) {
-    console.warn('Load my posts:', e);
-    container.innerHTML = `<div style="padding:16px;text-align:center;color:var(--text-tertiary);font-size:11px">שגיאה בטעינת פוסטים</div>`;
-  }
-}
-
 // Load my follower/following counts
 async function loadMyFollowCounts() {
   if (!db || !currentUser) return;
@@ -20556,9 +20225,9 @@ async function openFollowsModal(userId, type) {
       const data = userDoc.data();
       const profile = data.personalProfile || {};
       const uid = userIds[idx];
-      const name = profile.displayName || 'משקיע';
-      const avatar = profile.avatar || '👤';
-      const profilePic = profile.profilePic || '';
+      const name = escapeHtml(profile.displayName || 'משקיע');
+      const avatar = escapeHtml(profile.avatar || '👤');
+      const profilePic = escapeHtml(profile.profilePic || '');
       const avatarHTML = profilePic
         ? `<img src="${profilePic}" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover">`
         : `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:20px;color:white">${avatar}</div>`;
@@ -21088,10 +20757,10 @@ async function renderProfile() {
 
     const personalProfile = userData.personalProfile || {};
     const investorProfile = userData.investorProfile || null;
-    const displayName = personalProfile.displayName || userName;
-    const bio = personalProfile.bio || '';
-    const avatar = personalProfile.avatar || '👤';
-    const profilePic = personalProfile.profilePic || '';
+    const displayName = escapeHtml(personalProfile.displayName || userName);
+    const bio = escapeHtml(personalProfile.bio || '');
+    const avatar = escapeHtml(personalProfile.avatar || '👤');
+    const profilePic = escapeHtml(personalProfile.profilePic || '');
 
     // Calculate portfolio stats
     const stats = (typeof calculatePortfolioStats === 'function')
@@ -21407,10 +21076,10 @@ function renderSettings() {
   
   // Load saved profile data
   const profileData = JSON.parse(localStorage.getItem('user_profile_' + currentUser) || '{}');
-  const displayName = profileData.displayName || userName;
-  const bio = profileData.bio || '';
-  const avatar = profileData.avatar || '';
-  const profilePic = profileData.profilePic || '';
+  const displayName = escapeHtml(profileData.displayName || userName);
+  const bio = escapeHtml(profileData.bio || '');
+  const avatar = escapeHtml(profileData.avatar || '');
+  const profilePic = escapeHtml(profileData.profilePic || '');
   
   const avatarEmojis = ['👤','👨‍💼','👩‍💼','👨‍💻','👩‍💻','🧑‍🎓','👨‍🎓','👩‍🎓','🦸‍♂️','🦸‍♀️','🧙‍♂️','🐂','🐻','📊','💹','🏆'];
   
@@ -27183,97 +26852,6 @@ async function shareTradeFromTx(txId) {
     }, 100);
   } else {
     if (typeof showToast === 'function') showToast('פתח את טאב הקהילה תחילה', 'info');
-  }
-}
-
-// ===== LOAD AND RENDER MY POSTS IN PROFILE =====
-async function loadMyPostsForProfile() {
-  const target = document.getElementById('profile-my-posts-list');
-  if (!target || !currentUser || !db) return;
-
-  target.innerHTML = `<div style="padding:24px;text-align:center;color:var(--text-tertiary);font-size:11px">טוען פוסטים...</div>`;
-
-  try {
-    const snapshot = await db.collection('stock_posts')
-      .where('userId', '==', currentUser)
-      .get();
-
-    const posts = [];
-    snapshot.forEach(doc => {
-      const d = doc.data();
-      if (!d.hidden) posts.push({ id: doc.id, ...d });
-    });
-    posts.sort((a, b) => {
-      const ta = a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0;
-      const tb = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
-      return tb - ta;
-    });
-
-    if (posts.length === 0) {
-      target.innerHTML = `
-        <div style="padding:32px 20px;text-align:center">
-          <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(99,102,241,0.08));display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:28px">💬</div>
-          <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px">עדיין לא פרסמת פוסטים</div>
-          <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:16px;line-height:1.5">שתף את הדעות שלך על מניות,<br>הצלחות וטעויות עם הקהילה</div>
-          <button onclick="if(typeof openCompose==='function')openCompose();else goToCommunity();" style="padding:10px 20px;border:none;border-radius:8px;background:linear-gradient(135deg,#0ea5e9,#6366f1);color:white;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 12px rgba(14,165,233,0.3)">
-            פרסם פוסט ראשון ›
-          </button>
-        </div>
-      `;
-      return;
-    }
-
-    const limit = 5;
-    const shown = posts.slice(0, limit);
-    const items = shown.map(p => {
-      const date = p.createdAt && p.createdAt.toDate ? p.createdAt.toDate() : new Date();
-      const dateStr = date.toLocaleDateString('he-IL', { day: 'numeric', month: 'short' });
-      const timeStr = date.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
-      const content = p.content || '';
-      const preview = content.length > 140 ? content.slice(0, 140) + '…' : content;
-
-      // Sentiment badge
-      let sentBadge = '';
-      if (p.sentiment === 'bullish') sentBadge = '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;background:rgba(16,185,129,0.12);color:#10b981;border-radius:8px;font-size:10px;font-weight:700">📈 שורי</span>';
-      else if (p.sentiment === 'bearish') sentBadge = '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;background:rgba(239,68,68,0.12);color:#ef4444;border-radius:8px;font-size:10px;font-weight:700">📉 דובי</span>';
-      else if (p.sentiment === 'question') sentBadge = '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;background:rgba(245,158,11,0.12);color:#f59e0b;border-radius:8px;font-size:10px;font-weight:700">❓ שאלה</span>';
-      else if (p.sentiment === 'news') sentBadge = '<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;background:rgba(99,102,241,0.12);color:#6366f1;border-radius:8px;font-size:10px;font-weight:700">📰 חדשות</span>';
-
-      const stockTag = p.stockName ? `<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 7px;background:rgba(14,165,233,0.1);color:#0ea5e9;border-radius:8px;font-size:10px;font-weight:700;font-family:var(--font-mono, monospace)">$${escapeHtml(p.stockName)}</span>` : '';
-
-      return `
-        <div style="padding:12px 14px;border-bottom:1px solid var(--border);transition:background 0.15s"
-             onmouseover="this.style.background='var(--bg-base)'"
-             onmouseout="this.style.background='transparent'">
-          <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;align-items:center">
-            ${sentBadge}
-            ${stockTag}
-            <span style="margin-${(document.body.dir === 'rtl' || document.documentElement.dir === 'rtl') ? 'right' : 'left'}:auto;font-size:10px;color:var(--text-tertiary);font-family:var(--font-mono, monospace)">${dateStr} · ${timeStr}</span>
-          </div>
-          <div style="font-size:13px;color:var(--text-primary);line-height:1.45;white-space:pre-wrap;word-wrap:break-word;margin-bottom:8px">${escapeHtml(preview)}</div>
-          <div style="display:flex;gap:14px;font-size:11px;color:var(--text-tertiary)">
-            <span style="display:inline-flex;align-items:center;gap:4px">❤️ ${p.likeCount || 0}</span>
-            <span style="display:inline-flex;align-items:center;gap:4px">💬 ${p.commentCount || 0}</span>
-            <button onclick="deleteMyPost('${p.id}')" style="margin-${(document.body.dir === 'rtl' || document.documentElement.dir === 'rtl') ? 'right' : 'left'}:auto;background:none;border:none;color:var(--text-tertiary);cursor:pointer;font-size:11px;padding:0;font-family:inherit;display:inline-flex;align-items:center;gap:3px;transition:color 0.15s"
-                    onmouseover="this.style.color='#ef4444'"
-                    onmouseout="this.style.color='var(--text-tertiary)'">🗑 מחק</button>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    const moreFooter = posts.length > limit ? `
-      <div style="padding:10px 14px;text-align:center;border-top:1px dashed var(--border)">
-        <button onclick="goToCommunity()" style="background:none;border:none;color:#0ea5e9;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">
-          הצג עוד ${posts.length - limit} פוסטים בקהילה ›
-        </button>
-      </div>
-    ` : '';
-
-    target.innerHTML = items + moreFooter;
-  } catch (err) {
-    console.error('loadMyPostsForProfile error:', err);
-    target.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-tertiary);font-size:11px">לא ניתן לטעון פוסטים כרגע</div>`;
   }
 }
 
