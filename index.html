@@ -10368,21 +10368,21 @@ function renderPortfolioPieChart() {
   
   // צבעים לענפים
   const sectorColors = {
-    'בנקאות': '#3b82f6',
-    'טכנולוגיה וחצאים': '#8b5cf6',
-    'טכנולוגיה ותוכנה': '#a855f7',
-    'ביטוח ופיננסים': '#06b6d4',
-    'תרופות וביוטכנולוגיה': '#10b981',
-    'אנרגיה ותשתיות': '#f59e0b',
-    'נדל"ן': '#ef4444',
-    'תעשייה ביטחונית': '#64748b',
-    'תעשייה': '#78716c',
-    'קמעונאות': '#ec4899',
-    'מזון ומשקאות': '#f97316',
-    'בנייה ותשתיות': '#84cc16',
-    'תקשורת': '#14b8a6',
-    'כימיה וחומרים': '#6366f1',
-    'כללי': '#94a3b8'
+    'בנקאות': '#13775c',
+    'טכנולוגיה וחצאים': '#3fd1a1',
+    'טכנולוגיה ותוכנה': '#8de8c6',
+    'ביטוח ופיננסים': '#2f8f9d',
+    'תרופות וביוטכנולוגיה': '#9cc5a1',
+    'אנרגיה ותשתיות': '#e9b44c',
+    'נדל"ן': '#d4825a',
+    'תעשייה ביטחונית': '#6b8578',
+    'תעשייה': '#b3ad86',
+    'קמעונאות': '#cf7b7a',
+    'מזון ומשקאות': '#e4ad72',
+    'בנייה ותשתיות': '#7fa585',
+    'תקשורת': '#5aa9a5',
+    'כימיה וחומרים': '#3e7f6c',
+    'כללי': '#b0bdb7'
   };
   
   const labels = sorted.map(([s]) => s);
@@ -10402,10 +10402,11 @@ function renderPortfolioPieChart() {
       datasets: [{
         data: values,
         backgroundColor: colors,
-        borderWidth: 1.5,
-        borderColor: 'var(--bg-base)',
+        borderWidth: 2,
+        // Canvas can't read CSS variables, so resolve the card color here
+        borderColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-elevated').trim() || '#ffffff',
         hoverBorderWidth: 2,
-        hoverBorderColor: 'var(--text-primary)',
+        hoverBorderColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-elevated').trim() || '#ffffff',
         hoverOffset: 4
       }]
     },
@@ -10416,11 +10417,11 @@ function renderPortfolioPieChart() {
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: 'rgba(15,23,42,0.95)',
-          titleFont: { size: 12, weight: '700', family: 'inherit' },
-          bodyFont: { size: 11, family: 'inherit' },
-          padding: 8,
-          cornerRadius: 4,
+          backgroundColor: 'rgba(10,38,33,0.95)',
+          titleFont: { size: 12, weight: '600', family: 'Rubik' },
+          bodyFont: { size: 11, family: 'Rubik' },
+          padding: 10,
+          cornerRadius: 10,
           displayColors: false,
           callbacks: {
             label: function(context) {
@@ -22629,14 +22630,14 @@ function renderTransactions() {
   
   let summaryHtml = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-      <div style="background:rgba(16,185,129,0.08);padding:12px;border-radius:4px;text-align:center">
+      <div class="tx-sum-tile buy">
         <div style="font-size:10px;color:var(--text-tertiary);font-weight:600;text-transform:uppercase;letter-spacing:0.03em">סך קניות</div>
-        <div style="font-size:18px;font-weight:800;color:var(--success);margin-top:4px">${buys.length}</div>
+        <div style="font-size:18px;font-weight:700;color:var(--text-primary);margin-top:4px">${buys.length}</div>
         <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">₪${totalBought.toLocaleString('he-IL', {maximumFractionDigits: 0})}</div>
       </div>
-      <div style="background:rgba(245,158,11,0.08);padding:12px;border-radius:4px;text-align:center">
+      <div class="tx-sum-tile sell">
         <div style="font-size:10px;color:var(--text-tertiary);font-weight:600;text-transform:uppercase;letter-spacing:0.03em">סך מכירות</div>
-        <div style="font-size:18px;font-weight:800;color:#f59e0b;margin-top:4px">${sells.length}</div>
+        <div style="font-size:18px;font-weight:700;color:var(--text-primary);margin-top:4px">${sells.length}</div>
         <div style="font-size:11px;color:var(--text-tertiary);margin-top:2px">₪${totalSold.toLocaleString('he-IL', {maximumFractionDigits: 0})}</div>
       </div>
     </div>
@@ -22652,14 +22653,14 @@ function renderTransactions() {
   summaryHtml += `
     <div style="display:flex;gap:6px;margin-bottom:12px">
       <button class="sort-btn active" onclick="filterTransactions('all', this)" style="font-size:11px;padding:6px 12px">הכל (${transactions.length})</button>
-      <button class="sort-btn" onclick="filterTransactions('buy', this)" style="font-size:11px;padding:6px 12px">🟢 קניות (${buys.length})</button>
-      <button class="sort-btn" onclick="filterTransactions('sell', this)" style="font-size:11px;padding:6px 12px">🟠 מכירות (${sells.length})</button>
+      <button class="sort-btn" onclick="filterTransactions('buy', this)" style="font-size:11px;padding:6px 12px">קניות (${buys.length})</button>
+      <button class="sort-btn" onclick="filterTransactions('sell', this)" style="font-size:11px;padding:6px 12px">מכירות (${sells.length})</button>
     </div>
   `;
   
   const itemsHtml = sorted.map(tx => {
     const isBuy = tx.type === 'buy';
-    const icon = isBuy ? '🟢' : '🟠';
+    const txIcon = isBuy ? icon('arrow-down-left', 18) : icon('arrow-up-right', 18);
     const typeText = isBuy ? 'קנייה' : 'מכירה';
     const date = new Date(tx.date);
     const dateStr = date.toLocaleDateString('he-IL', { day: 'numeric', month: 'short' });
@@ -22679,7 +22680,7 @@ function renderTransactions() {
     
     return `
       <div class="tx-item" data-tx-type="${tx.type}">
-        <div class="tx-icon ${tx.type}">${icon}</div>
+        <div class="tx-icon ${tx.type}">${txIcon}</div>
         <div class="tx-info">
           <div class="tx-name">${tx.stockName || tx.stockId}</div>
           <div class="tx-details">${typeText} · ${tx.quantity} מניות · ₪${tx.price.toFixed(2)} · ${dateStr} ${timeStr}</div>
@@ -22687,13 +22688,14 @@ function renderTransactions() {
         <div class="tx-amount">
           <div class="tx-total ${tx.type}">${isBuy ? '-' : '+'}₪${tx.total.toLocaleString('he-IL', {maximumFractionDigits: 0})}</div>
           ${profitHtml}
-          ${!isBuy ? `<button onclick="event.stopPropagation();shareTradeFromTx('${tx.id}')" style="margin-top:6px;padding:5px 10px;border:none;border-radius:6px;background:linear-gradient(135deg, #0ea5e9, #6366f1);color:white;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:4px">📢 שתף</button>` : ''}
+          ${!isBuy ? `<button onclick="event.stopPropagation();shareTradeFromTx('${tx.id}')" class="tx-share-btn">${icon('share-2', 12)} שתף</button>` : ''}
         </div>
       </div>
     `;
   }).join('');
   
   body.innerHTML = summaryHtml + itemsHtml;
+  if (window.lucide && lucide.createIcons) lucide.createIcons();
 }
 
 // פילטר עסקאות
@@ -28965,6 +28967,67 @@ body {
 
 /* Sticky tabs on the stock page */
 .sp-sticky-tab.active { color: var(--accent); }
+
+/* ============================================================
+   DESIGN B — step 3: portfolio and trade journal
+   ============================================================ */
+/* Summary card */
+.portfolio-summary { border-radius: 20px; border-color: transparent; box-shadow: var(--shadow-sm); padding: 18px; }
+[data-theme="dark"] .portfolio-summary { border-color: var(--border); }
+.portfolio-summary-title, .portfolio-stat-label { text-transform: none; letter-spacing: 0; font-weight: 500; font-size: 12px; }
+.portfolio-summary-total { font-size: 28px; font-weight: 600; }
+.portfolio-summary-total-pct { font-weight: 500; }
+.portfolio-stats { background: transparent; gap: 8px; border-radius: 0; }
+.portfolio-stat { background: var(--bg-base); border-radius: 14px; padding: 10px 12px; }
+.portfolio-stat-value { font-weight: 600; }
+.portfolio-summary [style*="letter-spacing"][style*="font-size:10px"] { text-transform: none !important; letter-spacing: 0 !important; font-size: 12px !important; font-weight: 500 !important; }
+
+/* Toolbar: soft tiles like the home quick actions */
+.portfolio-toolbar { gap: 8px; }
+.portfolio-toolbar-btn { border: 0; border-radius: 14px; background: var(--bg-base); color: var(--text-primary); font-weight: 500; }
+.portfolio-toolbar-btn svg { color: var(--accent); }
+.portfolio-toolbar-btn:hover { background: var(--accent-soft); }
+.portfolio-toolbar-btn.danger svg { color: var(--danger); }
+.portfolio-toolbar-btn.danger:hover { background: rgba(224, 71, 76, 0.08); }
+
+/* Holdings list: one rounded card with soft dividers */
+.portfolio-compact { border: 0; border-radius: 20px; box-shadow: var(--shadow-sm); }
+[data-theme="dark"] .portfolio-compact { border: 1px solid var(--border); }
+.portfolio-item { border-bottom: 1px solid var(--border); }
+.portfolio-item-header { padding: 14px 18px; }
+.portfolio-item-name { font-weight: 600; }
+.portfolio-item-quantity-label { text-transform: none; font-weight: 500; }
+.portfolio-item-profit { font-weight: 600; }
+.portfolio-item-details { border-top-color: var(--border); }
+.portfolio-action-btn { border-radius: 99px; }
+.portfolio-sell-btn { background: var(--b-hero-1); }
+.portfolio-sell-btn:hover { background: var(--accent); }
+
+/* Trade journal */
+.tx-overlay { background: rgba(6, 20, 15, 0.55); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+.tx-box { border-radius: 24px; box-shadow: var(--shadow-lg); }
+.tx-header { border-bottom-color: var(--border); }
+.tx-title { font-weight: 600; }
+.tx-close { width: 36px; height: 36px; border-radius: 50%; background: var(--bg-base); font-size: 18px; display: grid; place-items: center; }
+.tx-sum-tile { padding: 12px; border-radius: 16px; text-align: center; background: var(--bg-base); }
+.tx-sum-tile.buy { background: var(--accent-soft); }
+#tx-body > div[style*="border-radius:12px"] { border-radius: 18px !important; }
+.tx-item { border: 0; border-radius: 16px; background: var(--bg-base); padding: 12px 14px; }
+.tx-icon { width: 38px; height: 38px; border-radius: 12px; }
+.tx-icon.buy { background: var(--accent-soft); color: var(--accent); }
+.tx-icon.sell { background: rgba(233, 180, 76, 0.16); color: #b7791f; }
+[data-theme="dark"] .tx-icon.sell { color: #e9b44c; }
+.tx-total { font-weight: 600; }
+.tx-total.buy { color: var(--text-primary); }
+.tx-share-btn {
+  margin-top: 6px; padding: 5px 11px; border: 0; border-radius: 99px;
+  background: var(--accent-soft); color: var(--accent);
+  font: inherit; font-size: 11px; font-weight: 600; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.tx-share-btn:hover { background: var(--accent); color: #fff; }
+[data-theme="dark"] .tx-box, [data-theme="dark"] .glossary-box, [data-theme="dark"] .simple-popup-box { background: var(--bg-elevated); }
+.portfolio-toolbar-btn { padding-block: 10px; }
 </style>
 
 </body>
