@@ -7766,6 +7766,7 @@ setTimeout(() => {
         </button>
         <span class="notif-bell-badge" id="notif-bell-badge" style="display:none">0</span>
       </div>
+      <button class="header-avatar" id="header-avatar" onclick="goToProfile()" title="הפרופיל וההגדרות" aria-label="הפרופיל וההגדרות">👤</button>
       <div id="status-bar" style="font-size:10px;color:rgba(255,255,255,0.5);font-weight:500">טוען...</div>
     </div>
 
@@ -7975,6 +7976,7 @@ setTimeout(() => {
         <button type="button" data-range="30">חודש</button>
         <button type="button" data-range="all" class="on">הכל</button>
       </div>
+      <button type="button" class="b-hero-link" onclick="goToPortfolio()">לתיק המלא ‹</button>
       <div class="b-hero-stats">
         <div><span>מזומן</span><b id="dashboard-cash">₪0</b></div>
         <div><span>בתיק</span><b id="dashboard-portfolio-count">0</b></div>
@@ -7985,13 +7987,8 @@ setTimeout(() => {
     <!-- Real Holdings Summary (loaded async, dashboard view) -->
     <div id="dashboard-real-holdings-summary"></div>
 
-    <!-- Quick Actions (design B) -->
-    <div class="b-actions">
-      <button type="button" class="b-act" onclick="goToAllStocks()"><i class="b-act-ic"><i data-lucide="list" style="width:18px;height:18px"></i></i><span>מניות</span></button>
-      <button type="button" class="b-act" onclick="goToPortfolio()"><i class="b-act-ic"><i data-lucide="briefcase" style="width:18px;height:18px"></i></i><span>התיק שלי</span></button>
-      <button type="button" class="b-act" onclick="goToMarket()"><i class="b-act-ic"><i data-lucide="bar-chart-3" style="width:18px;height:18px"></i></i><span>שוק</span></button>
-      <button type="button" class="b-act" onclick="goToFunctions()"><i class="b-act-ic"><i data-lucide="layout-grid" style="width:18px;height:18px"></i></i><span>כלים</span></button>
-    </div>
+    <!-- Next learning step (filled by renderHomeLearnCard) -->
+    <div id="home-learn-card"></div>
 
     <!-- Dashboard Search Bar -->
     <div onclick="goToAllStocks();setTimeout(()=>{const s=document.getElementById('stocks-inline-search');if(s){s.focus()}},300)" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:10px 14px;margin-bottom:8px;display:flex;align-items:center;gap:8px;cursor:pointer">
@@ -8028,24 +8025,6 @@ setTimeout(() => {
       </div>
     </div>
 
-    <!-- Leaderboard Mini (links to Competition Arena) -->
-    <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:14px;margin-bottom:8px;cursor:pointer" onclick="goToCompetition()">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <div style="font-size:12px;font-weight:700;color:var(--text-primary)"><i data-lucide="trophy" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-left:4px"></i> זירת התחרות</div>
-        <span style="font-size:11px;color:var(--accent);font-weight:600">לזירה →</span>
-      </div>
-      <div id="dashboard-leaderboard-body"><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div></div>
-    </div>
-
-    <!-- Portfolio Mini -->
-    <div id="dashboard-portfolio-card" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:14px;margin-bottom:8px;cursor:pointer" onclick="goToPortfolio()">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div style="font-size:12px;font-weight:700;color:var(--text-primary)"><i data-lucide="briefcase" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-left:4px"></i> תיק הדמה</div>
-        <span style="font-size:11px;color:var(--accent);font-weight:600">פרטים →</span>
-      </div>
-      <div id="dashboard-portfolio-mini"><div class="skeleton skeleton-card"></div></div>
-    </div>
-
     <div style="height:70px"></div>
   </div>
 
@@ -8063,6 +8042,7 @@ setTimeout(() => {
       </div>
     </div>
   </div>
+  <div class="section-tabs" id="section-tabs" role="tablist" hidden></div>
 
   <!-- Search + Filter Card -->
   <div id="stocks-filter-card" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:10px 12px;margin-bottom:6px">
@@ -8222,6 +8202,7 @@ setTimeout(() => {
 
   <!-- Budget View -->
   <div id="budget-view" style="display:none;">
+    <div class="section-tabs" role="tablist" hidden></div>
     <div class="budget-container">
 
       <!-- Sticky summary at top - always visible while scrolling/typing -->
@@ -8422,11 +8403,13 @@ setTimeout(() => {
 
   <!-- Competition Arena (full page) -->
   <div id="competition-view">
+    <div class="section-tabs" id="section-tabs-competition" role="tablist" hidden></div>
     <div id="competition-content"></div>
   </div>
 
   <!-- Investment Calculator -->
   <div id="calc-view">
+    <div class="section-tabs" role="tablist" hidden></div>
     <div id="calc-content"></div>
   </div>
 
@@ -14913,6 +14896,11 @@ function renderDashboard() {
         avatarEl.textContent = avatar;
       }
     }
+    const headerAvatarEl = document.getElementById('header-avatar');
+    if (headerAvatarEl) {
+      if (profilePic) headerAvatarEl.innerHTML = `<img src="${escapeAttr(profilePic)}" alt="">`;
+      else headerAvatarEl.textContent = profileData.avatar || '👤';
+    }
   }
   
   // Stats
@@ -14950,6 +14938,7 @@ function renderDashboard() {
     todayChangeEl.classList.toggle('dn', !up);
   }
   try { recordPortfolioSnapshot(portfolioValue); renderPortfolioChart(); } catch (e) { console.warn('portfolio chart:', e); }
+  try { renderHomeLearnCard(); } catch (e) { console.warn('learn card:', e); }
   
   // Watchlists on dashboard - collapsible with rename
   const watchlistsBody = document.getElementById('dashboard-watchlists-body');
@@ -19410,147 +19399,106 @@ async function viewFriendPortfolio(uid, username) {
 
 // ===== FUNCTIONS PAGE =====
 function goToFunctions() {
+  // The old "כלים" drawer was split up; its learning content became the "לימוד" tab
+  goToLearn();
+}
+
+// ===== LEARN HUB (the "לימוד" tab; replaces the old "כלים" drawer) =====
+// The next thing worth doing, used by the learn hub and the home card
+function getNextLearningStep() {
+  const progress = getChallengeProgress();
+  const completedLessons = JSON.parse(localStorage.getItem('completed_lessons_' + currentUser) || '[]');
+  if (portfolio.length === 0) {
+    return { icon: 'plus-circle', title: 'קנה מניה ראשונה', sub: 'הכסף הווירטואלי מחכה לך בתיק הדמה', action: 'goToAllStocks()', cta: 'התחל' };
+  }
+  const nextLesson = LESSONS.find(l => !completedLessons.includes(l.id));
+  if (nextLesson) {
+    return { icon: 'book-open', title: 'המשך ללמוד', sub: 'השיעור הבא: ' + nextLesson.title, action: 'goToLessons()', cta: 'המשך',
+             pct: Math.round(completedLessons.length / LESSONS.length * 100) };
+  }
+  if (progress.completed < progress.total) {
+    return { icon: 'target', title: 'השלם אתגרים', sub: `${progress.completed} מתוך ${progress.total} אתגרים הושלמו`, action: 'goToChallenges()', cta: 'המשך',
+             pct: Math.round(progress.completed / progress.total * 100) };
+  }
+  return { icon: 'gamepad-2', title: 'נסה את Trader Academy ברמה קשה', sub: 'השלמת את כל השיעורים והאתגרים', action: 'goToSimulator()', cta: 'שחק' };
+}
+
+function renderHomeLearnCard() {
+  const el = document.getElementById('home-learn-card');
+  if (!el || !currentUser) return;
+  const step = getNextLearningStep();
+  el.innerHTML = `
+    <button type="button" class="home-learn" onclick="${step.action}">
+      <span class="home-learn-ic">${icon(step.icon, 20)}</span>
+      <span class="home-learn-txt"><b>${step.title}</b><small>${escapeHtml(step.sub)}</small>
+        ${step.pct != null ? `<span class="learn-bar"><i style="width:${step.pct}%"></i></span>` : ''}</span>
+      <span class="home-learn-cta">${step.cta} ‹</span>
+    </button>`;
+  if (window.lucide && lucide.createIcons) lucide.createIcons();
+}
+
+function goToLearn() {
   viewMode = 'stocks';
   switchView();
-  showPageHeader('פונקציות', '📦', 'כל הכלים שלך במקום אחד', 'blue');
+  showPageHeader('לימוד', '🎓', 'שיעורים, תרחישים, אתגרים ומושגים', 'green');
   currentSort = 'functions';
-  
-  // Hide stocks UI
   ['cards-grid', 'portfolio-summary-container', 'results-count', 'sort-bar', 'filter-bar', 'watchlist-selector-container', 'stocks-search-bar'].forEach(id => {
     const el = document.getElementById(id); if (el) el.style.display = 'none';
   });
   ['.sector-filter', '.screener-panel', '.holdings-summary'].forEach(cls => {
     const el = document.querySelector(cls); if (el) el.style.display = 'none';
   });
-  
   const fv = document.getElementById('functions-view');
   if (fv) fv.style.display = 'block';
-  
-  updateBottomNav('nav-functions');
   renderFunctions();
-  history.pushState({ page: 'functions' }, '', '#functions');
+  if (typeof scrollToTop === 'function') scrollToTop();
+  history.pushState({ page: 'learn' }, '', '#learn');
 }
 
 function renderFunctions() {
   const c = document.getElementById('functions-content');
   if (!c) return;
-  
-  const stats = calculatePortfolioStats();
   const progress = getChallengeProgress();
   const completedLessons = JSON.parse(localStorage.getItem('completed_lessons_' + currentUser) || '[]');
-  
-  // === "CONTINUE WHERE YOU LEFT OFF" logic ===
-  let continueCard = '';
-  if (portfolio.length === 0) {
-    continueCard = `
-      <div onclick="goToAllStocks()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:14px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:12px;border-left:3px solid #0ea5e9">
-        <div style="width:40px;height:40px;border-radius:8px;background:rgba(14,165,233,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#0ea5e9">${icon('plus-circle', 20)}</div>
-        <div style="flex:1">
-          <div style="font-size:13px;font-weight:700;color:var(--text-primary)">קנה מניה ראשונה</div>
-          <div style="font-size:11px;color:var(--text-tertiary)">₪30,000 מחכים לך בתיק הדמה</div>
-        </div>
-        <div style="color:var(--accent);font-size:12px;font-weight:600">התחל →</div>
-      </div>`;
-  } else if (completedLessons.length < LESSONS.length) {
-    const nextLesson = LESSONS.find(l => !completedLessons.includes(l.id));
-    if (nextLesson) {
-      continueCard = `
-        <div onclick="goToLessons()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:14px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:12px;border-left:3px solid #10b981">
-          <div style="width:40px;height:40px;border-radius:8px;background:rgba(16,185,129,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#10b981">${icon('book-open', 20)}</div>
-          <div style="flex:1">
-            <div style="font-size:13px;font-weight:700;color:var(--text-primary)">המשך ללמוד</div>
-            <div style="font-size:11px;color:var(--text-tertiary)">השיעור הבא: ${nextLesson.title}</div>
-          </div>
-          <div style="color:#10b981;font-size:12px;font-weight:600">המשך →</div>
-        </div>`;
-    }
-  } else if (progress.completed < progress.total) {
-    continueCard = `
-      <div onclick="goToChallenges()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:14px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:12px;border-left:3px solid #ef4444">
-        <div style="width:40px;height:40px;border-radius:8px;background:rgba(239,68,68,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#ef4444">${icon('target', 20)}</div>
-        <div style="flex:1">
-          <div style="font-size:13px;font-weight:700;color:var(--text-primary)">השלם אתגרים</div>
-          <div style="font-size:11px;color:var(--text-tertiary)">${progress.completed}/${progress.total} הושלמו — ממשיכים!</div>
-        </div>
-        <div style="color:#ef4444;font-size:12px;font-weight:600">המשך →</div>
-      </div>`;
-  } else {
-    continueCard = `
-      <div onclick="goToSimulator()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:14px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:12px;border-left:3px solid #8b5cf6">
-        <div style="width:40px;height:40px;border-radius:8px;background:rgba(139,92,246,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#8b5cf6">${icon('trophy', 20)}</div>
-        <div style="flex:1">
-          <div style="font-size:13px;font-weight:700;color:var(--text-primary)">אלוף! 🎉</div>
-          <div style="font-size:11px;color:var(--text-tertiary)">נסה את Trader Academy רמה קשה</div>
-        </div>
-        <div style="color:#8b5cf6;font-size:12px;font-weight:600">שחק →</div>
-      </div>`;
-  }
-  
-  // === PROGRESS STATS ===
-  const totalTasks = LESSONS.length + progress.total + 15; // lessons + challenges + academy scenarios
-  const completedTasks = completedLessons.length + progress.completed;
-  const overallPct = Math.round((completedTasks / totalTasks) * 100);
-  
+  const done = completedLessons.length + progress.completed;
+  const total = LESSONS.length + progress.total;
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  const step = getNextLearningStep();
+
   const items = [
-    { icon: icon('trophy', 22), title: 'זירת התחרות', desc: 'המשקיע הכי טוב של תל-35', action: 'goToCompetition()', color: '#f59e0b' },
-    { icon: icon('calculator', 22), title: 'מחשבון השקעה', desc: 'חשב רווח לאחר מס 25%', action: 'goToCalculator()', color: '#10b981' },
-    { icon: icon('briefcase', 22), title: 'תיק דמה', desc: `${portfolio.length} מניות · ₪${stats.totalPortfolioWorth.toLocaleString('he-IL',{maximumFractionDigits:0})}`, action: 'goToPortfolio()', color: '#f59e0b' },
-    { icon: icon('list', 22), title: 'כל המניות', desc: `${companies.length} מניות ת"א 35`, action: 'goToAllStocks()', color: '#0ea5e9' },
-    { icon: icon('gamepad-2', 22), title: 'Trader Academy', desc: '15 תרחישי השקעה × 3 רמות', action: 'goToSimulator()', color: '#8b5cf6' },
-    { icon: icon('book-open', 22), title: 'שיעורי השקעות', desc: `${completedLessons.length}/${LESSONS.length} שיעורים הושלמו`, action: 'goToLessons()', color: '#10b981' },
-    { icon: icon('target', 22), title: 'אתגרים ומשימות', desc: `${progress.completed}/${progress.total} הושלמו`, action: 'goToChallenges()', color: '#ef4444' },
-    { icon: icon('wallet', 22), title: 'ניהול תקציב', desc: 'תכנון תקציב חודשי', action: 'goToBudget()', color: '#f97316' },
-    { icon: icon('book-marked', 22), title: 'מילון מושגים', desc: '26 מושגים פיננסיים', action: 'openGlossary()', color: '#06b6d4' },
-    { icon: icon('scale', 22), title: 'השוואת מניות', desc: 'השווה 2 מניות זו לצד זו', action: 'openCompare()', color: '#a855f7' },
-    { icon: icon('users', 22), title: 'חפש חבר', desc: 'צפה בתיק של חברים', action: 'openFriendSearch()', color: '#ec4899' },
+    { ic: 'gamepad-2', title: 'Trader Academy', desc: '15 תרחישי השקעה, 3 רמות קושי', action: 'goToSimulator()' },
+    { ic: 'book-open', title: 'שיעורים', desc: `${completedLessons.length} מתוך ${LESSONS.length} הושלמו`, action: 'goToLessons()', pct: Math.round(completedLessons.length / Math.max(1, LESSONS.length) * 100) },
+    { ic: 'target', title: 'אתגרים', desc: `${progress.completed} מתוך ${progress.total} הושלמו`, action: 'goToChallenges()', pct: Math.round(progress.completed / Math.max(1, progress.total) * 100) },
+    { ic: 'book-marked', title: 'מילון מושגים', desc: '26 מושגים פיננסיים', action: 'openGlossary()' },
   ];
-  
+
   c.innerHTML = `
-    ${continueCard}
-    
-    <!-- Progress Stats -->
-    <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:14px;margin-bottom:8px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <div style="font-size:12px;font-weight:700;color:var(--text-primary)">ההתקדמות שלך</div>
-        <div style="font-size:12px;font-weight:700;font-family:var(--font-mono);color:var(--accent)">${overallPct}%</div>
-      </div>
-      <div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-bottom:10px">
-        <div style="height:100%;width:${overallPct}%;background:linear-gradient(90deg,#0ea5e9,#8b5cf6);border-radius:2px;transition:width 0.5s"></div>
-      </div>
-      <div style="display:flex;gap:12px;justify-content:center">
-        <div style="text-align:center">
-          <div style="font-size:14px;font-weight:700;font-family:var(--font-mono);color:var(--text-primary)">${completedLessons.length}/${LESSONS.length}</div>
-          <div style="font-size:9px;color:var(--text-tertiary);font-weight:600;text-transform:uppercase;letter-spacing:0.04em">שיעורים</div>
-        </div>
-        <div style="width:1px;background:var(--border)"></div>
-        <div style="text-align:center">
-          <div style="font-size:14px;font-weight:700;font-family:var(--font-mono);color:var(--text-primary)">${progress.completed}/${progress.total}</div>
-          <div style="font-size:9px;color:var(--text-tertiary);font-weight:600;text-transform:uppercase;letter-spacing:0.04em">אתגרים</div>
-        </div>
-        <div style="width:1px;background:var(--border)"></div>
-        <div style="text-align:center">
-          <div style="font-size:14px;font-weight:700;font-family:var(--font-mono);color:var(--text-primary)">${portfolio.length}</div>
-          <div style="font-size:9px;color:var(--text-tertiary);font-weight:600;text-transform:uppercase;letter-spacing:0.04em">מניות בתיק</div>
-        </div>
-        <div style="width:1px;background:var(--border)"></div>
-        <div style="text-align:center">
-          <div style="font-size:14px;font-weight:700;font-family:var(--font-mono);color:var(--text-primary)">${favorites.length}</div>
-          <div style="font-size:9px;color:var(--text-tertiary);font-weight:600;text-transform:uppercase;letter-spacing:0.04em">במעקב</div>
-        </div>
+    <div class="learn-progress">
+      <div class="learn-progress-top"><span>ההתקדמות שלך</span><b>${pct}%</b></div>
+      <span class="learn-bar big"><i style="width:${pct}%"></i></span>
+      <div class="learn-progress-stats">
+        <div><b>${completedLessons.length}/${LESSONS.length}</b><span>שיעורים</span></div>
+        <div><b>${progress.completed}/${progress.total}</b><span>אתגרים</span></div>
       </div>
     </div>
-    
-    <!-- Functions Grid -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      ${items.map(item => `
-        <div onclick="${item.action}" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:18px 16px;cursor:pointer;border-left:3px solid ${item.color};transition:background 0.15s;min-height:90px;display:flex;flex-direction:column;justify-content:center" onmouseover="this.style.background='var(--bg-base)'" onmouseout="this.style.background='var(--bg-elevated)'">
-          <div style="margin-bottom:8px;color:${item.color}">${item.icon}</div>
-          <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:3px">${item.title}</div>
-          <div style="font-size:11px;color:var(--text-tertiary);line-height:1.4">${item.desc}</div>
-        </div>
-      `).join('')}
+
+    <button type="button" class="home-learn" onclick="${step.action}">
+      <span class="home-learn-ic">${icon(step.icon, 20)}</span>
+      <span class="home-learn-txt"><b>${step.title}</b><small>${escapeHtml(step.sub)}</small></span>
+      <span class="home-learn-cta">${step.cta} ‹</span>
+    </button>
+
+    <div class="learn-grid">
+      ${items.map(it => `
+        <button type="button" class="learn-tile" onclick="${it.action}">
+          <span class="learn-tile-ic">${icon(it.ic, 22)}</span>
+          <b>${it.title}</b>
+          <small>${it.desc}</small>
+          ${it.pct != null ? `<span class="learn-bar"><i style="width:${it.pct}%"></i></span>` : ''}
+        </button>`).join('')}
     </div>
   `;
+  if (window.lucide && lucide.createIcons) lucide.createIcons();
 }
 
 // ===== MARKET PAGE =====
@@ -19591,15 +19539,6 @@ function renderMarketPage() {
   const dateStr = now.toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' });
   
   c.innerHTML = `
-    <!-- Competition Arena Link -->
-    <div onclick="goToCompetition()" style="background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);border:1px solid rgba(245,158,11,0.3);border-radius:6px;padding:14px;margin-bottom:8px;cursor:pointer;position:relative;overflow:hidden;display:flex;align-items:center;gap:12px">
-      <div style="font-size:32px">🏆</div>
-      <div style="flex:1">
-        <div style="font-size:14px;font-weight:800;color:white;margin-bottom:2px">זירת התחרות</div>
-        <div style="font-size:11px;color:rgba(255,255,255,0.6)">מי המשקיע המצליח ביותר של תל-35?</div>
-      </div>
-      <div style="background:#f59e0b;color:#0f172a;padding:6px 12px;border-radius:4px;font-size:11px;font-weight:800">לזירה →</div>
-    </div>
 
     <!-- Daily Overview -->
     <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:4px;padding:16px;margin-bottom:8px;text-align:center">
@@ -20781,7 +20720,7 @@ async function showPrompt(message, defaultValue = '') {
 function goToProfile() {
   viewMode = 'stocks';
   switchView();
-  showPageHeader('הפרופיל שלי', '👤', 'הפעילות, התיק וההגדרות שלך', 'blue');
+  showPageHeader('הפרופיל שלי', '👤', 'הפעילות וההגדרות שלך', 'blue');
   setSort('profile');
   updateBottomNav('nav-profile');
   history.pushState({ page: 'profile' }, '', '#profile');
@@ -20945,24 +20884,6 @@ async function renderProfile() {
 
       </div>
 
-      <!-- ========== PORTFOLIO CARD (תיק דמה) ========== -->
-      <div onclick="goToPortfolio()" style="background:linear-gradient(135deg,var(--bg-elevated) 0%,var(--bg-elevated) 70%, ${pfReturn >= 0 ? 'rgba(16,185,129,0.06)' : 'rgba(239,68,68,0.06)'} 100%);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:14px;cursor:pointer;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;transition:all 0.2s"
-           onmouseover="this.style.borderColor='${pfReturn >= 0 ? '#10b981' : '#ef4444'}';this.style.transform='translateY(-1px)'"
-           onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-        <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(160deg,var(--b-hero-1),var(--accent));display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(15,59,51,0.25)">
-          <i data-lucide="briefcase" style="width:22px;height:22px;color:white"></i>
-        </div>
-        <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
-            <span style="font-size:13px;font-weight:800;color:var(--text-primary)">תיק דמה</span>
-            <span style="font-size:9px;font-weight:700;color:var(--text-tertiary);background:var(--bg-base);padding:2px 6px;border-radius:8px;text-transform:uppercase;letter-spacing:0.06em">${(typeof portfolio !== 'undefined' ? portfolio.length : 0)} מניות</span>
-          </div>
-          <div style="font-size:18px;font-weight:800;color:var(--text-primary);font-family:var(--font-mono, monospace);line-height:1">₪${pfValue.toLocaleString('he-IL', {maximumFractionDigits:0})}</div>
-          <div style="font-size:11px;color:${pfReturnColor};font-weight:700;margin-top:3px;font-family:var(--font-mono, monospace)">${pfReturnStr} · ${pfProfit >= 0 ? '+' : ''}₪${Math.abs(pfProfit).toLocaleString('he-IL', {maximumFractionDigits:0})}</div>
-        </div>
-        <div style="color:var(--text-tertiary);font-size:22px;flex-shrink:0">›</div>
-      </div>
-
       <!-- ========== REAL HOLDINGS (US stocks, loaded async) ========== -->
       <div id="profile-real-holdings-section"></div>
 
@@ -21001,74 +20922,6 @@ async function renderProfile() {
 
       <!-- ========== SAVED CALCULATIONS (rendered async) ========== -->
       <div id="profile-saved-calcs-section"></div>
-
-      <!-- ========== QUICK ACTIONS (premium tile grid - 6 actions) ========== -->
-      <div style="margin-bottom:14px">
-        <div style="font-size:10px;font-weight:800;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;padding:0 4px">⚡ פעולות מהירות</div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
-
-          <!-- Simulator -->
-          <button onclick="goToSimulator()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s"
-                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
-                  onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-            <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
-              <i data-lucide="zap" style="width:18px;height:18px;color:var(--accent)"></i>
-            </div>
-            <div style="font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.2">סימולטור</div>
-          </button>
-
-          <!-- Calculator -->
-          <button onclick="goToCalculator()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s"
-                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
-                  onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-            <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
-              <i data-lucide="calculator" style="width:18px;height:18px;color:var(--accent)"></i>
-            </div>
-            <div style="font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.2">מחשבון</div>
-          </button>
-
-          <!-- Budget -->
-          <button onclick="goToBudget()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s"
-                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
-                  onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-            <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
-              <i data-lucide="wallet" style="width:18px;height:18px;color:var(--accent)"></i>
-            </div>
-            <div style="font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.2">תקציב</div>
-          </button>
-
-          <!-- Lessons (קורס) -->
-          <button onclick="setSort('lessons');goToFunctions();" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s"
-                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
-                  onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-            <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
-              <i data-lucide="book-open" style="width:18px;height:18px;color:var(--accent)"></i>
-            </div>
-            <div style="font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.2">הקורס</div>
-          </button>
-
-          <!-- Challenges -->
-          <button onclick="setSort('challenges');goToFunctions();" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s"
-                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
-                  onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-            <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
-              <i data-lucide="trophy" style="width:18px;height:18px;color:var(--accent)"></i>
-            </div>
-            <div style="font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.2">אתגרים</div>
-          </button>
-
-          <!-- Competition -->
-          <button onclick="goToCompetition()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 8px;cursor:pointer;text-align:center;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:6px;transition:all 0.15s"
-                  onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-1px)'"
-                  onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
-            <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center">
-              <i data-lucide="medal" style="width:18px;height:18px;color:var(--accent)"></i>
-            </div>
-            <div style="font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.2">תחרות</div>
-          </button>
-
-        </div>
-      </div>
 
       <!-- ========== MY POSTS (loaded async) ========== -->
       <div id="posts-section" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:14px">
@@ -23141,19 +22994,17 @@ document.addEventListener('keydown', e => {
     <span class="bottom-nav-icon"><i data-lucide="trending-up" style="width:20px;height:20px"></i></span>
     <span class="bottom-nav-label">שוק</span>
   </button>
-  <button class="bottom-nav-compose" onclick="openCompose()" aria-label="פוסט חדש">
-    <span class="bottom-nav-compose-fab">
-      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    </span>
-    <span class="bottom-nav-compose-label">פרסם</span>
+  <button class="bottom-nav-item" id="nav-portfolio" onclick="goToPortfolio()">
+    <span class="bottom-nav-icon"><i data-lucide="briefcase" style="width:20px;height:20px"></i></span>
+    <span class="bottom-nav-label">התיק</span>
+  </button>
+  <button class="bottom-nav-item" id="nav-learn" onclick="goToLearn()">
+    <span class="bottom-nav-icon"><i data-lucide="graduation-cap" style="width:20px;height:20px"></i></span>
+    <span class="bottom-nav-label">לימוד</span>
   </button>
   <button class="bottom-nav-item" id="nav-community" onclick="goToCommunity()">
     <span class="bottom-nav-icon"><i data-lucide="message-circle" style="width:20px;height:20px"></i></span>
     <span class="bottom-nav-label">קהילה</span>
-  </button>
-  <button class="bottom-nav-item" id="nav-profile" onclick="goToProfile()">
-    <span class="bottom-nav-icon"><i data-lucide="user" style="width:20px;height:20px"></i></span>
-    <span class="bottom-nav-label">פרופיל</span>
   </button>
 </nav>
 
@@ -25075,10 +24926,14 @@ if ('serviceWorker' in navigator) {
     <button class="community-tab" id="ctab-following" onclick="setCommunityTab('following')">עוקב</button>
     <button class="community-tab" id="ctab-popular" onclick="setCommunityTab('popular')">פופולרי</button>
     <button class="community-tab" id="ctab-discover" onclick="setCommunityTab('discover')">גלה</button>
+    <button class="community-tab" id="ctab-competition" onclick="goToCompetition()">תחרות</button>
   </div>
 
   <!-- Content area (gets re-rendered per tab) -->
   <div id="community-content"></div>
+  <button type="button" class="community-fab" onclick="openCompose()" aria-label="פוסט חדש">
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </button>
 </div>
 <!-- ========================================================================
      SOCIAL NETWORK — JAVASCRIPT (Phase 1+2+3)
@@ -28672,6 +28527,72 @@ console.log('[dashboard-holdings] summary card loaded');
 })();
 </script>
 
+<script>
+/* ============================================================
+   NAVIGATION (layout A): one place decides which bottom tab is
+   active and which sub-tabs show, based on the page being opened.
+   ============================================================ */
+(function navigationLayoutA() {
+  const PAGE_TO_TAB = {
+    dashboard: 'nav-home', watchlist: 'nav-home',
+    market: 'nav-market', all: 'nav-market', compare: 'nav-market', stock: 'nav-market',
+    portfolio: 'nav-portfolio', calc: 'nav-portfolio', tradecalc: 'nav-portfolio', budget: 'nav-portfolio',
+    learn: 'nav-learn', functions: 'nav-learn', lessons: 'nav-learn', simulator: 'nav-learn', challenges: 'nav-learn',
+    community: 'nav-community', feed: 'nav-community', competition: 'nav-community',
+    profile: null, settings: null
+  };
+  const SECTIONS = {
+    market: [['market', 'סקירה', 'goToMarket()'], ['all', 'כל המניות', 'goToAllStocks()'], ['compare', 'השוואה', 'openCompare()']],
+    portfolio: [['portfolio', 'התיק', 'goToPortfolio()'], ['journal', 'יומן עסקאות', 'openTransactionsHistory()'], ['calc', 'מחשבון', 'goToCalculator()'], ['budget', 'תקציב', 'goToBudget()']],
+    community: [['community', 'פיד', 'goToCommunity()'], ['competition', 'זירת התחרות', 'goToCompetition()']]
+  };
+  const PAGE_TO_SECTION = { market: 'market', all: 'market', compare: 'market', portfolio: 'portfolio', calc: 'portfolio', budget: 'portfolio', competition: 'community' };
+
+  function renderSectionTabs(page) {
+    const group = PAGE_TO_SECTION[page];
+    // Some pages are standalone views with their own bar; fill every bar,
+    // only the one inside the visible view is actually seen.
+    document.querySelectorAll('.section-tabs').forEach(bar => {
+      if (!group) { bar.hidden = true; bar.innerHTML = ''; return; }
+      bar.innerHTML = SECTIONS[group].map(([key, label, action]) =>
+        `<button type="button" role="tab" class="section-tab${key === page ? ' active' : ''}" aria-selected="${key === page}" onclick="${action}">${label}</button>`
+      ).join('');
+      bar.hidden = false;
+    });
+  }
+
+  function syncNavForPage(page) {
+    if (!page) page = 'dashboard';
+    const tab = PAGE_TO_TAB[page];
+    if (tab !== undefined) {
+      document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.toggle('active', b.id === tab));
+    }
+    renderSectionTabs(page);
+    document.querySelectorAll('.community-tab').forEach(t => { if (t.id === 'ctab-competition') t.classList.toggle('active', page === 'competition'); });
+  }
+  window.syncNavForPage = syncNavForPage;
+
+  // Every screen change already calls history.pushState({ page }); hook it
+  const originalPush = history.pushState.bind(history);
+  history.pushState = function (state) {
+    const result = originalPush.apply(history, arguments);
+    const page = state && state.page;
+    setTimeout(() => syncNavForPage(page), 0);
+    return result;
+  };
+  window.addEventListener('popstate', e => syncNavForPage(e.state && e.state.page));
+
+  // goToDashboard doesn't push a page: clear sub-tabs when it runs
+  const originalDashboard = window.goToDashboard;
+  if (typeof originalDashboard === 'function') {
+    window.goToDashboard = function () {
+      const r = originalDashboard.apply(this, arguments);
+      setTimeout(() => syncNavForPage('dashboard'), 0);
+      return r;
+    };
+  }
+})();
+</script>
 <style id="design-b-layer">
 /* ============================================================
    DESIGN B — "Fintech" layer
@@ -29146,6 +29067,100 @@ button[style*="linear-gradient(135deg,#0ea5e9"], button[style*="linear-gradient(
 [style*="rgba(14,165,233,0.04),rgba(139,92,246,0.04)"] {
   background: var(--bg-elevated) !important; border-color: transparent !important;
 }
+
+/* ============================================================
+   LAYOUT A — navigation, sub-tabs, learn hub
+   ============================================================ */
+/* Bottom nav: five equal tabs */
+.bottom-nav-item { flex: 1; padding: 6px 2px; min-width: 0; }
+.bottom-nav-label { white-space: nowrap; }
+
+/* Profile avatar in the top header */
+.header-avatar {
+  width: 34px; height: 34px; border-radius: 50%; border: 0; padding: 0; flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.12); color: var(--b-on-hero);
+  display: grid; place-items: center; font-size: 17px; cursor: pointer; overflow: hidden;
+}
+.header-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.header-avatar:focus-visible { outline: 2px solid var(--b-mint); outline-offset: 2px; }
+
+/* Sub-tabs under a page banner (שוק / התיק / קהילה) */
+.section-tabs {
+  display: flex; gap: 4px; margin: 10px 0 12px; padding: 4px;
+  background: var(--bg-elevated); border-radius: 99px; box-shadow: var(--shadow-sm);
+  overflow-x: auto; scrollbar-width: none;
+}
+.section-tabs[hidden] { display: none; }
+.section-tabs::-webkit-scrollbar { display: none; }
+.section-tab {
+  flex: 1 0 auto; border: 0; background: transparent; border-radius: 99px;
+  padding: 8px 14px; font: inherit; font-size: 13px; font-weight: 500; color: var(--text-secondary);
+  cursor: pointer; white-space: nowrap;
+}
+.section-tab.active { background: var(--b-hero-1); color: var(--b-on-hero); font-weight: 600; }
+[data-theme="dark"] .section-tab.active { background: var(--accent); color: #0a2621; }
+.section-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Hero link to the full portfolio */
+.b-hero-link {
+  align-self: flex-start; margin-top: 8px; border: 0; background: rgba(110, 240, 190, 0.14);
+  color: var(--b-mint); font: inherit; font-size: 12px; font-weight: 500;
+  padding: 5px 12px; border-radius: 99px; cursor: pointer;
+}
+
+/* "Next learning step" card (home + learn hub) */
+.home-learn {
+  width: 100%; display: flex; align-items: center; gap: 12px; text-align: right;
+  background: var(--bg-elevated); border: 0; border-radius: 18px; padding: 14px;
+  box-shadow: var(--shadow-sm); font: inherit; color: var(--text-primary); cursor: pointer; margin-bottom: 12px;
+}
+[data-theme="dark"] .home-learn { border: 1px solid var(--border); }
+.home-learn-ic { width: 42px; height: 42px; border-radius: 14px; background: var(--b-act-ic-bg); color: var(--accent); display: grid; place-items: center; flex-shrink: 0; }
+.home-learn-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.home-learn-txt b { font-size: 14px; font-weight: 600; }
+.home-learn-txt small { font-size: 12px; color: var(--text-tertiary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.home-learn-cta { font-size: 12px; font-weight: 600; color: var(--accent); flex-shrink: 0; }
+.learn-bar { display: block; height: 5px; border-radius: 99px; background: var(--accent-soft); overflow: hidden; margin-top: 6px; }
+.learn-bar i { display: block; height: 100%; background: var(--accent); border-radius: 99px; }
+.learn-bar.big { height: 8px; }
+
+/* Learn hub */
+.learn-progress {
+  background: linear-gradient(160deg, var(--b-hero-1) 0%, var(--b-hero-2) 100%); color: var(--b-on-hero);
+  border-radius: 22px; padding: 18px; margin-bottom: 12px; box-shadow: var(--shadow-md);
+}
+.learn-progress-top { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; opacity: 0.9; }
+.learn-progress-top b { font-size: 28px; font-weight: 600; opacity: 1; }
+.learn-progress .learn-bar { background: rgba(255, 255, 255, 0.12); }
+.learn-progress .learn-bar i { background: var(--b-mint); }
+.learn-progress-stats { display: grid; grid-template-columns: 1fr 1fr; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+.learn-progress-stats div { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.learn-progress-stats div + div { border-inline-start: 1px solid rgba(255, 255, 255, 0.08); }
+.learn-progress-stats b { font-size: 16px; font-weight: 600; }
+.learn-progress-stats span { font-size: 11px; opacity: 0.65; }
+.learn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.learn-tile {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: right;
+  background: var(--bg-elevated); border: 0; border-radius: 18px; padding: 16px 14px;
+  box-shadow: var(--shadow-sm); font: inherit; color: var(--text-primary); cursor: pointer; min-width: 0;
+}
+[data-theme="dark"] .learn-tile { border: 1px solid var(--border); }
+.learn-tile-ic { width: 40px; height: 40px; border-radius: 13px; background: var(--b-act-ic-bg); color: var(--accent); display: grid; place-items: center; margin-bottom: 6px; }
+.learn-tile b { font-size: 14px; font-weight: 600; }
+.learn-tile small { font-size: 12px; color: var(--text-tertiary); }
+.learn-tile .learn-bar { width: 100%; }
+
+/* Compose button lives inside the community tab now */
+.community-fab {
+  position: fixed; z-index: 99998;
+  left: max(18px, env(safe-area-inset-left, 0px));
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 104px);
+  width: 56px; height: 56px; border-radius: 18px; border: 0; cursor: pointer;
+  background: linear-gradient(160deg, var(--b-hero-1) 0%, var(--accent) 100%); color: #fff;
+  display: grid; place-items: center; box-shadow: 0 8px 22px rgba(15, 59, 51, 0.35);
+}
+.community-fab:active { transform: scale(0.94); }
+.community-fab:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 </style>
 
 </body>
