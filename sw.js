@@ -1,8 +1,9 @@
-const CACHE_NAME = 'israelibourse-v1';
+// Bump this version whenever cached files change so clients pick up the new copy
+const CACHE_NAME = 'israelibourse-v2';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json'
+  './',
+  './index.html',
+  './manifest.json'
 ];
 
 // Install - cache core files
@@ -24,26 +25,22 @@ self.addEventListener('activate', event => {
       Promise.all(
         keys
           .filter(key => key !== CACHE_NAME)
-          .map(key => {
-            console.log('Deleting old cache:', key);
-            return caches.delete(key);
-          })
+          .map(key => caches.delete(key))
       )
     )
   );
   self.clients.claim();
 });
 
-// Fetch - network first, fallback to cache, fallback to /index.html
+// Fetch - network first, fallback to cache, fallback to index.html
 self.addEventListener('fetch', event => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') return;
 
-  // Skip Firebase / external API requests - always go to network
+  // Only handle requests to our own site (works on the custom domain, github.io and localhost).
+  // Firebase, CDNs and data APIs always go straight to the network.
   const url = new URL(event.request.url);
-  const isExternal = !url.hostname.includes('israelibourse.co.il') &&
-                     !url.hostname.includes('localhost');
-  if (isExternal) return;
+  if (url.origin !== self.location.origin) return;
 
   event.respondWith(
     fetch(event.request)
@@ -61,8 +58,9 @@ self.addEventListener('fetch', event => {
           if (cached) return cached;
           // For navigation requests (page loads), serve index.html
           if (event.request.mode === 'navigate') {
-            return caches.match('/index.html');
+            return caches.match('./index.html');
           }
+          return Response.error();
         });
       })
   );

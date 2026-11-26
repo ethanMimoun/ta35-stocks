@@ -26,7 +26,7 @@
 - חיפוש חופשי
 
 ### 💼 תיק דמה
-- ₪250,000 כסף וירטואלי להשקעה
+- ₪30,000 כסף וירטואלי להשקעה
 - קנייה לפי כמות או לפי סכום (₪)
 - מעקב רווח/הפסד בזמן אמת
 - גרף פיזור תיק לפי ענפים
@@ -73,7 +73,9 @@
 | Firebase Auth | הרשמה והתחברות |
 | Cloud Firestore | שמירת נתונים |
 | Chart.js | גרפים אינטראקטיביים |
-| Google Sheets API | נתוני מניות בזמן אמת |
+| Google Sheets (CSV מפורסם) | נתוני מניות, מתעדכן כל 10 שניות |
+| Yahoo Finance | היסטוריית מחירים (דרך CORS proxy) |
+| Groq (דרך Cloudflare Worker) | הסבר AI על מניה |
 | Service Worker | PWA + Offline |
 
 ---
@@ -102,6 +104,18 @@ cd ta35-stocks
 | דף הבית | דף מניה | Trader Academy |
 |---|---|---|
 | Dashboard עם סטטיסטיקות | גרף + נתונים + פעולות | סימולציית השקעות |
+
+---
+
+## 🔒 אבטחה
+
+- **חוקי Firestore** נמצאים ב-`firestore.rules`. כדי לפרסם: Firebase Console → Firestore → Rules, להדביק ולפרסם (או `firebase deploy --only firestore:rules`).
+- **בדיקות לחוקים** נמצאות ב-`tests/firestore-rules.test.mjs` ורצות מול האמולטור:
+  ```bash
+  npm i -D firebase-tools @firebase/rules-unit-testing firebase
+  npx firebase emulators:exec --only firestore --project demo-ta35 "node tests/firestore-rules.test.mjs"
+  ```
+- **מפתח Finnhub** של `exit.html` לא נשמר בקוד. מזינים אותו במסך ההגדרות של האפליקציה.
 
 ---
 

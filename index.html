@@ -2,7 +2,7 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>מגמת צמיחה • The Israeli Bourse</title>
   
   <!-- PWA Meta Tags -->
@@ -7471,6 +7471,11 @@
     }
   </style>
 <style id="premium-polish-layer">
+html { touch-action: manipulation; }
+/* Pinch-zoom is allowed now; 16px inputs on touch devices stop iOS from auto-zooming on focus */
+@media (pointer: coarse) {
+  input, select, textarea { font-size: 16px !important; }
+}
 /* ============================================================
    PREMIUM POLISH LAYER — subtle motion for a fast, modern feel
    Refined, not flashy. Appropriate for a financial app.
@@ -7670,7 +7675,7 @@ setTimeout(() => {
     <!-- Animated stats ticker -->
     <div style="display:flex;justify-content:center;gap:12px;margin-bottom:24px;padding:10px;background:rgba(255,255,255,0.02);border-radius:4px;border:1px solid rgba(255,255,255,0.04)">
       <div style="text-align:center;flex:1">
-        <div style="font-size:16px;font-weight:700;font-family:var(--font-mono);color:#10b981;animation:loginPulseNum 3s ease-in-out infinite">+2.4%</div>
+        <div style="font-size:16px;font-weight:700;font-family:var(--font-mono);color:#10b981;animation:loginPulseNum 3s ease-in-out infinite" id="login-index-change">—</div>
         <div style="font-size:8px;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px">ת"א 35</div>
       </div>
       <div style="width:1px;background:rgba(255,255,255,0.06)"></div>
@@ -9112,29 +9117,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Firebase יטפל בהתחברות דרך onAuthStateChanged
   setInterval(fetchData, REFRESH_INTERVAL);
 
-  // ===== PREVENT PINCH ZOOM (iOS Safari workaround) =====
-  // The viewport meta tag has user-scalable=no, but iOS Safari ignores it sometimes.
-  // These event listeners block pinch-zoom and double-tap-zoom.
-  document.addEventListener('gesturestart', e => e.preventDefault(), { passive: false });
-  document.addEventListener('gesturechange', e => e.preventDefault(), { passive: false });
-  document.addEventListener('gestureend', e => e.preventDefault(), { passive: false });
-
-  // Block double-tap zoom while still allowing single taps
-  let lastTouchEnd = 0;
-  document.addEventListener('touchend', (e) => {
-    const now = Date.now();
-    if (now - lastTouchEnd <= 300) {
-      e.preventDefault();
-    }
-    lastTouchEnd = now;
-  }, { passive: false });
-
-  // Block multi-touch (2+ finger gestures that aren't pinch-to-zoom)
-  document.addEventListener('touchmove', (e) => {
-    if (e.touches && e.touches.length > 1) {
-      e.preventDefault();
-    }
-  }, { passive: false });
+  // Zoom: pinch-zoom is allowed (accessibility). Double-tap zoom is disabled
+  // via CSS touch-action: manipulation, which does not swallow quick taps.
 
   // הסתר splash screen אחרי 1.8 שניות
   setTimeout(() => {
@@ -9561,6 +9545,19 @@ async function fetchData() {
         // בדוק התראות
         checkAlerts();
         checkFavoriteAlerts(companies);
+
+        // Login screen: market-cap weighted average change of the tracked stocks
+        try {
+          const loginChg = document.getElementById('login-index-change');
+          if (loginChg) {
+            const totalCap = companies.reduce((t, c) => t + (c.marketCap || 0), 0);
+            if (totalCap > 0) {
+              const avg = companies.reduce((t, c) => t + (c.changePercent || 0) * (c.marketCap || 0), 0) / totalCap;
+              loginChg.textContent = (avg >= 0 ? '+' : '') + avg.toFixed(1) + '%';
+              loginChg.style.color = avg >= 0 ? '#10b981' : '#ef4444';
+            }
+          }
+        } catch (e) { /* cosmetic only */ }
 
         const now = new Date().toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
         window._lastUpdateTime = Date.now();
@@ -13044,7 +13041,7 @@ async function getAIExplanation(stockId) {
 
     if (!response.ok || !data.explanation) {
       const errMsg = data.error || 'שגיאה לא צפויה';
-      resultDiv.innerHTML = `<div class="sp-ai-response error">❌ לא הצלחתי להביא הסבר כרגע. (${errMsg})<br>נסה שוב בעוד רגע.</div>`;
+      resultDiv.innerHTML = `<div class="sp-ai-response error">❌ לא הצלחתי להביא הסבר כרגע. (${escapeHtml(errMsg)})<br>נסה שוב בעוד רגע.</div>`;
       btn.disabled = false;
       btn.innerHTML = '<span>🔄</span><span>נסה שוב</span>';
       return;
@@ -13062,10 +13059,17 @@ async function getAIExplanation(stockId) {
   }
 }
 
+// AI output is untrusted text: escape it, then allow only line breaks and **bold**
+function formatAIText(text) {
+  return escapeHtml(String(text || ''))
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
+
 function showAIExplanation(resultDiv, text, fromCache) {
   const cacheLabel = fromCache ? '<span class="sp-ai-meta-item">⚡ מהזיכרון</span>' : '<span class="sp-ai-meta-item">🤖 Llama 3.3 70B</span>';
   resultDiv.innerHTML = `
-    <div class="sp-ai-response">${text}</div>
+    <div class="sp-ai-response">${formatAIText(text)}</div>
     <div class="sp-ai-meta">
       ${cacheLabel}
       <span class="sp-ai-meta-item">🔒 מאובטח דרך Cloudflare</span>

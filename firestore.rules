@@ -1,0 +1,129 @@
+rules_version = '2';
+
+// ============================================================================
+// Firestore Security Rules — מגמת צמיחה
+// ----------------------------------------------------------------------------
+// טיוטה שנכתבה לפי הקריאות והכתיבות שהאפליקציה (index.html) עושה בפועל.
+// לפני פרסום: בדוק ב-Firebase Console → Firestore → Rules → Rules Playground,
+// ושמור עותק של החוקים הנוכחיים כדי שאפשר יהיה לחזור אליהם.
+//
+// מה החוקים האלה נותנים:
+//   * רק משתמש מחובר יכול לקרוא נתונים בכלל.
+//   * כל משתמש כותב רק למסמך ולתתי-האוספים שלו.
+//   * משתמשים אחרים יכולים לשנות רק את השדות שהאפליקציה צריכה
+//     (לייקים, ספירת תגובות, ריאקציות, דיווחים, כתר בדירוג).
+//
+// מה הם לא נותנים:
+//   * היתרה (cash) והתשואה מחושבות בדפדפן, אז משתמש שיודע מה הוא עושה
+//     עדיין יכול לנפח אותן. מניעה אמיתית דורשת חישוב בצד השרת (Cloud Functions).
+// ============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isUser(uid) { return signedIn() && request.auth.uid == uid; }
+    function onlyChanges(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+    }
+
+    // ---------------------------------------------------------------- users
+    // Profiles and demo portfolios are shown to other users (profile page,
+    // friend portfolios, search), so any signed-in user can read them.
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create, update: if isUser(uid);
+      allow delete: if false;
+
+      // Private sub-collections: owner only
+      match /activity/{id}           { allow read, write: if isUser(uid); }
+      match /bookmarks/{id}          { allow read, write: if isUser(uid); }
+      match /saved_calculations/{id} { allow read, write: if isUser(uid); }
+      match /real_holdings/{id}      { allow read, write: if isUser(uid); }
+      match /following/{id}          { allow read: if signedIn(); allow write: if isUser(uid); }
+
+      // Anyone signed in can send a notification; only the owner reads/marks/deletes
+      match /notifications/{id} {
+        allow create: if signedIn();
+        allow read, update, delete: if isUser(uid);
+      }
+
+      // users/{uid}/followers/{followerId} is written by the follower
+      match /followers/{followerId} {
+        allow read: if signedIn();
+        allow create, update, delete: if isUser(followerId) || isUser(uid);
+      }
+
+      // Written by whichever client notices the crown changed hands
+      match /crown_history/{id} {
+        allow read: if signedIn();
+        allow create: if signedIn();
+        allow update, delete: if false;
+      }
+    }
+
+    // ------------------------------------------------------- publicProfiles
+    match /publicProfiles/{uid} {
+      allow read: if signedIn();
+      allow write: if isUser(uid);
+    }
+
+    // ---------------------------------------------------------- leaderboard
+    match /leaderboard/{uid} {
+      allow read: if signedIn();
+      allow create: if isUser(uid);
+      allow update: if isUser(uid)
+        || (signedIn() && onlyChanges(['crownDays', 'currentMedal', 'lastMedal', 'lastDaysHeld']));
+      allow delete: if isUser(uid);
+    }
+
+    match /leaderboard_state/{docId} {
+      allow read: if signedIn();
+      allow write: if signedIn()
+        && request.resource.data.keys().hasOnly(
+             ['topUserId', 'topDisplayName', 'crownDays', 'crownStartDate', 'lastCheckDate']);
+    }
+
+    // ---------------------------------------------------------- stock_posts
+    match /stock_posts/{postId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      // Author can edit anything (except the author field); others only social counters
+      allow update: if (isUser(resource.data.userId)
+                         && request.resource.data.userId == resource.data.userId)
+        || (signedIn() && onlyChanges(['likes', 'likeCount', 'commentCount', 'reactions', 'reports', 'hidden']));
+      allow delete: if isUser(resource.data.userId);
+
+      match /comments/{commentId} {
+        allow read: if signedIn();
+        allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+        allow update: if isUser(resource.data.userId)
+          || (signedIn() && onlyChanges(['likes', 'likeCount']));
+        // Comment author, or the post author (deleting a post removes its comments)
+        allow delete: if isUser(resource.data.userId)
+          || isUser(get(/databases/$(database)/documents/stock_posts/$(postId)).data.userId);
+      }
+    }
+
+    // -------------------------------------------------------- price_history
+    // Shared price samples; any client may add, and may delete samples older than a year
+    match /price_history/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn();
+      allow update: if false;
+      allow delete: if signedIn()
+        && resource.data.timestamp < request.time.toMillis() - 31536000000;
+    }
+
+    // ------------------------------------------------ exitTerminal (exit.html)
+    // Private cloud sync of the "נקודת יציאה" app: owner only
+    match /exitTerminal/{uid} {
+      allow read, write: if isUser(uid);
+    }
+
+    // Everything else is closed
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

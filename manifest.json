@@ -2,8 +2,8 @@
   "name": "Israeli Bourse - מגמת צמיחה",
   "short_name": "IsraeliB",
   "description": "אפליקציית מניות ת״א 35 - לימוד השקעות וניהול תיק",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
@@ -28,7 +28,7 @@
   "shortcuts": [
     {
       "name": "דשבורד",
-      "url": "/",
+      "url": "./",
       "description": "פתח את דשבורד המניות"
     }
   ]
