@@ -8040,6 +8040,7 @@ setTimeout(() => {
         <div class="page-title" id="page-title"></div>
         <div class="page-subtitle" id="page-subtitle"></div>
       </div>
+      <button class="header-avatar page-banner-avatar" id="page-banner-avatar" onclick="goToProfile()" title="הפרופיל וההגדרות" aria-label="הפרופיל וההגדרות">👤</button>
     </div>
   </div>
   <div class="section-tabs" id="section-tabs" role="tablist" hidden></div>
@@ -8197,6 +8198,8 @@ setTimeout(() => {
   </div>
 
   <div class="grid" id="cards-grid"></div>
+  <!-- Real holdings live in the portfolio tab (loaded by loadRealHoldingsForProfile) -->
+  <div id="portfolio-real-holdings-wrap" hidden><div id="profile-real-holdings-section"></div></div>
 
   </div><!-- end stocks-view -->
 
@@ -14896,11 +14899,10 @@ function renderDashboard() {
         avatarEl.textContent = avatar;
       }
     }
-    const headerAvatarEl = document.getElementById('header-avatar');
-    if (headerAvatarEl) {
+    document.querySelectorAll('.header-avatar').forEach(headerAvatarEl => {
       if (profilePic) headerAvatarEl.innerHTML = `<img src="${escapeAttr(profilePic)}" alt="">`;
       else headerAvatarEl.textContent = profileData.avatar || '👤';
-    }
+    });
   }
   
   // Stats
@@ -20885,7 +20887,6 @@ async function renderProfile() {
       </div>
 
       <!-- ========== REAL HOLDINGS (US stocks, loaded async) ========== -->
-      <div id="profile-real-holdings-section"></div>
 
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px">
         <div onclick="scrollToProfileSection('posts-section')" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center;cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden"
@@ -28016,7 +28017,7 @@ window.loadRealHoldingsForProfile = async function() {
       <div style="padding:12px 14px;font-size:11px;font-weight:800;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(16,185,129,0.04),transparent)">
         <div style="display:flex;align-items:center;gap:8px">
           <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#10b981,#059669);font-size:13px">💵</span>
-          <span>ההחזקות שלי</span>
+          <span>החזקות אמיתיות</span>
         </div>
       </div>
       <div style="padding:24px;text-align:center;color:var(--text-tertiary);font-size:11px">טוען החזקות...</div>
@@ -28032,7 +28033,7 @@ window.loadRealHoldingsForProfile = async function() {
           <div style="padding:12px 14px;font-size:11px;font-weight:800;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(16,185,129,0.04),transparent);display:flex;justify-content:space-between;align-items:center">
             <div style="display:flex;align-items:center;gap:8px">
               <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#10b981,#059669);font-size:13px">💵</span>
-              <span>ההחזקות שלי</span>
+              <span>החזקות אמיתיות</span>
             </div>
           </div>
           <div style="padding:32px 20px;text-align:center">
@@ -28196,7 +28197,7 @@ window.loadRealHoldingsForProfile = async function() {
         <div style="padding:12px 14px;font-size:11px;font-weight:800;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.08em;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(16,185,129,0.04),transparent);display:flex;justify-content:space-between;align-items:center">
           <div style="display:flex;align-items:center;gap:8px">
             <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#10b981,#059669);font-size:13px">💵</span>
-            <span>ההחזקות שלי</span>
+            <span>החזקות אמיתיות</span>
             <span style="background:var(--bg-base);padding:2px 8px;border-radius:10px;font-size:10px;color:var(--text-tertiary);font-weight:700">${results.length}</span>
           </div>
           <div style="display:flex;gap:6px;align-items:center">
@@ -28285,7 +28286,7 @@ async function loadRealHoldingsSummaryForDashboard() {
     // Empty state — show a subtle CTA card
     if (snapshot.empty) {
       target.innerHTML = `
-        <div onclick="goToProfile();setTimeout(()=>{const el=document.getElementById('profile-real-holdings-section');if(el)el.scrollIntoView({behavior:'smooth',block:'center'})},300)"
+        <div onclick="goToPortfolio();setTimeout(()=>{const el=document.getElementById('profile-real-holdings-section');if(el)el.scrollIntoView({behavior:'smooth',block:'center'})},300)"
              style="background:var(--bg-elevated);border:1px dashed var(--border);border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all 0.15s"
              onmouseover="this.style.borderColor='#10b981';this.style.borderStyle='solid';this.style.background='rgba(16,185,129,0.03)'"
              onmouseout="this.style.borderColor='var(--border)';this.style.borderStyle='dashed';this.style.background='var(--bg-elevated)'">
@@ -28349,7 +28350,7 @@ async function loadRealHoldingsSummaryForDashboard() {
     }
 
     target.innerHTML = `
-      <div onclick="goToProfile();setTimeout(()=>{const el=document.getElementById('profile-real-holdings-section');if(el)el.scrollIntoView({behavior:'smooth',block:'center'})},300)"
+      <div onclick="goToPortfolio();setTimeout(()=>{const el=document.getElementById('profile-real-holdings-section');if(el)el.scrollIntoView({behavior:'smooth',block:'center'})},300)"
            style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:8px;cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden"
            onmouseover="this.style.borderColor='#10b981';this.style.transform='translateY(-1px)'"
            onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
@@ -28568,6 +28569,13 @@ console.log('[dashboard-holdings] summary card loaded');
       document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.toggle('active', b.id === tab));
     }
     renderSectionTabs(page);
+    const rh = document.getElementById('portfolio-real-holdings-wrap');
+    if (rh) {
+      rh.hidden = page !== 'portfolio';
+      if (page === 'portfolio' && typeof loadRealHoldingsForProfile === 'function') loadRealHoldingsForProfile();
+    }
+    const bannerAvatar = document.getElementById('page-banner-avatar');
+    if (bannerAvatar) bannerAvatar.hidden = page === 'profile' || page === 'settings';
     document.querySelectorAll('.community-tab').forEach(t => { if (t.id === 'ctab-competition') t.classList.toggle('active', page === 'competition'); });
   }
   window.syncNavForPage = syncNavForPage;
@@ -29082,6 +29090,8 @@ button[style*="linear-gradient(135deg,#0ea5e9"], button[style*="linear-gradient(
   display: grid; place-items: center; font-size: 17px; cursor: pointer; overflow: hidden;
 }
 .header-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.page-banner-avatar[hidden] { display: none; }
+#portfolio-real-holdings-wrap { margin-top: 12px; }
 .header-avatar:focus-visible { outline: 2px solid var(--b-mint); outline-offset: 2px; }
 
 /* Sub-tabs under a page banner (שוק / התיק / קהילה) */
